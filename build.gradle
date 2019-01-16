@@ -1,0 +1,52 @@
+buildscript {
+    repositories {
+        google()
+    }
+}
+
+plugins {
+    id 'java-gradle-plugin'
+    id 'maven'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.11'
+}
+
+repositories {
+    google()
+    mavenCentral()
+    maven { url 'https://maven.fabric.io/public' }
+}
+
+dependencies {
+    compileOnly gradleApi()
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "com.android.tools.build:gradle:3.1.4"
+    implementation 'io.fabric.tools:gradle:1.27.0'
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+group 'com.xmartlabs'
+version '0.0.1'
+
+gradlePlugin {
+    plugins {
+        create("snapshot-publisher") {
+            id = "com.xmartlabs.snapshot-publisher"
+            implementationClass = "com.xmartlabs.snapshotpublisher.SnapshotPublisherPlugin"
+        }
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri('./local-maven'))
+        }
+    }
+}
