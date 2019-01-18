@@ -13,73 +13,70 @@ import org.gradle.api.Task
 
 @Suppress("unused")
 class SnapshotPublisherPlugin : Plugin<Project> {
-    override fun apply(project: Project) {
-        with(project) {
-            val releaseSetup =
-                extensions.create(Constants.SNAPSHOT_PUBLISHER_EXTENSION_NAME, SnapshotReleaseExtension::class.java)
+  override fun apply(project: Project) {
+    with(project) {
+      val releaseSetup =
+        extensions.create(Constants.SNAPSHOT_PUBLISHER_EXTENSION_NAME, SnapshotReleaseExtension::class.java)
 
-            if (hasAndroidExtension()) {
-                createGenerateReleaseNotesFileTask()
+      if (hasAndroidExtension()) {
+        createGenerateReleaseNotesFileTask()
 
-                getAndroidExtension().applicationVariants.all { variant ->
-                    val variantName = variant.getCapitalizedName()
+        getAndroidExtension().applicationVariants.all { variant ->
+          createGenerateReleaseNotesFileTask(variant)
+          val assembleTask = getAssembleTask(variant)
+          val updateVersionNameTask = createAndroidVersionTask(variant, assembleTask)
 
-                    createGenerateReleaseNotesFileTask(variant)
-                    val assembleTask = getAssembleTask(variantName)
-
-                    val updateVersionNameTask = createAndroidVersionTask(variantName, variant, assembleTask)
-
-                    createDeployTask(variant, releaseSetup, assembleTask, updateVersionNameTask)
-                }
-            } else {
-                throw GradleException("Android is not present")
-            }
+          createDeployTask(variant, releaseSetup, assembleTask, updateVersionNameTask)
         }
+      } else {
+        throw GradleException("Android is not present")
+      }
     }
+  }
 
-    private fun ApplicationVariant.getCapitalizedName() = name.capitalize()
+  private fun ApplicationVariant.getCapitalizedName() = name.capitalize()
 
-    private fun Project.getBetaDistributionTask(variantName: String) =
-        tasks.getByName("${Constants.BETA_DISTRIBUTION_TASK_NAME}$variantName")
+  private fun Project.getBetaDistributionTask(variant: ApplicationVariant) =
+    tasks.getByName("${Constants.BETA_DISTRIBUTION_TASK_NAME}${variant.getCapitalizedName()}")
 
-    private fun Project.getAssembleTask(variantName: String) =
-        tasks.getByName("${Constants.ASSEMBLE_TASK_NAME}$variantName")
+  private fun Project.getAssembleTask(variant: ApplicationVariant) =
+    tasks.getByName("${Constants.ASSEMBLE_TASK_NAME}${variant.getCapitalizedName()}")
 
-    private fun Project.createGenerateReleaseNotesFileTask(variant: ApplicationVariant? = null) =
-        createTask(
-            Constants.GENERATE_SNAPSHOT_RELEASE_NOTES_TASK_NAME + (variant?.getCapitalizedName() ?: ""),
-            GenerateReleaseNotesFileTask::class
-        ) {
-            this.variant = variant
-        }
-
-    private fun Project.createAndroidVersionTask(variantName: String, variant: ApplicationVariant, assembleTask: Task) =
-        createTask(
-            "${Constants.UPDATE_ANDROID_VERSION_NAME_TASK_NAME}$variantName",
-            UpdateAndroidVersionNameTask::class
-        ) {
-            this.variant = variant
-            assembleTask.mustRunAfter(this)
-        }
-
-    private fun Project.createDeployTask(
-        variant: ApplicationVariant,
-        releaseSetup: SnapshotReleaseExtension,
-        assembleTask: Task,
-        updateVersionNameTask: UpdateAndroidVersionNameTask
-    ) = createTask(
-        "${Constants.FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME}${variant.getCapitalizedName()}",
-        PrepareFabricReleaseTask::class
+  private fun Project.createGenerateReleaseNotesFileTask(variant: ApplicationVariant? = null) =
+    createTask(
+      Constants.GENERATE_SNAPSHOT_RELEASE_NOTES_TASK_NAME + (variant?.getCapitalizedName() ?: ""),
+      GenerateReleaseNotesFileTask::class
     ) {
-        releaseFabricTask = getBetaDistributionTask(variant.getCapitalizedName())
-        releaseNotes = {
-            ReleaseNotesGenerator.generate(
-                releaseNotesConfig = releaseSetup.releaseNotes,
-                versionName = getVersionName(variant)
-            )
-        }
-        dependsOn(updateVersionNameTask)
-        dependsOn(assembleTask)
-        finalizedBy(releaseFabricTask)
+      this.variant = variant
     }
+
+  private fun Project.createAndroidVersionTask(variant: ApplicationVariant, assembleTask: Task) =
+    createTask(
+      "${Constants.UPDATE_ANDROID_VERSION_NAME_TASK_NAME}${variant.getCapitalizedName()}",
+      UpdateAndroidVersionNameTask::class
+    ) {
+      this.variant = variant
+      assembleTask.mustRunAfter(this)
+    }
+
+  private fun Project.createDeployTask(
+    variant: ApplicationVariant,
+    releaseSetup: SnapshotReleaseExtension,
+    assembleTask: Task,
+    updateVersionNameTask: UpdateAndroidVersionNameTask
+  ) = createTask(
+    "${Constants.FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME}${variant.getCapitalizedName()}",
+    PrepareFabricReleaseTask::class
+  ) {
+    releaseFabricTask = getBetaDistributionTask(variant)
+    releaseNotes = {
+      ReleaseNotesGenerator.generate(
+        releaseNotesConfig = releaseSetup.releaseNotes,
+        versionName = getVersionName(variant)
+      )
+    }
+    dependsOn(updateVersionNameTask)
+    dependsOn(assembleTask)
+    finalizedBy(releaseFabricTask)
+  }
 }
