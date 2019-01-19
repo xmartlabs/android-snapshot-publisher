@@ -10,7 +10,7 @@ open class ReleaseNotesConfig {
   var template: String = Constants.RELEASE_NOTES_CONFIG_TEMPLATE_DEFAULT_VALUE
 
   internal fun getReleaseNotes(versionName: String, header: String, changelog: String): String = template
-    .replace(Constants.FILE_TEMPLATE_VERSION_KEY, versionName, true)
-    .replace(Constants.FILE_TEMPLATE_HEADER_KEY, header, true)
-    .replace(Constants.FILE_TEMPLATE_CHANGELOG_KEY, changelog, true)
+      .replace(Constants.FILE_TEMPLATE_VERSION_KEY, versionName, true)
+      .replace(Constants.FILE_TEMPLATE_HEADER_KEY, header, true)
+      .replace(Constants.FILE_TEMPLATE_CHANGELOG_KEY, changelog, true)
 }

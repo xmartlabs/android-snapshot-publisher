@@ -3,6 +3,7 @@ package com.xmartlabs.snapshotpublisher.task
 import com.xmartlabs.snapshotpublisher.utils.getSnapshotReleaseExtension
 import org.gradle.api.DefaultTask
 import org.gradle.api.Task
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
 open class PrepareFabricReleaseTask : DefaultTask() {
@@ -13,7 +14,9 @@ open class PrepareFabricReleaseTask : DefaultTask() {
     const val BETA_DISTRIBUTION_RELEASE_NOTES_EXTENSION_NAME = "betaDistributionReleaseNotes"
   }
 
+  @get:Internal
   lateinit var releaseNotes: () -> String
+  @get:Internal
   lateinit var releaseFabricTask: Task
 
   init {

@@ -5,12 +5,16 @@ import com.xmartlabs.snapshotpublisher.utils.ReleaseNotesGenerator
 import com.xmartlabs.snapshotpublisher.utils.getSnapshotReleaseExtension
 import com.xmartlabs.snapshotpublisher.utils.getVersionName
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 
 open class GenerateReleaseNotesFileTask : DefaultTask() {
+  @get:Internal
   var variant: ApplicationVariant? = null
-  lateinit var generatedReleaseNotes: String
+  @get:OutputFile
+  var outputFile: File? = null
 
   init {
     description = "Save the generated release notes in a file"
@@ -19,14 +23,15 @@ open class GenerateReleaseNotesFileTask : DefaultTask() {
   @TaskAction
   fun action() {
     val releaseSetup = project.getSnapshotReleaseExtension()
-    generatedReleaseNotes = ReleaseNotesGenerator.generate(
-      releaseNotesConfig = releaseSetup.releaseNotes,
-      versionName = project.getVersionName(variant)
+    val generatedReleaseNotes = ReleaseNotesGenerator.generate(
+        releaseNotesConfig = releaseSetup.releaseNotes,
+        versionName = project.getVersionName(variant)
     )
 
     with(releaseSetup.releaseNotesTextFilePath) {
       if (!isNullOrBlank()) {
-        File(this).writeText(generatedReleaseNotes)
+        outputFile = File(this)
+            .apply { writeText(generatedReleaseNotes) }
       }
     }
   }
