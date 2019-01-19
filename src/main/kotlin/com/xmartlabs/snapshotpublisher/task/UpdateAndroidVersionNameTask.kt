@@ -20,7 +20,7 @@ open class UpdateAndroidVersionNameTask : DefaultTask() {
   fun action() {
     if (project.getSnapshotReleaseExtension().useHashCommitInVersionName) {
       variant.outputs.all { output ->
-        (output as ApkVariantOutput).versionNameOverride = project.getVersionName(variant)
+        (output as? ApkVariantOutput)?.versionNameOverride = project.getVersionName(variant)
       }
     }
   }

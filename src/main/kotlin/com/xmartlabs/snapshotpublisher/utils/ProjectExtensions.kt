@@ -12,8 +12,10 @@ private const val ANDROID_EXTENSION_NAME = "android"
 
 fun Project.hasAndroidExtension() = hasProperty(ANDROID_EXTENSION_NAME)
 
+@Suppress("UnsafeCast")
 fun Project.getAndroidExtension() = extensions.getByName(ANDROID_EXTENSION_NAME) as AppExtension
 
+@Suppress("UnsafeCast")
 internal fun Project.getSnapshotReleaseExtension() =
     extensions.getByName(Constants.SNAPSHOT_PUBLISHER_EXTENSION_NAME) as SnapshotReleaseExtension
 

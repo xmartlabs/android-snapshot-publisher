@@ -4,17 +4,19 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 
 internal object GitHelper {
+  private const val SECONDS_TO_WAIT_COMMAND_RESPONSE: Long = 10
   private fun String.execute(dir: File? = File(".")): String {
     val parts = this.trim().split(" (?=([^\']*\'[^\']*\')*[^\']*$)".toRegex())
         .map { it.replace("'", "") }
 
+    @Suppress("SpreadOperator")
     val proc = ProcessBuilder(*parts.toTypedArray())
         .directory(dir)
         .redirectOutput(ProcessBuilder.Redirect.PIPE)
         .redirectError(ProcessBuilder.Redirect.PIPE)
         .start()
 
-    proc.waitFor(5, TimeUnit.SECONDS)
+    proc.waitFor(SECONDS_TO_WAIT_COMMAND_RESPONSE, TimeUnit.SECONDS)
     return proc.inputStream.bufferedReader().readText().trim()
   }
 
