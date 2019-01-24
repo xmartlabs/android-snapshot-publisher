@@ -6,15 +6,15 @@ Android Snapshot Publisher is a Gradle plugin to **prepare and distribute Androi
 The main features of the preparation process are:
 - Update the Android Version Name to keep track of the distributed versions.
 The default behavior adds the commit identifier to the Android Version name.
-It's very helpful to track possible issues.
+It's very helpful to track possible issues, for example if a crash occurs, you'll want to know in which snapshot version of the app it happened.
 - Create release notes based on git's history.
 It prepares rich and customizable release notes.
 
 This plugin is also meant to easily deploy snapshot builds.
 
 Currently the available sources are:
-- Google Play
-- Fabric Beta
+- [Google Play](https://play.google.com/apps/publish/)
+- [Fabric Beta](https://docs.fabric.io/apple/beta/overview.html)
 
 An interesting feature of this plugin is that it enables you to deploy the build in multiple sources with a low-effort setup.
 
@@ -125,7 +125,7 @@ This changelog includes all commits from the last -not current- commit to `maxCh
 - `maxChangelogLines`: Indicates the number of commits included in `{changelog}`.
 
 - `outputFile`: The file where the release notes will be saved.
-By default this value is `null` and that means that the release notes will be generated and delivered with the snapshot build but it will not saved in the local storage.
+By default this value is `null` and that means the release notes will be generated and delivered with the snapshot build but it will not be saved in the local storage.
 If you want to save the release notes in the local storage, you can set `outputFile = file("release-notes.txt")`.
 
 
