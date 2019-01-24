@@ -1,28 +1,39 @@
 package com.xmartlabs.snapshotpublisher
 
-object Constants {
-  const val FILE_TEMPLATE_VERSION_KEY = "{version}"
-  const val FILE_TEMPLATE_HEADER_KEY = "{header}"
-  const val FILE_TEMPLATE_CHANGELOG_KEY = "{changelog}"
+import java.io.File
 
+object Constants {
   const val ASSEMBLE_TASK_NAME = "assemble"
   const val BETA_DISTRIBUTION_TASK_NAME = "crashlyticsUploadDistribution"
-  const val FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME = "fabricBetaSnapshotDeploy"
-  const val GENERATE_SNAPSHOT_RELEASE_NOTES_TASK_NAME = "generateSnapshotReleaseNotes"
+  const val FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME = "publishSnapshotFabric"
+
+  internal const val PLUGIN_GROUP = "Publishing"
+
   const val SNAPSHOT_PUBLISHER_EXTENSION_NAME = "snapshotPublisher"
   const val UPDATE_ANDROID_VERSION_NAME_TASK_NAME = "updateAndroidVersionName"
+  const val GENERATE_SNAPSHOT_RELEASE_NOTES_TASK_NAME = "generateSnapshotReleaseNotes"
 
-  const val RELEASE_NOTES_CONFIG_CHANGELOG_FORMAT_DEFAULT_VALUE = "• %s (%an - %ci)"
+  const val VERSION_FORMAT_CURRENT_VERSION_NAME_KEY = "{currentVersionName}"
+  const val VERSION_FORMAT_COMMIT_HASH_KEY = "{commitHash}"
+  const val VERSION_FORMAT = "$VERSION_FORMAT_CURRENT_VERSION_NAME_KEY-$VERSION_FORMAT_COMMIT_HASH_KEY"
+
+  const val RELEASE_NOTES_COMMIT_HISTORY_KEY = "{commitHistory}"
+  const val RELEASE_NOTES_HEADER_KEY = "{header}"
+  const val RELEASE_NOTES_VERSION_CODE_KEY = "{versionCode}"
+  const val RELEASE_NOTES_VERSION_KEY = "{version}"
+  const val RELEASE_NOTES_VERSION_NAME_KEY = "{versionName}"
+
+  const val RELEASE_NOTES_VERSION_FORMAT_DEFAULT_VALUE = RELEASE_NOTES_VERSION_NAME_KEY
+  const val RELEASE_NOTES_CONFIG_COMMIT_HISTORY_FORMAT_DEFAULT_VALUE = "• %s (%an - %ci)"
   const val RELEASE_NOTES_CONFIG_HEADER_FORMAT_DEFAULT_VALUE = "%s%n%nAuthor: %an <%ae>%n%B"
-  const val RELEASE_NOTES_CONFIG_MAX_LINES_OF_CHANGELOG_DEFAULT_VALUE = 10
-  const val RELEASE_NOTES_CONFIG_TEMPLATE_DEFAULT_VALUE =
-      """${Constants.FILE_TEMPLATE_VERSION_KEY}: - ${Constants.FILE_TEMPLATE_HEADER_KEY}
+  const val RELEASE_NOTES_CONFIG_MAX_COMMIT_HISTORY_LINES_DEFAULT_VALUE = 10
+  val RELEASE_NOTES_OUTPUT_FILE_DEFAULT_VALUE: File? = null
+  const val RELEASE_NOTES_CONFIG_FORMAT_DEFAULT_VALUE =
+      """$RELEASE_NOTES_VERSION_KEY: - $RELEASE_NOTES_HEADER_KEY
 
 Last Changes:
-${Constants.FILE_TEMPLATE_CHANGELOG_KEY}
+$RELEASE_NOTES_COMMIT_HISTORY_KEY
 """
-
-  const val SNAPSHOT_RELEASE_USE_HASH_COMMIT_IN_VERSION_NAME_DEFAULT_VALUE = true
 
   const val FABRIC_DEPLOY_DISTRIBUTION_EMAILS_DEFAULT_VALUE = ""
   const val FABRIC_DEPLOY_DISTRIBUTION_GROUP_ALIASES_DEFAULT_VALUE = ""

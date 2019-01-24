@@ -15,22 +15,23 @@ open class PrepareFabricReleaseTask : DefaultTask() {
   }
 
   @get:Internal
-  lateinit var releaseNotes: () -> String
+  lateinit var generateReleaseNotesTask: GenerateReleaseNotesTask
   @get:Internal
   lateinit var releaseFabricTask: Task
 
   init {
-    description = "Prepare Fabric deploy"
+    description = "Fabric Beta deploy"
   }
 
+  @Suppress("unused")
   @TaskAction
   fun action() {
-    val fabricRelease = project.getSnapshotReleaseExtension().fabric
+    val fabric = project.getSnapshotReleaseExtension().fabric
     with(releaseFabricTask.extensions) {
-      add(BETA_DISTRIBUTION_EMAILS_EXTENSION_NAME, fabricRelease.distributionEmails)
-      add(BETA_DISTRIBUTION_GROUP_ALIASES_EXTENSION_NAME, fabricRelease.distributionGroupAliases)
-      add(BETA_DISTRIBUTION_NOTIFICATIONS_EXTENSION_NAME, fabricRelease.distributionNotifications)
-      add(BETA_DISTRIBUTION_RELEASE_NOTES_EXTENSION_NAME, releaseNotes.invoke())
+      add(BETA_DISTRIBUTION_EMAILS_EXTENSION_NAME, fabric.distributionEmails)
+      add(BETA_DISTRIBUTION_GROUP_ALIASES_EXTENSION_NAME, fabric.distributionGroupAliases)
+      add(BETA_DISTRIBUTION_NOTIFICATIONS_EXTENSION_NAME, fabric.distributionNotifications)
+      add(BETA_DISTRIBUTION_RELEASE_NOTES_EXTENSION_NAME, generateReleaseNotesTask.generatedReleaseNotes)
     }
   }
 }
