@@ -1,5 +1,5 @@
 # android-snapshot-publisher
-[![CircleCI](https://circleci.com/gh/xmartlabs/snapshot-publisher.svg?style=svg)](https://circleci.com/gh/xmartlabs/snapshot-publisher)
+[![CircleCI](https://circleci.com/gh/xmartlabs/android-snapshot-publisher.svg?style=svg&circle-token=6d6e2a4acdc22594144b675f30fa99b7bcb30af9)](https://circleci.com/gh/xmartlabs/android-snapshot-publisher)
 
 Android Snapshot Publisher is a Gradle plugin to **prepare and distribute Android Snapshot versions** to multiple distribution sources in a common way.
 
