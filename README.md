@@ -7,8 +7,7 @@ The main features of the preparation process are:
 - Update the Android Version Name to keep track of the distributed versions.
 The default behavior adds the commit identifier to the Android Version name.
 It's very helpful to track possible issues, for example if a crash occurs, you'll want to know in which snapshot version of the app it happened.
-- Create release notes based on git's history.
-It prepares rich and customizable release notes.
+- Create and customize rich release notes based on git's history.
 
 This plugin is also meant to easily deploy snapshot builds.
 
