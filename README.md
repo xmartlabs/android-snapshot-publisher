@@ -92,12 +92,12 @@ snapshotPublisher {
         releaseNotesFormat = """{version}: - {header}
     
 Last Changes:
-{changelog}
+{commitHistory}
 """
         versionFormat: '{versionName}'
         headerFormat = '%s%n%nAuthor: %an <%ae>%n%B'
-        changelogFormat = '• %s (%an - %ci)'
-        maxChangelogLines = 10
+        commitHistoryFormat = '• %s (%an - %ci)'
+        maxCommitHistoryLines = 10
         outputFile = null
     }
     // ...
@@ -108,7 +108,7 @@ Last Changes:
     The possible variables to play with in this case are:
     - `{version}` given by `versionFormat`.
     - `{header}` given by `headerFormat`.
-    - `{changelog}` given by `changelogFormat`.
+    - `{commitHistory}` given by `commitHistoryFormat`.
 
 - `versionFormat`: Specifies the version's variable format.
     
@@ -118,11 +118,11 @@ Last Changes:
 The plugin uses [Git's pretty format] to retrieve the information about the current commit.
 If you want to modify it, you may want to use the same tool to do it.
 
-- `changelogFormat`: Specifies the changelog's variable format.
-As `headerFormat` does, it uses [Git's pretty format] to create the changelog for the previous commits.
-This changelog includes all commits from the last -not current- commit to `maxChangelogLines` commits before that.
+- `commitHistoryFormat`: Specifies the `{commitHistory}` variable format.
+As `headerFormat` does, it uses [Git's pretty format] to create the `commitHistory` for the previous commits.
+It includes all commits from the last -not current- commit to `maxCommitHistoryLines` commits before that.
 
-- `maxChangelogLines`: Indicates the number of commits included in `{changelog}`.
+- `maxCommitHistoryLines`: Indicates the number of commits included in `{commitHistory}`.
 
 - `outputFile`: The file where the release notes will be saved.
 By default this value is `null` and that means the release notes will be generated and delivered with the snapshot build but it will not be saved in the local storage.
