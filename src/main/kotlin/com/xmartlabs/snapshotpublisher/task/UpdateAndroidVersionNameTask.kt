@@ -2,7 +2,6 @@ package com.xmartlabs.snapshotpublisher.task
 
 import com.android.build.gradle.api.ApkVariantOutput
 import com.android.build.gradle.api.ApplicationVariant
-import com.xmartlabs.snapshotpublisher.utils.getSnapshotReleaseExtension
 import com.xmartlabs.snapshotpublisher.utils.getVersionName
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Internal
@@ -13,15 +12,15 @@ open class UpdateAndroidVersionNameTask : DefaultTask() {
   lateinit var variant: ApplicationVariant
 
   init {
-    description = "Update version name"
+    description = "Update Android Version name"
   }
 
+  @Suppress("unused")
   @TaskAction
   fun action() {
-    if (project.getSnapshotReleaseExtension().useHashCommitInVersionName) {
-      variant.outputs.all { output ->
-        (output as? ApkVariantOutput)?.versionNameOverride = project.getVersionName(variant)
-      }
+    val versionName = project.getVersionName(variant)
+    variant.outputs.all { output ->
+      (output as? ApkVariantOutput)?.versionNameOverride = versionName
     }
   }
 }

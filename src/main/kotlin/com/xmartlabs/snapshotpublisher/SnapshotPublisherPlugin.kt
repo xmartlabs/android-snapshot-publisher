@@ -2,13 +2,11 @@ package com.xmartlabs.snapshotpublisher
 
 import com.android.build.gradle.api.ApplicationVariant
 import com.xmartlabs.snapshotpublisher.model.SnapshotReleaseExtension
-import com.xmartlabs.snapshotpublisher.task.GenerateReleaseNotesFileTask
+import com.xmartlabs.snapshotpublisher.task.GenerateReleaseNotesTask
 import com.xmartlabs.snapshotpublisher.task.PrepareFabricReleaseTask
 import com.xmartlabs.snapshotpublisher.task.UpdateAndroidVersionNameTask
-import com.xmartlabs.snapshotpublisher.utils.ReleaseNotesGenerator
 import com.xmartlabs.snapshotpublisher.utils.createTask
 import com.xmartlabs.snapshotpublisher.utils.getAndroidExtension
-import com.xmartlabs.snapshotpublisher.utils.getVersionName
 import com.xmartlabs.snapshotpublisher.utils.hasAndroidExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -19,18 +17,17 @@ import org.gradle.api.Task
 class SnapshotPublisherPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     with(project) {
-      val releaseSetup =
-          extensions.create(Constants.SNAPSHOT_PUBLISHER_EXTENSION_NAME, SnapshotReleaseExtension::class.java)
+      extensions.create(Constants.SNAPSHOT_PUBLISHER_EXTENSION_NAME, SnapshotReleaseExtension::class.java)
 
       if (hasAndroidExtension()) {
-        createGenerateReleaseNotesFileTask()
+        createGenerateReleaseNotesTask()
 
         getAndroidExtension().applicationVariants.all { variant ->
-          createGenerateReleaseNotesFileTask(variant)
+          val generateReleaseNotesTask = createGenerateReleaseNotesTask(variant)
           val assembleTask = getAssembleTask(variant)
           val updateVersionNameTask = createAndroidVersionTask(variant, assembleTask)
 
-          createDeployTask(variant, releaseSetup, assembleTask, updateVersionNameTask)
+          createDeployTask(variant, generateReleaseNotesTask, assembleTask, updateVersionNameTask)
         }
       } else {
         throw GradleException("Android is not present")
@@ -46,10 +43,10 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   private fun Project.getAssembleTask(variant: ApplicationVariant) =
       tasks.getByName("${Constants.ASSEMBLE_TASK_NAME}${variant.getCapitalizedName()}")
 
-  private fun Project.createGenerateReleaseNotesFileTask(variant: ApplicationVariant? = null) =
+  private fun Project.createGenerateReleaseNotesTask(variant: ApplicationVariant? = null) =
       createTask(
           Constants.GENERATE_SNAPSHOT_RELEASE_NOTES_TASK_NAME + (variant?.getCapitalizedName() ?: ""),
-          GenerateReleaseNotesFileTask::class
+          GenerateReleaseNotesTask::class
       ) {
         this.variant = variant
       }
@@ -60,12 +57,13 @@ class SnapshotPublisherPlugin : Plugin<Project> {
           UpdateAndroidVersionNameTask::class
       ) {
         this.variant = variant
+        @Suppress("UnstableApiUsage")
         assembleTask.mustRunAfter(this)
       }
 
   private fun Project.createDeployTask(
       variant: ApplicationVariant,
-      releaseSetup: SnapshotReleaseExtension,
+      generateReleaseNotesTask: GenerateReleaseNotesTask,
       assembleTask: Task,
       updateVersionNameTask: UpdateAndroidVersionNameTask
   ) = createTask(
@@ -73,13 +71,10 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       PrepareFabricReleaseTask::class
   ) {
     releaseFabricTask = getBetaDistributionTask(variant)
-    releaseNotes = {
-      ReleaseNotesGenerator.generate(
-          releaseNotesConfig = releaseSetup.releaseNotes,
-          versionName = getVersionName(variant)
-      )
-    }
+    this.generateReleaseNotesTask = generateReleaseNotesTask
+
     dependsOn(updateVersionNameTask)
+    dependsOn(generateReleaseNotesTask)
     dependsOn(assembleTask)
     finalizedBy(releaseFabricTask)
   }

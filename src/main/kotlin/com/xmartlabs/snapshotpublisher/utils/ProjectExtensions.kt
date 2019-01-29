@@ -19,20 +19,19 @@ fun Project.getAndroidExtension() = extensions.getByName(ANDROID_EXTENSION_NAME)
 internal fun Project.getSnapshotReleaseExtension() =
     extensions.getByName(Constants.SNAPSHOT_PUBLISHER_EXTENSION_NAME) as SnapshotReleaseExtension
 
-private fun getVersionNameSuffix(releaseSetup: SnapshotReleaseExtension) =
-    if (releaseSetup.useHashCommitInVersionName) GitHelper.getCommitHash() else null
-
 fun Project.getVersionName(variant: ApplicationVariant? = null): String {
-  val androidExtension = project.getAndroidExtension()
-  val versionNameSuffix = getVersionNameSuffix(getSnapshotReleaseExtension())
-  return VersionHelper.getUpdatedVersionName(androidExtension, variant, versionNameSuffix)
+  val releaseSetup = getSnapshotReleaseExtension()
+  val versionName = variant?.versionName ?: project.getAndroidExtension().defaultConfig.versionName
+  return releaseSetup.version.getVersionName(versionName, GitHelper.getCommitHash())
 }
+
+fun Project.getVersionCode(variant: ApplicationVariant? = null): Int =
+    variant?.versionCode ?: project.getAndroidExtension().defaultConfig.versionCode
 
 internal inline fun <reified T : Task> Project.createTask(
     name: String,
     taskKClass: KClass<T>,
     crossinline block: T.() -> Unit = {}
-): T {
-  return tasks.create(name, taskKClass.java)
-      .apply(block)
-}
+): T = tasks.create(name, taskKClass.java)
+    .apply { group = Constants.PLUGIN_GROUP }
+    .apply(block)
