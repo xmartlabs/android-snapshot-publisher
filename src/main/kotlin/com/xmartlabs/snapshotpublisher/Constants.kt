@@ -2,16 +2,23 @@ package com.xmartlabs.snapshotpublisher
 
 import java.io.File
 
-object Constants {
-  const val ASSEMBLE_TASK_NAME = "assemble"
-  const val BETA_DISTRIBUTION_TASK_NAME = "crashlyticsUploadDistribution"
+internal object Constants {
   const val FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME = "publishSnapshotFabric"
+  const val GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME = "publishSnapshotGooglePlay"
+  const val PREPARE_FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME = "preparePublishSnapshotFabric"
+  const val PREPARE_GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME = "preparePublishSnapshotGooglePlay"
 
-  internal const val PLUGIN_GROUP = "Publishing"
+  const val PLUGIN_NAME = "Android Snapshot Publisher"
+  const val PLUGIN_GROUP = "Snapshot Publishing"
 
   const val SNAPSHOT_PUBLISHER_EXTENSION_NAME = "snapshotPublisher"
   const val UPDATE_ANDROID_VERSION_NAME_TASK_NAME = "updateAndroidVersionName"
   const val GENERATE_SNAPSHOT_RELEASE_NOTES_TASK_NAME = "generateSnapshotReleaseNotes"
+
+  private const val OUTPUT_PATH = "snapshot-publisher"
+  const val RESOURCES_OUTPUT_PATH = "generated/$OUTPUT_PATH"
+  const val OUTPUT_RELEASE_NOTES_FILE_NAME = "releaseNotes.txt"
+  const val OUTPUT_RELEASE_NOTES_FILE_PATH = "$RESOURCES_OUTPUT_PATH/$OUTPUT_RELEASE_NOTES_FILE_NAME"
 
   const val VERSION_FORMAT_CURRENT_VERSION_NAME_KEY = "{currentVersionName}"
   const val VERSION_FORMAT_COMMIT_HASH_KEY = "{commitHash}"
