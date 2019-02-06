@@ -180,7 +180,7 @@ You can [follow the CodePath guide "Automating Publishing to the Play Store"](ht
 - `resolutionStrategy`: defines the strategy that will take place if a build with the same version code already exists in Google Play (this will throw an error). 
 The possible values are `ignore` (it will ignore the error and continue) and `auto` (it will automatically increase the version code for you).
 
-> Note: the Play Store limits your release notes to a maximum of 500 characters, so the plugin trim it in the las allowed line.
+> Note: Google's PlayStore limits your release notes to a maximum of 500 characters. Because of that, the plugin trims the last allowed line.
 
 ## How to use it?
 
