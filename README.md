@@ -180,17 +180,18 @@ You can [follow the CodePath guide "Automating Publishing to the Play Store"](ht
 - `resolutionStrategy`: defines the strategy that will take place if a build with the same version code already exists in Google Play (this will throw an error). 
 The possible values are `ignore` (it will ignore the error and continue) and `auto` (it will automatically increase the version code for you).
 
+> Note: Google's PlayStore limits your release notes to a maximum of 500 characters. Because of that, the plugin trims the last allowed line.
+
 ## How to use it?
 
 The plugin defines some tasks to can be ran.
 The naming convention is as follows: [action][Variant][Thing]. For example, `publishSnapshotGooglePlayStagingRelease` will be generated if the app has a `staging` flavor and `release` build type.
 
-To find available tasks, run `./gradlew tasks` and look under the "publishing" section.
+To find available tasks, run `./gradlew tasks` and look under the "Snapshot Publishing" section.
 
 The available tasks are:
 - `publishSnapshotFabric`: it'll publish a snapshot version in Fabric's Beta.   
 - `publishSnapshotGooglePlay`: it'll publish a snapshot version in Google Play.
-- `publishSnapshot`: it'll publish a snapshot version in all defined distribution sources.
 
 ## Getting involved
 
