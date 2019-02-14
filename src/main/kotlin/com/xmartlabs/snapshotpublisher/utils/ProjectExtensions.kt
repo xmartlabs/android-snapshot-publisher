@@ -6,7 +6,7 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 
 @Suppress("UnsafeCast")
-val Project.snapshotReleaseExtension: SnapshotReleaseExtension
+internal val Project.snapshotReleaseExtension: SnapshotReleaseExtension
   get() = extensions.getByName(Constants.SNAPSHOT_PUBLISHER_EXTENSION_NAME) as SnapshotReleaseExtension
 
 internal inline fun <reified T : Task> Project.createTask(

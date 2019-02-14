@@ -16,7 +16,7 @@ internal object PlayPublisherPluginHelper {
 
   private const val GENERATE_RESOURCES_TASK_NAME = "generate%sPlayResources"
   private const val PUBLISH_APK_TASK_NAME = "publish%sApk"
-  private const val PUBLISH_BUNDLE_TASK_NAME = "publish%sApk"
+  private const val PUBLISH_BUNDLE_TASK_NAME = "publish%sBundle"
 
   // https://github.com/Triple-T/gradle-play-publisher/blob/3e86503431794792dc63dd6b5bb51e03493f1ed7/plugin/src/main/kotlin/com/github/triplet/gradle/play/internal/Constants.kt
   private const val RESOURCE_PATH = "res"
