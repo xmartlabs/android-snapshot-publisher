@@ -2,9 +2,8 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/android:api-26-alpha
     working_directory: ~/repo
-
     environment:
       JVM_OPTS: -Xmx3200m
       TERM: dumb
@@ -16,15 +15,19 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "build.gradle" }}
             - v1-dependencies-
+      - run:
+          name: Accept licenses
+          command: yes | sdkmanager --licenses || true
 
-      - run: gradle dependencies
+      - run: ./gradlew dependencies
       - save_cache:
           paths:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
-      - run: gradle detekt
-      - run: gradle build
+      - run: ./gradlew detekt
+      - run: ./gradlew build
+      - run: ./gradlew jacocoTestReport
       - store_artifacts:
           path: build/reports
           destination: reports

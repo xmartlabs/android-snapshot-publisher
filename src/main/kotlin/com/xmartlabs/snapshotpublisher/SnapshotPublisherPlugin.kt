@@ -51,28 +51,27 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   }
 
   private fun Project.createGenerateReleaseNotesTask(variant: ApplicationVariant? = null) =
-    createTask<GenerateReleaseNotesTask>(
-      name = Constants.GENERATE_SNAPSHOT_RELEASE_NOTES_TASK_NAME + (variant?.capitalizedName ?: ""),
-      description = "Generates release notes"
-    ) {
-      this.variant = variant
-    }
+      createTask<GenerateReleaseNotesTask>(
+          name = Constants.GENERATE_SNAPSHOT_RELEASE_NOTES_TASK_NAME + (variant?.capitalizedName ?: ""),
+          description = "Generates release notes"
+      ) {
+        this.variant = variant
+      }
 
   private fun Project.createAndroidVersionTask(
       variant: ApplicationVariant,
       assembleTask: Task,
       bundleTask: Task?
-  ) =
-    createTask<UpdateAndroidVersionNameTask>(
+  ) = createTask<UpdateAndroidVersionNameTask>(
       name = "${Constants.UPDATE_ANDROID_VERSION_NAME_TASK_NAME}${variant.capitalizedName}",
       description = "Update Android Version name"
-    ) {
-      this.variant = variant
-      @Suppress("UnstableApiUsage")
-      assembleTask.mustRunAfter(this)
-      @Suppress("UnstableApiUsage")
-      bundleTask?.mustRunAfter(this)
-    }
+  ) {
+    this.variant = variant
+    @Suppress("UnstableApiUsage")
+    assembleTask.mustRunAfter(this)
+    @Suppress("UnstableApiUsage")
+    bundleTask?.mustRunAfter(this)
+  }
 
   private fun Project.createFabricDeployTask(
       variant: ApplicationVariant,
@@ -82,9 +81,9 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   ): DefaultTask {
     val releaseFabricTask = FabricBetaPluginHelper.getBetaDistributionTask(project, variant)
     val prepareFabricReleaseTask = createTask<PrepareFabricReleaseTask>(
-      name = "${Constants.PREPARE_FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
-      description = "Prepare the Fabric snapshot release",
-      group = null
+        name = "${Constants.PREPARE_FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+        description = "Prepare the Fabric snapshot release",
+        group = null
     ) {
       this.releaseFabricTask = releaseFabricTask
 
@@ -95,8 +94,8 @@ class SnapshotPublisherPlugin : Plugin<Project> {
     }
 
     return createTask(
-      name = "${Constants.FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
-      description = "Release a snapshot version to Fabric"
+        name = "${Constants.FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+        description = "Release a snapshot version to Fabric"
     ) {
       releaseFabricTask.mustRunAfter(assembleTask)
       dependsOn(assembleTask)
@@ -118,9 +117,9 @@ class SnapshotPublisherPlugin : Plugin<Project> {
         PlayPublisherPluginHelper.getPublishApkTask(this, variant)
       }
       val preparePublishTask = createTask<PrepareGooglePlayReleaseTask>(
-        name = "${Constants.PREPARE_GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
-        group = null,
-        description = "Prepare the Google Play snapshot release"
+          name = "${Constants.PREPARE_GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+          group = null,
+          description = "Prepare the Google Play snapshot release"
       ) {
         this.variant = variant
         this.publishGooglePlayTask = publishGooglePlayTask
@@ -135,18 +134,18 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       }
 
       createTask(
-        name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
-        group = Constants.PLUGIN_GROUP,
-        description = "Release a snapshot version to Google Play"
+          name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+          group = Constants.PLUGIN_GROUP,
+          description = "Release a snapshot version to Google Play"
       ) {
         dependsOn(preparePublishTask)
         dependsOn(publishGooglePlayTask)
       }
     } else {
       createTask<ErrorTask>(
-        name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
-        group = Constants.PLUGIN_GROUP,
-        description = "Release a snapshot version to Google Play"
+          name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+          group = Constants.PLUGIN_GROUP,
+          description = "Release a snapshot version to Google Play"
       ) {
         message = "Google Play credentials are not valid."
       }
