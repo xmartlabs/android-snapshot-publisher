@@ -1,6 +1,7 @@
 package com.xmartlabs.snapshotpublisher.plugin
 
 import com.android.build.gradle.AppExtension
+import com.android.build.gradle.api.ApkVariantOutput
 import com.android.build.gradle.api.ApplicationVariant
 import com.xmartlabs.snapshotpublisher.utils.GitHelper
 import com.xmartlabs.snapshotpublisher.utils.snapshotReleaseExtension
@@ -20,8 +21,16 @@ internal object AndroidPluginHelper {
 
   fun getVersionName(project: Project, variant: ApplicationVariant? = null): String {
     val releaseSetup = project.snapshotReleaseExtension
-    val versionName = variant?.versionName ?: getAndroidExtension(project).defaultConfig.versionName
-    return releaseSetup.version.getVersionName(versionName, GitHelper.getCommitHash())
+    val versionNameOverride = variant?.outputs
+        ?.map { (it as? ApkVariantOutput)?.versionNameOverride }
+        ?.filterNot { it.isNullOrBlank() }
+        ?.first()
+
+    val versionName = versionNameOverride
+        .orElse { variant?.versionName }
+        .orElse { getAndroidExtension(project).defaultConfig.versionName }
+
+    return releaseSetup.version.getVersionName(versionName ?: "", GitHelper.getCommitHash())
   }
 
   fun getVersionCode(project: Project, variant: ApplicationVariant? = null): Int =
@@ -35,3 +44,5 @@ internal object AndroidPluginHelper {
 }
 
 val ApplicationVariant.capitalizedName get() = name.capitalize()
+
+private inline fun <T> T?.orElse(defaultValue: () -> T) = this ?: defaultValue.invoke()
