@@ -18,8 +18,11 @@ open class GenerateReleaseNotesTask : DefaultTask() {
   private fun generate(releaseNotesConfig: ReleaseNotesConfig, versionName: String, versionCode: Int): String =
       with(GitHelper) {
         val header = getLog(releaseNotesConfig.headerFormat, 1)
-        val range = getLogRange(releaseNotesConfig.maxCommitHistoryLines)
-        val changelog = getLog(releaseNotesConfig.commitHistoryFormat, range)
+        val changelog = getHistoryFromPreviousCommit(
+          format = releaseNotesConfig.commitHistoryFormat,
+          maxLinesOfChangelog = releaseNotesConfig.maxCommitHistoryLines,
+          includeMergeCommits = releaseNotesConfig.includeMergeCommitsInHistory
+        )
         val version = releaseNotesConfig.getVersion(versionName = versionName, versionCode = versionCode)
         releaseNotesConfig.getReleaseNotes(version = version, header = header, changelog = changelog)
       }

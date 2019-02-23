@@ -98,6 +98,7 @@ Last Changes:
         commitHistoryFormat = '• %s (%an - %ci)'
         maxCommitHistoryLines = 10
         outputFile = null
+        includeMergeCommitsInHistory = true
     }
     // ...
 }
@@ -127,6 +128,7 @@ It includes all commits from the last -not current- commit to `maxCommitHistoryL
 By default this value is `null` and that means the release notes will be generated and delivered with the snapshot build but it will not be saved in the local storage.
 If you want to save the release notes in the local storage, you can set `outputFile = file("release-notes.txt")`.
 
+- `includeMergeCommitsInHistory`: Flag to include merge commits in `{commitHistory}`.
 
 ### Fabric Beta
 This block defines the configuration needed to deploy the artifacts in Fabric's Beta.
