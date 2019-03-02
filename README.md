@@ -88,7 +88,7 @@ All fields in that block are optional and their default values are:
 ```groovy
 snapshotPublisher {
     releaseNotes {
-        releaseNotesFormat = """{version}: - {header}
+        releaseNotesFormat = """{version}: {header}
     
 Last Changes:
 {commitHistory}
@@ -103,6 +103,8 @@ Last Changes:
     // ...
 }
 ```
+
+> Note: you can test the generated release notes executing the `generateSnapshotReleaseNotes` gradle task.
 
 - `releaseNotesFormat`: Defines the format of the release notes:
     The possible variables to play with in this case are:

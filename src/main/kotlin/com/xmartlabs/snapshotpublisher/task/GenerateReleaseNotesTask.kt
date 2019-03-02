@@ -2,9 +2,8 @@ package com.xmartlabs.snapshotpublisher.task
 
 import com.android.build.gradle.api.ApplicationVariant
 import com.xmartlabs.snapshotpublisher.Constants
-import com.xmartlabs.snapshotpublisher.model.ReleaseNotesConfig
 import com.xmartlabs.snapshotpublisher.plugin.AndroidPluginHelper
-import com.xmartlabs.snapshotpublisher.utils.GitHelper
+import com.xmartlabs.snapshotpublisher.utils.ReleaseNotesGenerator
 import com.xmartlabs.snapshotpublisher.utils.snapshotReleaseExtension
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Internal
@@ -15,23 +14,11 @@ open class GenerateReleaseNotesTask : DefaultTask() {
   @get:Internal
   var variant: ApplicationVariant? = null
 
-  private fun generate(releaseNotesConfig: ReleaseNotesConfig, versionName: String, versionCode: Int): String =
-      with(GitHelper) {
-        val header = getLog(releaseNotesConfig.headerFormat, 1)
-        val changelog = getHistoryFromPreviousCommit(
-          format = releaseNotesConfig.commitHistoryFormat,
-          maxLinesOfChangelog = releaseNotesConfig.maxCommitHistoryLines,
-          includeMergeCommits = releaseNotesConfig.includeMergeCommitsInHistory
-        )
-        val version = releaseNotesConfig.getVersion(versionName = versionName, versionCode = versionCode)
-        releaseNotesConfig.getReleaseNotes(version = version, header = header, changelog = changelog)
-      }
-
   @Suppress("unused")
   @TaskAction
   fun action() {
     val releaseNotesConfig = project.snapshotReleaseExtension.releaseNotes
-    val generatedReleaseNotes = generate(
+    val generatedReleaseNotes = ReleaseNotesGenerator.generate(
         releaseNotesConfig = releaseNotesConfig,
         versionName = AndroidPluginHelper.getVersionName(project, variant),
         versionCode = AndroidPluginHelper.getVersionCode(project, variant)

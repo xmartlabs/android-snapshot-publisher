@@ -1,11 +1,15 @@
 package com.xmartlabs.snapshotpublisher.utils
 
+import com.android.annotations.VisibleForTesting
 import java.io.File
 import java.util.concurrent.TimeUnit
 
 internal object GitHelper {
   private const val SECONDS_TO_WAIT_COMMAND_RESPONSE: Long = 10
-  private fun String.execute(dir: File? = File(".")): String {
+  @VisibleForTesting
+  internal var defaultDir = File(".")
+
+  private fun String.execute(dir: File? = defaultDir): String {
     val parts = this.trim().split(" (?=([^\']*\'[^\']*\')*[^\']*$)".toRegex())
         .map { it.replace("'", "") }
 

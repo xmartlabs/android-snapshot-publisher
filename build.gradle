@@ -31,10 +31,13 @@ dependencies {
     implementation 'io.fabric.tools:gradle:1.27.0'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 
-    testImplementation("com.android.tools.build:gradle:3.3.1")
-    testImplementation("junit:junit:4.12")
-    testImplementation("org.assertj:assertj-core:3.11.1")
-    testImplementation("org.mockito:mockito-core:2.23.4")
+    testImplementation "org.eclipse.jgit:org.eclipse.jgit:3.5.0.201409260305-r"
+    testImplementation "com.android.tools.build:gradle:3.3.1"
+    testImplementation "junit:junit:4.12"
+    testImplementation "org.jetbrains.kotlin:kotlin-test"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit"
+    testImplementation "org.assertj:assertj-core:3.11.1"
+    testImplementation "org.mockito:mockito-core:2.23.4"
 }
 
 jacoco {
