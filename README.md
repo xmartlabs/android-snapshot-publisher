@@ -1,7 +1,4 @@
-![android-snapshot-publisher](images/banner1.png)
-![android-snapshot-publisher](images/banner2.png)
-![android-snapshot-publisher](images/banner3.png)
-![android-snapshot-publisher](images/banner4.png)
+![android-snapshot-publisher](images/banner.png)
 
 <p align="left">
 <a href="https://circleci.com/gh/xmartlabs/android-snapshot-publisher"><img src="https://circleci.com/gh/xmartlabs/android-snapshot-publisher.svg?style=svg&circle-token=6d6e2a4acdc22594144b675f30fa99b7bcb30af9"></a>
