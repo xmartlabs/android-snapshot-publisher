@@ -1,5 +1,8 @@
-# android-snapshot-publisher
-[![CircleCI](https://circleci.com/gh/xmartlabs/android-snapshot-publisher.svg?style=svg&circle-token=6d6e2a4acdc22594144b675f30fa99b7bcb30af9)](https://circleci.com/gh/xmartlabs/android-snapshot-publisher)
+![android-snapshot-publisher](images/banner.png)
+
+<p align="left">
+<a href="https://circleci.com/gh/xmartlabs/android-snapshot-publisher"><img src="https://circleci.com/gh/xmartlabs/android-snapshot-publisher.svg?style=svg&circle-token=6d6e2a4acdc22594144b675f30fa99b7bcb30af9"></a>
+</p>
 
 Android Snapshot Publisher is a Gradle plugin to **prepare and distribute Android Snapshot versions** to multiple distribution sources in a common way.
 
@@ -178,7 +181,7 @@ To release to Google Play you must create a service account with access to the P
 You can [follow the CodePath guide "Automating Publishing to the Play Store"](https://guides.codepath.com/android/automating-publishing-to-the-play-store).
 
 - `serviceAccountCredentials`: contains the service account JSON file with your private key.
-- `track`: refers to the Google play tracks. The possible tracks are `internal`, `alpha`, `beta` and `production`.
+- `track`: refers to the Google play tracks. For example, some possible tracks are `internal`, `alpha`, `beta` and `production`.
 - `releaseStatus`: the type of the release. The possible values are `completed`, `draft`, `inProgress`, `halted`.
 - `defaultToAppBundles`: if set to `true`, the plugin will generate an [App Bundle](https://developer.android.com/platform/technology/app-bundle/) instead of an APK.  
 - `resolutionStrategy`: defines the strategy that will take place if a build with the same version code already exists in Google Play (this will throw an error). 
