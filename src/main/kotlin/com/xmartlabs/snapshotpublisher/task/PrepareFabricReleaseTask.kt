@@ -26,10 +26,12 @@ open class PrepareFabricReleaseTask : DefaultTask() {
   fun action() {
     val fabric = project.snapshotReleaseExtension.fabric
     with(releaseFabricTask.extensions) {
-      add(BETA_DISTRIBUTION_EMAILS_EXTENSION_NAME, fabric.distributionEmails)
-      add(BETA_DISTRIBUTION_GROUP_ALIASES_EXTENSION_NAME, fabric.distributionGroupAliases)
+      add(BETA_DISTRIBUTION_EMAILS_EXTENSION_NAME, fabric.distributionEmails.toFabricStringList())
+      add(BETA_DISTRIBUTION_GROUP_ALIASES_EXTENSION_NAME, fabric.distributionGroupAliases.toFabricStringList())
       add(BETA_DISTRIBUTION_NOTIFICATIONS_EXTENSION_NAME, fabric.distributionNotifications)
       add(BETA_DISTRIBUTION_RELEASE_NOTES_EXTENSION_NAME, generatedReleaseNotesFile.readText())
     }
   }
+
+  private fun List<String>?.toFabricStringList() = this?.joinToString(",") ?: ""
 }
