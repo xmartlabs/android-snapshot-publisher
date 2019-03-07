@@ -34,13 +34,13 @@ internal object AndroidPluginHelper {
   }
 
   fun getVersionCode(project: Project, variant: ApplicationVariant? = null): Int =
-      variant?.versionCode ?: getAndroidExtension(project).defaultConfig.versionCode
+    variant?.versionCode ?: getAndroidExtension(project).defaultConfig.versionCode
 
   fun getBundleTask(project: Project, variant: ApplicationVariant) =
-      project.tasks.findByName("$BUNDLE_TASK_NAME${variant.capitalizedName}")
+    project.tasks.findByName("$BUNDLE_TASK_NAME${variant.capitalizedName}")
 
   fun getAssembleTask(project: Project, variant: ApplicationVariant): Task =
-      project.tasks.getByName("$ASSEMBLE_TASK_NAME${variant.capitalizedName}")
+    project.tasks.getByName("$ASSEMBLE_TASK_NAME${variant.capitalizedName}")
 }
 
 val ApplicationVariant.capitalizedName get() = name.capitalize()

@@ -1,11 +1,15 @@
 package com.xmartlabs.snapshotpublisher.utils
 
+import com.android.annotations.VisibleForTesting
 import java.io.File
 import java.util.concurrent.TimeUnit
 
 internal object GitHelper {
   private const val SECONDS_TO_WAIT_COMMAND_RESPONSE: Long = 10
-  private fun String.execute(dir: File? = File(".")): String {
+  @VisibleForTesting
+  internal var defaultDir = File(".")
+
+  private fun String.execute(dir: File? = defaultDir): String {
     val parts = this.trim().split(" (?=([^\']*\'[^\']*\')*[^\']*$)".toRegex())
         .map { it.replace("'", "") }
 
@@ -22,16 +26,18 @@ internal object GitHelper {
 
   fun getCommitHash() = "git rev-parse --short HEAD".execute()
 
-  fun getLog(format: String, range: String) = "git log --pretty=format:'$format' $range".execute()
-
   fun getLog(format: String, numberOfCommits: Int = Int.MAX_VALUE) =
       "git log --pretty=format:'$format' -n $numberOfCommits".execute()
 
-  private fun getNumberOfCommits() = "git rev-list --count HEAD".execute().toInt()
+  private fun getTotalNumberOfCommits(from: String = "HEAD", commandArg: String?) =
+      "git rev-list --count $from ${commandArg ?: ""}".execute().toInt()
 
-  fun getLogRange(maxLinesOfChangelog: Int): String {
-    val numberOfCommits = GitHelper.getNumberOfCommits()
+  fun getHistoryFromPreviousCommit(format: String, maxLinesOfChangelog: Int, includeMergeCommits: Boolean): String {
+    val allowMergeCommitCommandArg = if (includeMergeCommits) "" else "--no-merges"
+    val numberOfCommits = GitHelper.getTotalNumberOfCommits("HEAD^", allowMergeCommitCommandArg)
     val maxLinesOfCommits = maxLinesOfChangelog + 1
-    return (if (numberOfCommits <= maxLinesOfCommits) "" else "HEAD~$maxLinesOfCommits..") + "HEAD^"
+    println("number $numberOfCommits max $maxLinesOfChangelog")
+    val requireCommitsCommandArg = if (numberOfCommits < maxLinesOfCommits) "" else " -n ${maxLinesOfCommits - 1}"
+    return "git log --pretty=format:'$format'$requireCommitsCommandArg HEAD^ $allowMergeCommitCommandArg".execute()
   }
 }
