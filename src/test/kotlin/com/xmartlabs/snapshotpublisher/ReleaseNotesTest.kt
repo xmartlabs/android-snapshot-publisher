@@ -35,7 +35,7 @@ class ReleaseNotesTest {
     private fun getCommits() =
       (0 until NUMBER_OF_COMMITS).map { commitNumber ->
         Commit(
-          message = "Commit nro $commitNumber",
+          message = "Commit number $commitNumber",
           author = if (commitNumber % 3 == 0) AUTHOR_1 else AUTHOR_2
         )
       }
@@ -143,21 +143,21 @@ class ReleaseNotesTest {
   @Test
   fun `Test default values`() {
     val generatedReleaseNotes = ReleaseNotesGenerator.generate(ReleaseNotesConfig(), "1.1.1", 12)
-    val expectedReleaseNotes = """1.1.1: Commit nro 14
+    val expectedReleaseNotes = """1.1.1: Commit number 14
 
 Author: Author 2 <author2@mail.com>
 
 Last Changes:
-• Commit nro 13 (Author 2 - 2019-03-06 12:00:00 -0300)
-• Commit nro 12 (Author 1 - 2019-03-06 12:00:00 -0300)
-• Commit nro 11 (Author 2 - 2019-03-06 12:00:00 -0300)
-• Commit nro 10 (Author 2 - 2019-03-06 12:00:00 -0300)
-• Commit nro 9 (Author 1 - 2019-03-06 12:00:00 -0300)
-• Commit nro 8 (Author 2 - 2019-03-06 12:00:00 -0300)
-• Commit nro 7 (Author 2 - 2019-03-06 12:00:00 -0300)
-• Commit nro 6 (Author 1 - 2019-03-06 12:00:00 -0300)
-• Commit nro 5 (Author 2 - 2019-03-06 12:00:00 -0300)
-• Commit nro 4 (Author 2 - 2019-03-06 12:00:00 -0300)
+• Commit number 13 (Author 2 - 2019-03-06 12:00:00 -0300)
+• Commit number 12 (Author 1 - 2019-03-06 12:00:00 -0300)
+• Commit number 11 (Author 2 - 2019-03-06 12:00:00 -0300)
+• Commit number 10 (Author 2 - 2019-03-06 12:00:00 -0300)
+• Commit number 9 (Author 1 - 2019-03-06 12:00:00 -0300)
+• Commit number 8 (Author 2 - 2019-03-06 12:00:00 -0300)
+• Commit number 7 (Author 2 - 2019-03-06 12:00:00 -0300)
+• Commit number 6 (Author 1 - 2019-03-06 12:00:00 -0300)
+• Commit number 5 (Author 2 - 2019-03-06 12:00:00 -0300)
+• Commit number 4 (Author 2 - 2019-03-06 12:00:00 -0300)
 """
     println(generatedReleaseNotes)
     assertEquals(expectedReleaseNotes, generatedReleaseNotes)
