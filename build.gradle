@@ -6,6 +6,7 @@ buildscript {
 }
 
 plugins {
+    id 'com.gradle.plugin-publish' version '0.10.0'
     id 'groovy'
     id 'io.gitlab.arturbosch.detekt' version '1.0.0-RC12'
     id 'jacoco'
@@ -60,11 +61,19 @@ gradlePlugin {
     plugins {
         create("snapshot-publisher") {
             id = "com.xmartlabs.snapshot-publisher"
+            displayName = "Android Snapshot Publisher"
+            description = "Android Snapshot Publisher is a Gradle plugin to prepare and distribute Android Snapshot " +
+                "versions to multiple distribution sources in a common way."
             implementationClass = "com.xmartlabs.snapshotpublisher.SnapshotPublisherPlugin"
         }
     }
 }
 
+pluginBundle {
+    website = 'https://github.com/xmartlabs/android-snapshot-publisher'
+    vcsUrl = 'https://github.com/xmartlabs/android-snapshot-publisher.git'
+    tags = ['android', 'google-play', 'beta-fabric']
+}
 
 detekt {
     toolVersion = '1.0.0-RC12'
