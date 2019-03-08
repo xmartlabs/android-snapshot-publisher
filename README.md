@@ -34,9 +34,8 @@ The plugin is hosted in the Gradle Plugin Portal.
 ```groovy
 buildscript {
   repositories {
-    maven {
-      url "https://plugins.gradle.org/m2/"
-    }
+    maven { url "https://plugins.gradle.org/m2/" }
+    maven { url 'https://maven.fabric.io/public' }
   }
   dependencies {
      classpath "com.xmartlabs:snapshot-publisher:0.0.1"
@@ -48,6 +47,8 @@ Apply the plugin to each individual `com.android.application` module where you w
 ```groovy
 apply plugin: 'com.xmartlabs.snapshot-publisher'
 ```
+
+> Note that Fabric's Maven Repository must to be added to the project because Android Snapshot Publisher plugin uses Fabric's plugin and it's hosted in their Maven Repository.
 
 ## Setup
 The plugin defines a `snapshotPublisher` block where you can add the different setup alongside the Android modules.
