@@ -48,7 +48,7 @@ Apply the plugin to each individual `com.android.application` module where you w
 apply plugin: 'com.xmartlabs.snapshot-publisher'
 ```
 
-> Note that Fabric's Maven Repository must to be added to the project because Android Snapshot Publisher plugin uses Fabric's plugin and it's hosted in their Maven Repository.
+> Note that Fabric's Maven Repository must be added to the project because Android Snapshot Publisher plugin uses Fabric's plugin and it's hosted in their Maven Repository.
 
 ## Setup
 The plugin defines a `snapshotPublisher` block where you can add the different setup alongside the Android modules.
