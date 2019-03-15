@@ -12,7 +12,7 @@
   </a>
 </p>
 
-Android Snapshot Publisher is a Gradle plugin to **prepare and distribute Android Snapshot versions** to multiple distribution sources in a common way.
+Android Snapshot Publisher is a Gradle plugin to **prepare and distribute Android Snapshot versions** to multiple distribution sources in a common way and with a low-effort setup.
 
 The main features of the preparation process are:
 - Update the Android Version Name to keep track of the distributed versions.
@@ -25,8 +25,6 @@ This plugin is also meant to easily deploy snapshot builds.
 Currently the available sources are:
 - [Google Play](https://play.google.com/apps/publish/)
 - [Fabric Beta](https://docs.fabric.io/apple/beta/overview.html)
-
-An interesting feature of this plugin is that it enables you to deploy the build in multiple sources with a low-effort setup.
 
 ## Installation
 
