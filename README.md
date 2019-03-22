@@ -12,7 +12,7 @@
   </a>
 </p>
 
-Android Snapshot Publisher is a Gradle plugin to **prepare and distribute Android Snapshot versions** to multiple distribution sources in a common way.
+Android Snapshot Publisher is a Gradle plugin to **prepare and distribute Android Snapshot versions** to multiple distribution sources in a simple and common way.
 
 The main features of the preparation process are:
 - Update the Android Version Name to keep track of the distributed versions.
@@ -25,8 +25,6 @@ This plugin is also meant to easily deploy snapshot builds.
 Currently the available sources are:
 - [Google Play](https://play.google.com/apps/publish/)
 - [Fabric Beta](https://docs.fabric.io/apple/beta/overview.html)
-
-An interesting feature of this plugin is that it enables you to deploy the build in multiple sources with a low-effort setup.
 
 ## Installation
 
@@ -105,7 +103,7 @@ snapshotPublisher {
 Last Changes:
 {commitHistory}
 """
-        versionFormat: '{versionName}'
+        versionFormat = '{versionName}'
         headerFormat = '%s%n%nAuthor: %an <%ae>%n%B'
         commitHistoryFormat = '• %s (%an - %ci)'
         maxCommitHistoryLines = 10
@@ -200,14 +198,14 @@ The possible values are `ignore` (it will ignore the error and continue) and `au
 
 ## How to use it?
 
-The plugin defines some tasks to can be ran.
-The naming convention is as follows: [action][Variant][Thing]. For example, `publishSnapshotGooglePlayStagingRelease` will be generated if the app has a `staging` flavor and `release` build type.
+The plugin defines some tasks that can be run.
+The naming convention is as follows: [action][Variant][BuildType]. For example, `publishSnapshotGooglePlayStagingRelease` will be generated if the app has a `staging` flavor and `release` build type.
 
 To find available tasks, run `./gradlew tasks` and look under the "Snapshot Publishing" section.
 
 The available tasks are:
-- `publishSnapshotFabric`: it'll publish a snapshot version in Fabric's Beta.   
-- `publishSnapshotGooglePlay`: it'll publish a snapshot version in Google Play.
+- `publishSnapshotFabric[Variant][BuildType]`: it'll publish a snapshot version in Fabric's Beta.   
+- `publishSnapshotGooglePlay[Variant][BuildType]`: it'll publish a snapshot version in Google Play.
 
 ## Getting involved
 
