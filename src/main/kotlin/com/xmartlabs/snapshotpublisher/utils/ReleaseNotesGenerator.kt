@@ -13,17 +13,18 @@ internal object ReleaseNotesGenerator {
 
   @VisibleForTesting
   internal fun getVersionSection(releaseNotesConfig: ReleaseNotesConfig, versionName: String, versionCode: Int) =
-      releaseNotesConfig.getVersion(versionName = versionName, versionCode = versionCode)
+    releaseNotesConfig.getVersion(versionName = versionName, versionCode = versionCode)
 
   @VisibleForTesting
   internal fun getHeaderSection(releaseNotesConfig: ReleaseNotesConfig) =
-      GitHelper.getLog(releaseNotesConfig.headerFormat, 1)
+    GitHelper.getLog(releaseNotesConfig.headerFormat, 1)
 
   @VisibleForTesting
   internal fun getHistorySection(releaseNotesConfig: ReleaseNotesConfig) =
-      GitHelper.getHistoryFromPreviousCommit(
-          format = releaseNotesConfig.commitHistoryFormat,
-          maxLinesOfChangelog = releaseNotesConfig.maxCommitHistoryLines,
-          includeMergeCommits = releaseNotesConfig.includeMergeCommitsInHistory
-      )
+    GitHelper.getHistoryFromPreviousCommit(
+      format = releaseNotesConfig.commitHistoryFormat,
+      maxLinesOfChangelog = releaseNotesConfig.maxCommitHistoryLines,
+      includeMergeCommits = releaseNotesConfig.includeMergeCommitsInHistory,
+      includeLastCommitInHistory = releaseNotesConfig.includeLastCommitInHistory
+    )
 }

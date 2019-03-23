@@ -113,6 +113,18 @@ class ReleaseNotesTest {
   }
 
   @Test
+  fun `Test history section including last commit`() {
+    val config = ReleaseNotesConfig()
+      .apply {
+        commitHistoryFormat = "- %s"
+        maxCommitHistoryLines = NUMBER_OF_COMMITS
+        includeLastCommitInHistory = true
+      }
+
+    checkChangelogIsRight(config)
+  }
+
+  @Test
   fun `Test history section where all commits are required`() {
     val config = ReleaseNotesConfig()
       .apply {
@@ -166,7 +178,8 @@ Last Changes:
   private fun checkChangelogIsRight(config: ReleaseNotesConfig) {
     val libraryHistory = ReleaseNotesGenerator.getHistorySection(config)
 
-    val realHistory = COMMITS.subList(Math.max(COMMITS.size - config.maxCommitHistoryLines - 1, 0), COMMITS.size - 1)
+    val lastCommit = COMMITS.size + if (config.includeLastCommitInHistory) 0 else -1
+    val realHistory = COMMITS.subList(Math.max(COMMITS.size - config.maxCommitHistoryLines - 1, 0), lastCommit)
       .reversed()
       .joinToString("\n") {
         config.commitHistoryFormat.format(it.message)

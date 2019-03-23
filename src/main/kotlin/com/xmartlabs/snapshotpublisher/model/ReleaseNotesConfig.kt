@@ -12,6 +12,7 @@ open class ReleaseNotesConfig {
   var releaseNotesFormat: String = Constants.RELEASE_NOTES_CONFIG_FORMAT_DEFAULT_VALUE
   var outputFile: File? = Constants.RELEASE_NOTES_OUTPUT_FILE_DEFAULT_VALUE
   var includeMergeCommitsInHistory: Boolean = Constants.RELEASE_NOTES_INCLUDE_MERGE_COMMITS_DEFAULT_VALUE
+  var includeLastCommitInHistory: Boolean = Constants.RELEASE_NOTES_INCLUDE_LAST_COMMIT_DEFAULT_VALUE
 
   internal fun getVersion(versionName: String, versionCode: Int) = versionFormat
       .replace(Constants.RELEASE_NOTES_VERSION_NAME_KEY, versionName, true)
