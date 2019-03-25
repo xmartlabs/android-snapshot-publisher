@@ -3,6 +3,7 @@ package com.xmartlabs.snapshotpublisher.model
 import com.xmartlabs.snapshotpublisher.Constants
 import java.io.File
 
+// codebeat:disable[TOO_MANY_IVARS]
 open class ReleaseNotesConfig {
   var versionFormat: String = Constants.RELEASE_NOTES_VERSION_FORMAT_DEFAULT_VALUE
   var headerFormat: String = Constants.RELEASE_NOTES_CONFIG_HEADER_FORMAT_DEFAULT_VALUE
