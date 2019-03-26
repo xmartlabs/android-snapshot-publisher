@@ -21,9 +21,5 @@ internal object ReleaseNotesGenerator {
 
   @VisibleForTesting
   internal fun getHistorySection(releaseNotesConfig: ReleaseNotesConfig) =
-      GitHelper.getHistoryFromPreviousCommit(
-          format = releaseNotesConfig.commitHistoryFormat,
-          maxLinesOfChangelog = releaseNotesConfig.maxCommitHistoryLines,
-          includeMergeCommits = releaseNotesConfig.includeMergeCommitsInHistory
-      )
+      GitHelper.getHistoryFromPreviousCommit(releaseNotesConfig)
 }

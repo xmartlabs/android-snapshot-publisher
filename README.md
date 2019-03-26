@@ -108,6 +108,7 @@ Last Changes:
         commitHistoryFormat = '• %s (%an - %ci)'
         maxCommitHistoryLines = 10
         outputFile = null
+        includeLastCommitInHistory = false
         includeMergeCommitsInHistory = true
     }
     // ...
@@ -139,6 +140,9 @@ It includes all commits from the last -not current- commit to `maxCommitHistoryL
 - `outputFile`: The file where the release notes will be saved.
 By default this value is `null` and that means the release notes will be generated and delivered with the snapshot build but it will not be saved in the local storage.
 If you want to save the release notes in the local storage, you can set `outputFile = file("release-notes.txt")`.
+
+- `includeLastCommitInHistory`: Flag to include the most recent commit in `{commitHistory}`.
+By default this value is `false` because it's used in `{header}`.
 
 - `includeMergeCommitsInHistory`: Flag to include merge commits in `{commitHistory}`.
 
