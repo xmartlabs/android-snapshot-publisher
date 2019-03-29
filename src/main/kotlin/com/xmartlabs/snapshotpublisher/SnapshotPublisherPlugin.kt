@@ -53,7 +53,7 @@ class SnapshotPublisherPlugin : Plugin<Project> {
 
     createPrepareApkSnapshotTask(variant, assembleTask, preparationTasks)
     if (bundleTask != null) {
-      createPrepareBundleSnapshotTask(variant, generateReleaseNotesTask, preparationTasks)
+      createPrepareBundleSnapshotTask(variant, bundleTask, preparationTasks)
     }
     createFabricDeployTask(variant, assembleTask, preparationTasks)
     createGooglePlayDeployTask(variant, preparationTasks)
