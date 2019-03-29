@@ -41,6 +41,10 @@ class SnapshotPublisherPlugin : Plugin<Project> {
           val bundleTask = AndroidPluginHelper.getBundleTask(this, variant)
           val updateVersionNameTask = createAndroidVersionTask(variant, assembleTask, bundleTask)
 
+          createPrepareApkSnapshotTask(variant, generateReleaseNotesTask, updateVersionNameTask, assembleTask)
+          if (bundleTask != null) {
+            createPrepareBundleSnapshotTask(variant, generateReleaseNotesTask, updateVersionNameTask, bundleTask)
+          }
           createFabricDeployTask(variant, generateReleaseNotesTask, assembleTask, updateVersionNameTask)
           createGooglePlayDeployTask(variant, generateReleaseNotesTask, updateVersionNameTask)
         }
@@ -73,6 +77,34 @@ class SnapshotPublisherPlugin : Plugin<Project> {
     bundleTask?.mustRunAfter(this)
   }
 
+  private fun Project.createPrepareApkSnapshotTask(
+      variant: ApplicationVariant,
+      generateReleaseNotesTask: GenerateReleaseNotesTask,
+      updateAndroidVersionNameTask: UpdateAndroidVersionNameTask,
+      assembleTask: Task
+  ) = createTask<DefaultTask>(
+      name = "${Constants.PREPARE_APK_VERSION_TASK_NAME}${variant.capitalizedName}",
+      description = "Prepare, compile and create an apk file."
+  ) {
+    dependsOn(updateAndroidVersionNameTask)
+    dependsOn(assembleTask)
+    dependsOn(generateReleaseNotesTask)
+  }
+
+  private fun Project.createPrepareBundleSnapshotTask(
+      variant: ApplicationVariant,
+      generateReleaseNotesTask: GenerateReleaseNotesTask,
+      updateAndroidVersionNameTask: UpdateAndroidVersionNameTask,
+      bundleTask: Task?
+  ) = createTask<DefaultTask>(
+      name = "${Constants.PREPARE_BUNDLE_VERSION_TASK_NAME}${variant.capitalizedName}",
+      description = "Prepare, compile and create a bundle file."
+  ) {
+    dependsOn(updateAndroidVersionNameTask)
+    dependsOn(bundleTask)
+    dependsOn(generateReleaseNotesTask)
+  }
+
   private fun Project.createFabricDeployTask(
       variant: ApplicationVariant,
       generateReleaseNotesTask: GenerateReleaseNotesTask,
@@ -95,7 +127,7 @@ class SnapshotPublisherPlugin : Plugin<Project> {
 
     return createTask(
         name = "${Constants.FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
-        description = "Release a snapshot version to Fabric"
+        description = "Prepare and deploy a snapshot build to Fabric"
     ) {
       releaseFabricTask.mustRunAfter(assembleTask)
       dependsOn(assembleTask)
@@ -119,7 +151,7 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       val preparePublishTask = createTask<PrepareGooglePlayReleaseTask>(
           name = "${Constants.PREPARE_GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
           group = null,
-          description = "Prepare the Google Play snapshot release"
+          description = "Prepare and deploy snapshot build to Google Play"
       ) {
         this.variant = variant
         this.publishGooglePlayTask = publishGooglePlayTask

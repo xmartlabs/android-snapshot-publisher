@@ -203,13 +203,19 @@ The possible values are `ignore` (it will ignore the error and continue) and `au
 ## How to use it?
 
 The plugin defines some tasks that can be run.
-The naming convention is as follows: [action][Variant][BuildType]. For example, `publishSnapshotGooglePlayStagingRelease` will be generated if the app has a `staging` flavor and `release` build type.
+The naming convention is as follows: `[action][Variant][BuildType]`. For example, `publishSnapshotGooglePlayStagingRelease` will be generated if the app has a `staging` flavor and `release` build type.
 
 To find available tasks, run `./gradlew tasks` and look under the "Snapshot Publishing" section.
 
-The available tasks are:
+The most important tasks are:
 - `publishSnapshotFabric[Variant][BuildType]`: it'll publish a snapshot version in Fabric's Beta.   
 - `publishSnapshotGooglePlay[Variant][BuildType]`: it'll publish a snapshot version in Google Play.
+
+Some auxiliary tasks are:
+- `generateSnapshotReleaseNotes[Variant][BuildType]`: Generates the release notes file.
+- `updateAndroidVersionName[Variant][BuildType]`: Changes the app version name to use the version name defined in the `version` configuration's block.
+- `prepareApkSnapshotBuild[Variant][BuildType]`: Prepares the snapshot build and creates an apk version.
+- `prepareBundleSnapshotBuild[Variant][BuildType]`: Prepares the snapshot build and creates a bundle version.
 
 ## Getting involved
 

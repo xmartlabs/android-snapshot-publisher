@@ -12,6 +12,8 @@ internal object Constants {
   const val PLUGIN_GROUP = "Snapshot Publishing"
 
   const val SNAPSHOT_PUBLISHER_EXTENSION_NAME = "snapshotPublisher"
+  const val PREPARE_APK_VERSION_TASK_NAME = "prepareApkSnapshotBuild"
+  const val PREPARE_BUNDLE_VERSION_TASK_NAME = "prepareBundleSnapshotBuild"
   const val UPDATE_ANDROID_VERSION_NAME_TASK_NAME = "updateAndroidVersionName"
   const val GENERATE_SNAPSHOT_RELEASE_NOTES_TASK_NAME = "generateSnapshotReleaseNotes"
 
