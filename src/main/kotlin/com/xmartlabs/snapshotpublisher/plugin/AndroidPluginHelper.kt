@@ -29,18 +29,19 @@ internal object AndroidPluginHelper {
     val versionName = versionNameOverride
         .orElse { variant?.versionName }
         .orElse { getAndroidExtension(project).defaultConfig.versionName }
+        .orEmpty()
 
-    return releaseSetup.version.getVersionName(versionName ?: "", GitHelper.getCommitHash())
+    return releaseSetup.version.getVersionName(versionName, GitHelper.getCommitHash(), GitHelper.getBranchName())
   }
 
   fun getVersionCode(project: Project, variant: ApplicationVariant? = null): Int =
-    variant?.versionCode ?: getAndroidExtension(project).defaultConfig.versionCode
+      variant?.versionCode ?: getAndroidExtension(project).defaultConfig.versionCode
 
   fun getBundleTask(project: Project, variant: ApplicationVariant) =
-    project.tasks.findByName("$BUNDLE_TASK_NAME${variant.capitalizedName}")
+      project.tasks.findByName("$BUNDLE_TASK_NAME${variant.capitalizedName}")
 
   fun getAssembleTask(project: Project, variant: ApplicationVariant): Task =
-    project.tasks.getByName("$ASSEMBLE_TASK_NAME${variant.capitalizedName}")
+      project.tasks.getByName("$ASSEMBLE_TASK_NAME${variant.capitalizedName}")
 }
 
 val ApplicationVariant.capitalizedName get() = name.capitalize()
