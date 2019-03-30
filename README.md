@@ -87,7 +87,7 @@ snapshotPublisher {
     The possible variables for this value are:
     - `{currentVersionName}`: The current version name.
     - `{commitHash}`: The current git commit hash, in the short format.
-    - `{branchName}`: The current git name.
+    - `{branchName}`: The current git branch name.
 
     This value can be updated using these optional variables.
     For example, if you want to keep the current version name and the hash commit and add a custom suffix such as `-SNAPSHOT`, you must assign the value `'{currentVersionName}-{commitHash}-SNAPSHOT'` to the `versionNameFormat` variable.
