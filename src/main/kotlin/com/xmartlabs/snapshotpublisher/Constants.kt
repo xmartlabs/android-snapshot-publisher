@@ -24,6 +24,7 @@ internal object Constants {
 
   const val VERSION_FORMAT_CURRENT_VERSION_NAME_KEY = "{currentVersionName}"
   const val VERSION_FORMAT_COMMIT_HASH_KEY = "{commitHash}"
+  const val VERSION_FORMAT_BRANCH_NAME_KEY = "{branchName}"
   const val VERSION_FORMAT = "$VERSION_FORMAT_CURRENT_VERSION_NAME_KEY-$VERSION_FORMAT_COMMIT_HASH_KEY"
 
   const val RELEASE_NOTES_COMMIT_HISTORY_KEY = "{commitHistory}"

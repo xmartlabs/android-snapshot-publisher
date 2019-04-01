@@ -27,6 +27,8 @@ internal object GitHelper {
 
   fun getCommitHash() = "git rev-parse --short HEAD".execute()
 
+  fun getBranchName() = "git rev-parse --abbrev-ref HEAD".execute()
+
   fun getLog(format: String, numberOfCommits: Int = Int.MAX_VALUE) =
       "git log --pretty=format:'$format' -n $numberOfCommits".execute()
 
