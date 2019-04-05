@@ -56,7 +56,7 @@ compileTestKotlin {
 }
 
 group 'com.xmartlabs'
-version '0.0.1'
+version '0.1.0'
 
 gradlePlugin {
     plugins {
@@ -73,7 +73,7 @@ gradlePlugin {
 pluginBundle {
     website = 'https://github.com/xmartlabs/android-snapshot-publisher'
     vcsUrl = 'https://github.com/xmartlabs/android-snapshot-publisher.git'
-    tags = ['android', 'google-play', 'beta-fabric']
+    tags = ['android', 'google-play', 'beta-fabric', 'snapshot-build', 'publisher']
 }
 
 detekt {
