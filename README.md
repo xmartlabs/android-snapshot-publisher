@@ -22,7 +22,7 @@ It's very helpful to track possible issues, for example if a crash occurs, you'l
 
 This plugin is also meant to easily deploy snapshot builds.
 
-Currently the available sources are:
+Currently the available places are:
 - [Google Play](https://play.google.com/apps/publish/)
 - [Fabric Beta](https://docs.fabric.io/apple/beta/overview.html)
 
@@ -122,7 +122,10 @@ Last Changes:
     The possible variables to play with in this case are:
     - `{version}` given by `versionFormat`.
     - `{header}` given by `headerFormat`.
-    - `{commitHistory}` given by `commitHistoryFormat`.
+    By default it contains information about the most recent commit and their author.
+    - `{commitHistory}` given by the result of apply `commitHistoryFormat` to a range of commits.
+    By default the range includes all commits from the last -not current- commit to `maxCommitHistoryLines` commits before that.
+    If you want to include the last commit in that range, you can set `includeLastCommitInHistory` in `true`.
 
 - `versionFormat`: Specifies the version's variable format.
     
@@ -134,16 +137,16 @@ If you want to modify it, you may want to use the same tool to do it.
 
 - `commitHistoryFormat`: Specifies the `{commitHistory}` variable format.
 As `headerFormat` does, it uses [Git's pretty format] to create the `commitHistory` for the previous commits.
-It includes all commits from the last -not current- commit to `maxCommitHistoryLines` commits before that.
 
 - `maxCommitHistoryLines`: Indicates the number of commits included in `{commitHistory}`.
 
 - `outputFile`: The file where the release notes will be saved.
-By default this value is `null` and that means the release notes will be generated and delivered with the snapshot build but it will not be saved in the local storage.
-If you want to save the release notes in the local storage, you can set `outputFile = file("release-notes.txt")`.
+By default this value is `null` and that means the release notes will be generated and delivered with the snapshot build but it will not be saved in the file system.
+If you want to save the release notes in the file system, you can set `outputFile = file("release-notes.txt")`.
+You can define it using a relative path (where the start point is the Android application module folder) or an absolute path.
 
 - `includeLastCommitInHistory`: Flag to include the most recent commit in `{commitHistory}`.
-By default this value is `false` because it's used in `{header}`.
+By default this value is `false` because it's used in `{header}`
 
 - `includeMergeCommitsInHistory`: Flag to include merge commits in `{commitHistory}`.
 
