@@ -125,7 +125,7 @@ Last Changes:
     By default it contains information about the most recent commit and their author.
     - `{commitHistory}` given by the result of apply `commitHistoryFormat` to a range of commits.
     By default the range includes all commits from the last -not current- commit to `maxCommitHistoryLines` commits before that.
-    If you want to include the last commit in that range, you can set `includeLastCommitInHistory` in `true`.
+    If you want to include the last commit in that range, you can set `includeLastCommitInHistory` as `true`.
 
 - `versionFormat`: Specifies the version's variable format.
     
