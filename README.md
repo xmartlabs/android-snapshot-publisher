@@ -22,7 +22,7 @@ It's very helpful to track possible issues, for example if a crash occurs, you'l
 
 This plugin is also meant to easily deploy snapshot builds.
 
-Currently the available places are:
+Currently the available services are:
 - [Google Play](https://play.google.com/apps/publish/)
 - [Fabric Beta](https://docs.fabric.io/apple/beta/overview.html)
 
