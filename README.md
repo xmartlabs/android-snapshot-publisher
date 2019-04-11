@@ -126,7 +126,7 @@ Last Changes:
 {commitHistory}
 """
         versionFormat = '{versionName}'
-        headerFormat = '%s%n%nAuthor: %an <%ae>%n%B'
+        headerFormat = '%s%n%nAuthor: %an <%ae>'
         commitHistoryFormat = '• %s (%an - %ci)'
         maxCommitHistoryLines = 10
         outputFile = null
