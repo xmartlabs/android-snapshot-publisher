@@ -1,6 +1,7 @@
 package com.xmartlabs.snapshotpublisher.task
 
 import com.xmartlabs.snapshotpublisher.Constants
+import com.xmartlabs.snapshotpublisher.utils.ReleaseNotesGenerator
 import com.xmartlabs.snapshotpublisher.utils.snapshotReleaseExtension
 import org.gradle.api.DefaultTask
 import org.gradle.api.Task
@@ -14,6 +15,7 @@ open class PrepareFabricReleaseTask : DefaultTask() {
     private const val BETA_DISTRIBUTION_GROUP_ALIASES_EXTENSION_NAME = "betaDistributionGroupAliases"
     private const val BETA_DISTRIBUTION_NOTIFICATIONS_EXTENSION_NAME = "betaDistributionNotifications"
     private const val BETA_DISTRIBUTION_RELEASE_NOTES_EXTENSION_NAME = "betaDistributionReleaseNotes"
+    private const val MAX_RELEASE_NOTES_LENGTH = 16384
   }
 
   @get:Internal
@@ -29,9 +31,12 @@ open class PrepareFabricReleaseTask : DefaultTask() {
       add(BETA_DISTRIBUTION_EMAILS_EXTENSION_NAME, fabric.distributionEmails.toFabricStringList())
       add(BETA_DISTRIBUTION_GROUP_ALIASES_EXTENSION_NAME, fabric.distributionGroupAliases.toFabricStringList())
       add(BETA_DISTRIBUTION_NOTIFICATIONS_EXTENSION_NAME, fabric.distributionNotifications)
-      add(BETA_DISTRIBUTION_RELEASE_NOTES_EXTENSION_NAME, generatedReleaseNotesFile.readText())
+      add(BETA_DISTRIBUTION_RELEASE_NOTES_EXTENSION_NAME, getReleaseNotes())
     }
   }
+
+  private fun getReleaseNotes() =
+      ReleaseNotesGenerator.truncateReleaseNotesIfNeeded(generatedReleaseNotesFile.readText(), MAX_RELEASE_NOTES_LENGTH)
 
   private fun List<String>?.toFabricStringList() = this?.joinToString(",") ?: ""
 }
