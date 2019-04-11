@@ -181,8 +181,8 @@ All of the block's fields are optional:
 ```groovy
 snapshotPublisher {
     fabric {
-        distributionEmails = []
-        distributionGroupAliases = []
+        distributionEmails = ""
+        distributionGroupAliases = ""
         distributionNotifications = true
     }
     // ...
@@ -190,7 +190,10 @@ snapshotPublisher {
 ```
 
 - `distributionEmails`: The list of email addresses of those who'll get the release.
+This value is built by joining all emails with commas.
+For example if you want to distribute the build to `email1@mail.com` and `email2@mail.com`, `distributionEmails` value should be `"email1@mail.com,email2@mail.com"`.
 - `distributionGroupAliases`: The list of names (aliases) of the groups defined inside Fabric's Beta that will get the release.
+As well as `distributionEmails`, all aliases must be joined by commas.
 - `distributionNotifications`: If set to `true`, all build's recipients will get an email notification about the release.
 
 > Note: Fabric's Beta limits your release notes to a maximum of 16384 characters.

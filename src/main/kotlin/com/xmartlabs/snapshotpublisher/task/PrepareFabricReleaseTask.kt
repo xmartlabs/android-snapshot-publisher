@@ -28,8 +28,10 @@ open class PrepareFabricReleaseTask : DefaultTask() {
   fun action() {
     val fabric = project.snapshotReleaseExtension.fabric
     with(releaseFabricTask.extensions) {
-      add(BETA_DISTRIBUTION_EMAILS_EXTENSION_NAME, fabric.distributionEmails.toFabricStringList())
-      add(BETA_DISTRIBUTION_GROUP_ALIASES_EXTENSION_NAME, fabric.distributionGroupAliases.toFabricStringList())
+      fabric.distributionEmails
+        ?.let { add(BETA_DISTRIBUTION_EMAILS_EXTENSION_NAME, it) }
+      fabric.distributionGroupAliases
+        ?.let { add(BETA_DISTRIBUTION_GROUP_ALIASES_EXTENSION_NAME, it) }
       add(BETA_DISTRIBUTION_NOTIFICATIONS_EXTENSION_NAME, fabric.distributionNotifications)
       add(BETA_DISTRIBUTION_RELEASE_NOTES_EXTENSION_NAME, getReleaseNotes())
     }
@@ -37,6 +39,4 @@ open class PrepareFabricReleaseTask : DefaultTask() {
 
   private fun getReleaseNotes() =
       ReleaseNotesGenerator.truncateReleaseNotesIfNeeded(generatedReleaseNotesFile.readText(), MAX_RELEASE_NOTES_LENGTH)
-
-  private fun List<String>?.toFabricStringList() = this?.joinToString(",") ?: ""
 }
