@@ -5,6 +5,7 @@ import com.github.triplet.gradle.play.tasks.internal.PlayPublishPackageBase
 import com.xmartlabs.snapshotpublisher.Constants
 import com.xmartlabs.snapshotpublisher.plugin.PlayPublisherPluginHelper
 import com.xmartlabs.snapshotpublisher.utils.AndroidPublisherHelper
+import com.xmartlabs.snapshotpublisher.utils.ReleaseNotesGenerator
 import com.xmartlabs.snapshotpublisher.utils.snapshotReleaseExtension
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Internal
@@ -13,7 +14,7 @@ import java.io.File
 
 open class PrepareGooglePlayReleaseTask : DefaultTask() {
   companion object {
-    const val MAX_RELEASE_NOTES_LENGTH = 500
+    private const val MAX_RELEASE_NOTES_LENGTH = 500
   }
 
   @get:Internal
@@ -50,29 +51,11 @@ open class PrepareGooglePlayReleaseTask : DefaultTask() {
       PlayPublisherPluginHelper.releaseNotesFile(project, variant, details.defaultLanguage, googlePlayConfig.track)
           .apply {
             parentFile.mkdirs()
-            writeText(processGeneratedReleaseNotes())
+            writeText(getReleaseNotes())
           }
     }
   }
 
-  private fun processGeneratedReleaseNotes(): String {
-    val releaseNotes: String = generatedReleaseNotesFile.readText()
-    if (releaseNotes.length <= MAX_RELEASE_NOTES_LENGTH) {
-      return releaseNotes
-    }
-
-    var notes = ""
-    releaseNotes.lines().forEach { line ->
-      if (notes.length + line.length < MAX_RELEASE_NOTES_LENGTH) {
-        notes += (if (notes.isEmpty()) "" else "\n") + line
-      } else {
-        return@forEach
-      }
-    }
-    if (notes.isEmpty()) {
-      notes = releaseNotes.substring(0, Math.min(releaseNotes.length, MAX_RELEASE_NOTES_LENGTH))
-    }
-
-    return notes
-  }
+  private fun getReleaseNotes() =
+    ReleaseNotesGenerator.truncateReleaseNotesIfNeeded(generatedReleaseNotesFile.readText(), MAX_RELEASE_NOTES_LENGTH)
 }
