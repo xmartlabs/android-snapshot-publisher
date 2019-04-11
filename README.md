@@ -91,7 +91,7 @@ Whereas [fabric](#fabric-beta) and [googlePlay](#google-play) blocks are used to
 
 ### Version customization
 The `version` block allows you to perform version customizations.
-The field in that block is optional and it default value is:
+The field in that block is optional and its default value is:
 
 ```groovy
 snapshotPublisher {
