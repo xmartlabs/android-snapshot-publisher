@@ -26,19 +26,19 @@ class ReleaseNotesTest {
     private val REPO_GIT_FOLDER = File("${REPO_FOLDER.absoluteFile}/.git")
     private val COMMIT_TIMEZONE = TimeZone.getTimeZone("GMT-3:00")
     private val COMMIT_DATE = Calendar.getInstance()
-      .apply {
-        timeZone = COMMIT_TIMEZONE
-        set(2019, Calendar.MARCH, 6, 12, 0, 0)
-      }
-      .time
+        .apply {
+          timeZone = COMMIT_TIMEZONE
+          set(2019, Calendar.MARCH, 6, 12, 0, 0)
+        }
+        .time
 
     private fun getCommits() =
-      (0 until NUMBER_OF_COMMITS).map { commitNumber ->
-        Commit(
-          message = "Commit number $commitNumber",
-          author = if (commitNumber % 3 == 0) AUTHOR_1 else AUTHOR_2
-        )
-      }
+        (0 until NUMBER_OF_COMMITS).map { commitNumber ->
+          Commit(
+              message = "Commit number $commitNumber",
+              author = if (commitNumber % 3 == 0) AUTHOR_1 else AUTHOR_2
+          )
+        }
   }
 
   data class Commit(val message: String, val author: Author)
@@ -47,18 +47,18 @@ class ReleaseNotesTest {
 
   private fun Repository.addCommit(commit: Commit) {
     Git(this)
-      .commit()
-      .setMessage(commit.message)
-      .setAuthor(commit.author.name, commit.author.mail)
-      .setCommitter(PersonIdent(commit.author.name, commit.author.mail, COMMIT_DATE, COMMIT_TIMEZONE))
-      .setAllowEmpty(true)
-      .call()
+        .commit()
+        .setMessage(commit.message)
+        .setAuthor(commit.author.name, commit.author.mail)
+        .setCommitter(PersonIdent(commit.author.name, commit.author.mail, COMMIT_DATE, COMMIT_TIMEZONE))
+        .setAllowEmpty(true)
+        .call()
   }
 
   @Before
   fun setup() {
     val newlyCreatedRepo = FileRepositoryBuilder.create(
-      REPO_GIT_FOLDER
+        REPO_GIT_FOLDER
     )
     newlyCreatedRepo.create()
     COMMITS.forEach { newlyCreatedRepo.addCommit(it) }
@@ -73,7 +73,7 @@ class ReleaseNotesTest {
   @Test
   fun `Test header section`() {
     val config = ReleaseNotesConfig()
-      .apply { headerFormat = "%B%n%nAuthor: %an <%ae>" }
+        .apply { headerFormat = "%B%n%nAuthor: %an <%ae>" }
     val generatedHeader = ReleaseNotesGenerator.getHeaderSection(config)
     val lastCommit = COMMITS.last()
     val expectedHeader = "${lastCommit.message}\n\nAuthor: ${lastCommit.author.name} <${lastCommit.author.mail}>"
@@ -83,7 +83,7 @@ class ReleaseNotesTest {
   @Test
   fun `Test version section`() {
     val config = ReleaseNotesConfig()
-      .apply { versionFormat = "{versionName}({versionCode})-SNAPSHOT" }
+        .apply { versionFormat = "{versionName}({versionCode})-SNAPSHOT" }
 
     val generatedVersion = ReleaseNotesGenerator.getVersionSection(config, "1.1.1-ef79601", 44)
 
@@ -93,10 +93,10 @@ class ReleaseNotesTest {
   @Test
   fun `Test history section`() {
     val config = ReleaseNotesConfig()
-      .apply {
-        commitHistoryFormat = "- %s"
-        maxCommitHistoryLines = 5
-      }
+        .apply {
+          commitHistoryFormat = "- %s"
+          maxCommitHistoryLines = 5
+        }
 
     checkChangelogIsRight(config)
   }
@@ -104,10 +104,10 @@ class ReleaseNotesTest {
   @Test
   fun `Test history section with less commits that are required`() {
     val config = ReleaseNotesConfig()
-      .apply {
-        commitHistoryFormat = "- %s"
-        maxCommitHistoryLines = NUMBER_OF_COMMITS + 5
-      }
+        .apply {
+          commitHistoryFormat = "- %s"
+          maxCommitHistoryLines = NUMBER_OF_COMMITS + 5
+        }
 
     checkChangelogIsRight(config)
   }
@@ -115,11 +115,11 @@ class ReleaseNotesTest {
   @Test
   fun `Test history section including last commit`() {
     val config = ReleaseNotesConfig()
-      .apply {
-        commitHistoryFormat = "- %s"
-        maxCommitHistoryLines = NUMBER_OF_COMMITS
-        includeLastCommitInHistory = true
-      }
+        .apply {
+          commitHistoryFormat = "- %s"
+          maxCommitHistoryLines = NUMBER_OF_COMMITS
+          includeLastCommitInHistory = true
+        }
 
     checkChangelogIsRight(config)
   }
@@ -127,10 +127,10 @@ class ReleaseNotesTest {
   @Test
   fun `Test history section where all commits are required`() {
     val config = ReleaseNotesConfig()
-      .apply {
-        commitHistoryFormat = "- %s"
-        maxCommitHistoryLines = NUMBER_OF_COMMITS - 1
-      }
+        .apply {
+          commitHistoryFormat = "- %s"
+          maxCommitHistoryLines = NUMBER_OF_COMMITS - 1
+        }
 
     checkChangelogIsRight(config)
   }
@@ -138,17 +138,39 @@ class ReleaseNotesTest {
   @Test
   fun `Test release notes`() {
     val config = ReleaseNotesConfig()
-      .apply {
-        commitHistoryFormat = "%s"
-        maxCommitHistoryLines = 1
-        versionFormat = "{versionCode}"
-        releaseNotesFormat = "{version}{header}{commitHistory}"
-        headerFormat = "%an"
-      }
+        .apply {
+          commitHistoryFormat = "%s"
+          maxCommitHistoryLines = 1
+          versionFormat = "{versionCode}"
+          releaseNotesFormat = "{version}{header}{commitHistory}"
+          headerFormat = "%an"
+        }
     val versionCode = 23
 
     val expectedReleaseNotes = "$versionCode${COMMITS.last().author.name}${COMMITS[COMMITS.size - 2].message}"
     val generatedReleaseNotes = ReleaseNotesGenerator.generate(config, "", versionCode)
+    assertEquals(expectedReleaseNotes, generatedReleaseNotes)
+  }
+
+  @Test
+  fun `Test release notes truncation`() {
+    val releaseNoteLine = "123456789"
+    val releaseNotes = (0..9).joinToString("\n") { releaseNoteLine }
+
+    val generatedReleaseNotes = ReleaseNotesGenerator.truncateReleaseNotesIfNeeded(releaseNotes, 90)
+    val expectedReleaseNotes = (0..8).joinToString("\n") { releaseNoteLine }
+
+    assertEquals(expectedReleaseNotes, generatedReleaseNotes)
+  }
+
+  @Test
+  fun `Test release notes truncation in the middle of the line`() {
+    val releaseNoteLine = "123456789"
+    val releaseNotes = (0..9).joinToString("\n") { releaseNoteLine }
+
+    val generatedReleaseNotes = ReleaseNotesGenerator.truncateReleaseNotesIfNeeded(releaseNotes, 95)
+    val expectedReleaseNotes = (0..8).joinToString("\n") { releaseNoteLine }
+
     assertEquals(expectedReleaseNotes, generatedReleaseNotes)
   }
 
@@ -180,10 +202,10 @@ Last Changes:
 
     val lastCommit = COMMITS.size + if (config.includeLastCommitInHistory) 0 else -1
     val realHistory = COMMITS.subList(Math.max(COMMITS.size - config.maxCommitHistoryLines - 1, 0), lastCommit)
-      .reversed()
-      .joinToString("\n") {
-        config.commitHistoryFormat.format(it.message)
-      }
+        .reversed()
+        .joinToString("\n") {
+          config.commitHistoryFormat.format(it.message)
+        }
     assertEquals(libraryHistory, realHistory)
   }
 }

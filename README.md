@@ -172,6 +172,8 @@ For example if you want to distribute the build to `email1@mail.com` and `email2
 As well as `distributionEmails`, all aliases must be joined by commas.
 - `distributionNotifications`: If set to `true`, all build's recipients will get an email notification about the release.
 
+> Note: Fabric's Beta limits your release notes to a maximum of 16384 characters.
+Because of that, the plugin trims them up to the last allowed line.
 
 ### Google Play
 
@@ -202,7 +204,8 @@ You can [follow the CodePath guide "Automating Publishing to the Play Store"](ht
 - `resolutionStrategy`: defines the strategy that will take place if a build with the same version code already exists in Google Play (this will throw an error). 
 The possible values are `ignore` (it will ignore the error and continue) and `auto` (it will automatically increase the version code for you).
 
-> Note: Google's PlayStore limits your release notes to a maximum of 500 characters. Because of that, the plugin trims the last allowed line.
+> Note: Google's PlayStore limits your release notes to a maximum of 500 characters.
+Because of that, the plugin trims them up to the last allowed line.
 
 ## How to use it?
 
