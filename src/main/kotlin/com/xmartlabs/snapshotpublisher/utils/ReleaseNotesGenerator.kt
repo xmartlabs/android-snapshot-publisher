@@ -11,6 +11,26 @@ internal object ReleaseNotesGenerator {
     return releaseNotesConfig.getReleaseNotes(version = version, header = header, changelog = changelog)
   }
 
+  fun truncateReleaseNotesIfNeeded(releaseNotes: String, maxCharacters: Int): String {
+    if (releaseNotes.length <= maxCharacters) {
+      return releaseNotes
+    }
+
+    var notes = ""
+    releaseNotes.lines().forEach { line ->
+      if (notes.length + line.length < maxCharacters) {
+        notes += (if (notes.isEmpty()) "" else "\n") + line
+      } else {
+        return@forEach
+      }
+    }
+    if (notes.isEmpty()) {
+      notes = releaseNotes.substring(0, Math.min(releaseNotes.length, maxCharacters))
+    }
+
+    return notes
+  }
+
   @VisibleForTesting
   internal fun getVersionSection(releaseNotesConfig: ReleaseNotesConfig, versionName: String, versionCode: Int) =
       releaseNotesConfig.getVersion(versionName = versionName, versionCode = versionCode)
