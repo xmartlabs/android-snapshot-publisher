@@ -47,12 +47,12 @@ class ReleaseNotesTest {
   data class Author(val name: String, val mail: String)
 
   private fun Repository.addCommit(commit: Commit) = Git(this)
-        .commit()
-        .setMessage(commit.message)
-        .setAuthor(commit.author.name, commit.author.mail)
-        .setCommitter(PersonIdent(commit.author.name, commit.author.mail, COMMIT_DATE, COMMIT_TIMEZONE))
-        .setAllowEmpty(true)
-        .call()
+      .commit()
+      .setMessage(commit.message)
+      .setAuthor(commit.author.name, commit.author.mail)
+      .setCommitter(PersonIdent(commit.author.name, commit.author.mail, COMMIT_DATE, COMMIT_TIMEZONE))
+      .setAllowEmpty(true)
+      .call()
 
   @Before
   fun setup() {
@@ -105,6 +105,18 @@ class ReleaseNotesTest {
         }
 
     checkChangelogIsRight(config)
+  }
+
+  @Test
+  fun `Test empty history section`() {
+    val config = ReleaseNotesConfig()
+        .apply {
+          commitHistoryFormat = "- %s"
+          maxCommitHistoryLines = 0
+          historyFormat = "Test {commitHistory}"
+        }
+    val libraryHistory = ReleaseNotesGenerator.getHistorySection(config)
+    assertEquals("", libraryHistory)
   }
 
   @Test

@@ -47,7 +47,9 @@ internal object ReleaseNotesGenerator {
 
   @VisibleForTesting
   internal fun getHistorySection(releaseNotesConfig: ReleaseNotesConfig) =
-      releaseNotesConfig.getHistory(getChangelogSection(releaseNotesConfig))
+      getChangelogSection(releaseNotesConfig).let { changelog ->
+        if (changelog.isBlank()) "" else releaseNotesConfig.getHistory(changelog)
+      }
 
   private fun getChangelogSection(releaseNotesConfig: ReleaseNotesConfig) =
       GitHelper.getHistoryFromPreviousCommit(releaseNotesConfig)
