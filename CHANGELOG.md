@@ -2,7 +2,13 @@ Change Log
 ==========
 All notable changes to this project will be documented in this file.
 
-[Version 1.0.0 _(2018-04-11)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.0)
+[Version 1.0.1 _(Pending release)_]()
+---
+
+### Fixes
+- Fix version name issue in generated release notes. (24)
+
+[Version 1.0.0 _(2018-04-12)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.0)
 ---
 
 ### New Features
@@ -12,7 +18,7 @@ It enables you to create snapshot builds and test them locally without the neces
 - Include git branch name in the app custom version name options (#18)
 
 ### Fixes
-- Truncate Fabric Beta's release notes if its length is greater than `16384` characters.
+- Truncate Fabric Beta's release notes if its length is greater than `16384` characters. (#21)
 
 ### Breaking changes
 - `distributionEmails` and `distributionGroupAliases` in Fabric's Beta configuration block are changed to strings instead of a list of strings.
