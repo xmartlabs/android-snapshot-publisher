@@ -21,6 +21,14 @@ class TaskDependenciesTest {
   }
 
   @Test
+  void testGenerateReleaseNotesTaskMustBeRunBeforeUpdateVersionName() {
+    def project = ProjectCreator.mockProject()
+    project.evaluate()
+
+    assertThat(getUpdateVersionNameTask(project), mustRunAfter(Constants.GENERATE_SNAPSHOT_RELEASE_NOTES_TASK_NAME+ ProjectCreator.FLAVOUR_WITH_BUILD_TYPE))
+  }
+
+  @Test
   void testPublishApkTaskDependsOnAssembleTask() {
     def project = ProjectCreator.mockProject()
     project.evaluate()
@@ -87,6 +95,10 @@ class TaskDependenciesTest {
     project.evaluate()
     def bundleTask = project.tasks.getByName("bundle$ProjectCreator.FLAVOUR_WITH_BUILD_TYPE")
     assertThat(bundleTask, mustRunAfter(Constants.UPDATE_ANDROID_VERSION_NAME_TASK_NAME + ProjectCreator.FLAVOUR_WITH_BUILD_TYPE))
+  }
+
+  private static Task getUpdateVersionNameTask(Project project) {
+    project.tasks.getByName("$Constants.UPDATE_ANDROID_VERSION_NAME_TASK_NAME$ProjectCreator.FLAVOUR_WITH_BUILD_TYPE")
   }
 
   private static Task getFabricSnapshotTask(Project project) {
