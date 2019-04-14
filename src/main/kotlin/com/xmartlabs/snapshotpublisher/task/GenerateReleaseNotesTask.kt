@@ -18,6 +18,12 @@ open class GenerateReleaseNotesTask : DefaultTask() {
   @TaskAction
   fun action() {
     val releaseNotesConfig = project.snapshotReleaseExtension.releaseNotes
+
+    if (releaseNotesConfig.releaseNotesFormat.contains(Constants.RELEASE_NOTES_COMMIT_HISTORY_KEY)) {
+      project.logger.warn("${Constants.RELEASE_NOTES_COMMIT_HISTORY_KEY} in `releaseNotesFormat` is deprecated and " +
+          "it will remove in the nex major update")
+    }
+
     val generatedReleaseNotes = ReleaseNotesGenerator.generate(
         releaseNotesConfig = releaseNotesConfig,
         versionName = AndroidPluginHelper.getVersionName(project, variant),

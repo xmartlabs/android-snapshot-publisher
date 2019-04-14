@@ -7,8 +7,14 @@ internal object ReleaseNotesGenerator {
   fun generate(releaseNotesConfig: ReleaseNotesConfig, versionName: String, versionCode: Int): String {
     val version = getVersionSection(releaseNotesConfig, versionName, versionCode)
     val header = getHeaderSection(releaseNotesConfig)
-    val changelog = getHistorySection(releaseNotesConfig)
-    return releaseNotesConfig.getReleaseNotes(version = version, header = header, changelog = changelog)
+    val history = getHistorySection(releaseNotesConfig)
+    val changelog = getChangelogSection(releaseNotesConfig)
+    return releaseNotesConfig.getReleaseNotes(
+        version = version,
+        header = header,
+        history = history,
+        changelog = changelog
+    )
   }
 
   fun truncateReleaseNotesIfNeeded(releaseNotes: String, maxCharacters: Int): String {
@@ -41,5 +47,8 @@ internal object ReleaseNotesGenerator {
 
   @VisibleForTesting
   internal fun getHistorySection(releaseNotesConfig: ReleaseNotesConfig) =
+      releaseNotesConfig.getHistory(getChangelogSection(releaseNotesConfig))
+
+  private fun getChangelogSection(releaseNotesConfig: ReleaseNotesConfig) =
       GitHelper.getHistoryFromPreviousCommit(releaseNotesConfig)
 }
