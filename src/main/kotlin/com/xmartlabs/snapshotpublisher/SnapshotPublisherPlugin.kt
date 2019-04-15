@@ -47,8 +47,8 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   private fun Project.createTasksForVariant(variant: ApplicationVariant) {
     val assembleTask = AndroidPluginHelper.getAssembleTask(this, variant)
     val bundleTask = AndroidPluginHelper.getBundleTask(this, variant)
-    val generateReleaseNotesTask = createGenerateReleaseNotesTask(variant)
     val updateVersionNameTask = createAndroidVersionTask(variant, assembleTask, bundleTask)
+    val generateReleaseNotesTask = createGenerateReleaseNotesTask(variant, updateVersionNameTask)
     val preparationTasks = listOf(generateReleaseNotesTask, updateVersionNameTask)
 
     createPrepareApkSnapshotTask(variant, assembleTask, preparationTasks)
@@ -59,13 +59,16 @@ class SnapshotPublisherPlugin : Plugin<Project> {
     createGooglePlayDeployTask(variant, preparationTasks)
   }
 
-  private fun Project.createGenerateReleaseNotesTask(variant: ApplicationVariant? = null) =
-      createTask<GenerateReleaseNotesTask>(
-          name = Constants.GENERATE_SNAPSHOT_RELEASE_NOTES_TASK_NAME + (variant?.capitalizedName ?: ""),
-          description = "Generates release notes"
-      ) {
-        this.variant = variant
-      }
+  private fun Project.createGenerateReleaseNotesTask(
+      variant: ApplicationVariant? = null,
+      updateVersionNameTask: UpdateAndroidVersionNameTask? = null
+  ) = createTask<GenerateReleaseNotesTask>(
+      name = Constants.GENERATE_SNAPSHOT_RELEASE_NOTES_TASK_NAME + (variant?.capitalizedName ?: ""),
+      description = "Generates release notes"
+  ) {
+    this.variant = variant
+    updateVersionNameTask?.mustRunAfter(this)
+  }
 
   private fun Project.createAndroidVersionTask(
       variant: ApplicationVariant,
