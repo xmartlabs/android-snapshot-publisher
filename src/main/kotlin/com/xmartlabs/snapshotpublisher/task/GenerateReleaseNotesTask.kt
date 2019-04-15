@@ -2,6 +2,7 @@ package com.xmartlabs.snapshotpublisher.task
 
 import com.android.build.gradle.api.ApplicationVariant
 import com.xmartlabs.snapshotpublisher.Constants
+import com.xmartlabs.snapshotpublisher.model.ReleaseNotesConfig
 import com.xmartlabs.snapshotpublisher.plugin.AndroidPluginHelper
 import com.xmartlabs.snapshotpublisher.utils.ReleaseNotesGenerator
 import com.xmartlabs.snapshotpublisher.utils.snapshotReleaseExtension
@@ -21,7 +22,7 @@ open class GenerateReleaseNotesTask : DefaultTask() {
 
     if (releaseNotesConfig.releaseNotesFormat.contains(Constants.RELEASE_NOTES_COMMIT_HISTORY_KEY)) {
       project.logger.warn("${Constants.RELEASE_NOTES_COMMIT_HISTORY_KEY} in `releaseNotesFormat` is deprecated and " +
-          "it will remove in the nex major update")
+          "it will remove in the next major update")
     }
 
     val generatedReleaseNotes = ReleaseNotesGenerator.generate(
@@ -32,16 +33,21 @@ open class GenerateReleaseNotesTask : DefaultTask() {
 
     project.logger.info("Generated Release Notes: \n$generatedReleaseNotes")
 
-    val releaseNotesFile = File(project.buildDir, Constants.OUTPUT_RELEASE_NOTES_FILE_PATH)
-        .apply {
-          parentFile.mkdirs()
-          writeText(generatedReleaseNotes)
-        }
-
-    releaseNotesConfig.outputFile
-        ?.apply {
-          parentFile.mkdirs()
-          releaseNotesFile.copyTo(target = this, overwrite = true)
-        }
+    val releaseNotesFile = createGeneratedReleaseNotesFile(generatedReleaseNotes)
+    copyGeneratedReleaseNoteFileToOutputFile(releaseNotesConfig, releaseNotesFile)
   }
+
+  private fun copyGeneratedReleaseNoteFileToOutputFile(releaseNotesConfig: ReleaseNotesConfig, releaseNotesFile: File) =
+      releaseNotesConfig.outputFile
+          ?.apply {
+            parentFile.mkdirs()
+            releaseNotesFile.copyTo(target = this, overwrite = true)
+          }
+
+  private fun createGeneratedReleaseNotesFile(generatedReleaseNotes: String) =
+      File(project.buildDir, Constants.OUTPUT_RELEASE_NOTES_FILE_PATH)
+          .apply {
+            parentFile.mkdirs()
+            writeText(generatedReleaseNotes)
+          }
 }
