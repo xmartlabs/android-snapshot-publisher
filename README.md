@@ -45,6 +45,22 @@ Currently the available services are:
 - [Google Play](https://play.google.com/apps/publish/)
 - [Fabric Beta](https://docs.fabric.io/apple/beta/overview.html)
 
+## Table of content
+
+- [Installation](#installation)
+    - [Setup](#setup)
+        - [Version customization](#version-customization)
+        - [Release notes](#release-notes)
+            - [Version](#version)
+            - [Header](#header)
+            - [History](#history)
+            - [Other](#other)
+        - [Fabric Beta](#fabric-beta)
+        - [Google Play](#google-play)
+- [How to use it?](#how-to-use-it)
+- [Getting involved](#getting-involved)
+- [About](#about)
+
 ## Installation
 
 The plugin is hosted in the Gradle Plugin Portal.
