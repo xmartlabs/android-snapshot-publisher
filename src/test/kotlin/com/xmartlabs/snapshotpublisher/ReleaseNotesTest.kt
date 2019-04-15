@@ -244,7 +244,7 @@ Last Changes:
 
     val lastCommit = COMMITS.size + if (config.includeLastCommitInHistory) 0 else -1
     var initialCommitIndex = Math.max(COMMITS.size - config.maxCommitHistoryLines - 1, 0)
-    if (config.includeHistoryOnlyFromPreviousTag) {
+    if (config.includeHistorySinceLastTag) {
       initialCommitIndex = Math.min(TAG_POSITION, initialCommitIndex)
     }
     val realHistory = COMMITS.subList(initialCommitIndex, lastCommit)

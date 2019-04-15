@@ -146,7 +146,7 @@ snapshotPublisher {
         maxCommitHistoryLines = 10
         includeLastCommitInHistory = false
         includeMergeCommitsInHistory = true
-        includeHistoryOnlyFromPreviousTag = false
+        includeHistorySinceLastTag = false
         outputFile = null
     }
     // ...
@@ -195,7 +195,7 @@ By default this value is `false` because it's used in `{header}`
 
 - `includeMergeCommitsInHistory`: Flag to include merge commits in `{commitHistory}`.
 
-- `includeHistoryOnlyFromPreviousTag`: Indicates the history start point.
+- `includeHistorySinceLastTag`: Indicates the history start point.
 By default it's `false`, which means that all commits are used to get the history.
 However, if its value is `true`, only the commits after the most recent tag will be included in the build history.
 This is useful if you want to include in the history only the changes after the previous release.

@@ -38,7 +38,7 @@ internal object GitHelper {
       "git rev-list --count $logRange ${commandArg ?: ""}".execute().toInt()
 
   private fun getHistoryRange(releaseNotesConfig: ReleaseNotesConfig): String {
-    val startRange = if (releaseNotesConfig.includeHistoryOnlyFromPreviousTag) getLatestTag() else null
+    val startRange = if (releaseNotesConfig.includeHistorySinceLastTag) getLatestTag() else null
     val endRange = "HEAD" + if (releaseNotesConfig.includeLastCommitInHistory) "" else "^"
     return if (startRange.isNullOrBlank()) endRange else "$startRange..$endRange"
   }

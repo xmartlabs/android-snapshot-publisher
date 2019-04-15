@@ -15,7 +15,7 @@ open class ReleaseNotesConfig {
   var outputFile: File? = Constants.RELEASE_NOTES_OUTPUT_FILE_DEFAULT_VALUE
   var includeMergeCommitsInHistory: Boolean = Constants.RELEASE_NOTES_INCLUDE_MERGE_COMMITS_DEFAULT_VALUE
   var includeLastCommitInHistory: Boolean = Constants.RELEASE_NOTES_INCLUDE_LAST_COMMIT_DEFAULT_VALUE
-  var includeHistoryOnlyFromPreviousTag: Boolean =
+  var includeHistorySinceLastTag: Boolean =
       Constants.RELEASE_NOTES_INCLUDE_HISTORY_ONLY_FROM_PREVIOUS_TAG_DEFAULT_VALUE
 
   internal fun getHistory(commitHistory: String): String = historyFormat
