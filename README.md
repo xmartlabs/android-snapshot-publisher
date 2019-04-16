@@ -153,7 +153,7 @@ snapshotPublisher {
 }
 ```
 
-> Note: you can test the generated release notes executing the `generateSnapshotReleaseNotes` gradle task and if you also add `--info` flag you will see the it in the command's output.
+> Note: you can test the generated release notes executing the `generateSnapshotReleaseNotes` gradle task and if you also add the `--info` flag you will see them in the command's output.
 
 - `releaseNotesFormat`: Defines the format of the release notes:
     The possible variables to play with in this case are:
