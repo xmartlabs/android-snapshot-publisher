@@ -25,6 +25,7 @@ class ReleaseNotesTest {
     private val REPO_FOLDER = File("/tmp/${UUID.randomUUID()}/")
     private val REPO_GIT_FOLDER = File("${REPO_FOLDER.absoluteFile}/.git")
     private val COMMIT_TIMEZONE = TimeZone.getTimeZone("GMT-3:00")
+    private const val TAG_POSITION = NUMBER_OF_COMMITS - 3
     private val COMMIT_DATE = Calendar.getInstance()
         .apply {
           timeZone = COMMIT_TIMEZONE
@@ -45,15 +46,13 @@ class ReleaseNotesTest {
 
   data class Author(val name: String, val mail: String)
 
-  private fun Repository.addCommit(commit: Commit) {
-    Git(this)
-        .commit()
-        .setMessage(commit.message)
-        .setAuthor(commit.author.name, commit.author.mail)
-        .setCommitter(PersonIdent(commit.author.name, commit.author.mail, COMMIT_DATE, COMMIT_TIMEZONE))
-        .setAllowEmpty(true)
-        .call()
-  }
+  private fun Repository.addCommit(commit: Commit) = Git(this)
+      .commit()
+      .setMessage(commit.message)
+      .setAuthor(commit.author.name, commit.author.mail)
+      .setCommitter(PersonIdent(commit.author.name, commit.author.mail, COMMIT_DATE, COMMIT_TIMEZONE))
+      .setAllowEmpty(true)
+      .call()
 
   @Before
   fun setup() {
@@ -61,8 +60,15 @@ class ReleaseNotesTest {
         REPO_GIT_FOLDER
     )
     newlyCreatedRepo.create()
-    COMMITS.forEach { newlyCreatedRepo.addCommit(it) }
+    val commits = COMMITS.map { newlyCreatedRepo.addCommit(it) }
     GitHelper.defaultDir = REPO_FOLDER
+
+    Git(newlyCreatedRepo).tag()
+        .apply {
+          name = "test.tag"
+          objectId = commits[TAG_POSITION]
+          call()
+        }
   }
 
   @After
@@ -99,6 +105,30 @@ class ReleaseNotesTest {
         }
 
     checkChangelogIsRight(config)
+  }
+
+  @Test
+  fun `Test empty history section`() {
+    val config = ReleaseNotesConfig()
+        .apply {
+          commitHistoryFormat = "- %s"
+          maxCommitHistoryLines = 0
+          historyFormat = "Test {commitHistory}"
+        }
+    val libraryHistory = ReleaseNotesGenerator.getHistorySection(config)
+    assertEquals("", libraryHistory)
+  }
+
+  @Test
+  fun `Test history section with custom format`() {
+    val config = ReleaseNotesConfig()
+        .apply {
+          historyFormat = "Changelog: \n{commitHistory}"
+          commitHistoryFormat = "- %s"
+          maxCommitHistoryLines = 5
+        }
+
+    checkChangelogIsRight(config, "Changelog: \n%s")
   }
 
   @Test
@@ -175,6 +205,18 @@ class ReleaseNotesTest {
   }
 
   @Test
+  fun `Test release notes from previous tag`() {
+    val config = ReleaseNotesConfig()
+        .apply {
+          commitHistoryFormat = "- %s"
+          maxCommitHistoryLines = NUMBER_OF_COMMITS
+          includeLastCommitInHistory = true
+        }
+
+    checkChangelogIsRight(config)
+  }
+
+  @Test
   fun `Test default values`() {
     val generatedReleaseNotes = ReleaseNotesGenerator.generate(ReleaseNotesConfig(), "1.1.1", 12)
     val expectedReleaseNotes = """1.1.1: Commit number 14
@@ -197,15 +239,19 @@ Last Changes:
     assertEquals(expectedReleaseNotes, generatedReleaseNotes)
   }
 
-  private fun checkChangelogIsRight(config: ReleaseNotesConfig) {
+  private fun checkChangelogIsRight(config: ReleaseNotesConfig, historyStringFormat: String = "Last Changes:\n%s") {
     val libraryHistory = ReleaseNotesGenerator.getHistorySection(config)
 
     val lastCommit = COMMITS.size + if (config.includeLastCommitInHistory) 0 else -1
-    val realHistory = COMMITS.subList(Math.max(COMMITS.size - config.maxCommitHistoryLines - 1, 0), lastCommit)
+    var initialCommitIndex = Math.max(COMMITS.size - config.maxCommitHistoryLines - 1, 0)
+    if (config.includeHistorySinceLastTag) {
+      initialCommitIndex = Math.min(TAG_POSITION, initialCommitIndex)
+    }
+    val realHistory = COMMITS.subList(initialCommitIndex, lastCommit)
         .reversed()
         .joinToString("\n") {
           config.commitHistoryFormat.format(it.message)
         }
-    assertEquals(libraryHistory, realHistory)
+    assertEquals(libraryHistory, historyStringFormat.format(realHistory))
   }
 }

@@ -8,19 +8,27 @@ open class ReleaseNotesConfig {
   var versionFormat: String = Constants.RELEASE_NOTES_VERSION_FORMAT_DEFAULT_VALUE
   var headerFormat: String = Constants.RELEASE_NOTES_CONFIG_HEADER_FORMAT_DEFAULT_VALUE
   var commitHistoryFormat: String = Constants.RELEASE_NOTES_CONFIG_COMMIT_HISTORY_FORMAT_DEFAULT_VALUE
+  var historyFormat: String = Constants.RELEASE_NOTES_CONFIG_HISTORY_FORMAT_DEFAULT_VALUE
   var maxCommitHistoryLines: Int = Constants.RELEASE_NOTES_CONFIG_MAX_COMMIT_HISTORY_LINES_DEFAULT_VALUE
   @Suppress("MemberVisibilityCanBePrivate")
   var releaseNotesFormat: String = Constants.RELEASE_NOTES_CONFIG_FORMAT_DEFAULT_VALUE
   var outputFile: File? = Constants.RELEASE_NOTES_OUTPUT_FILE_DEFAULT_VALUE
   var includeMergeCommitsInHistory: Boolean = Constants.RELEASE_NOTES_INCLUDE_MERGE_COMMITS_DEFAULT_VALUE
   var includeLastCommitInHistory: Boolean = Constants.RELEASE_NOTES_INCLUDE_LAST_COMMIT_DEFAULT_VALUE
+  var includeHistorySinceLastTag: Boolean =
+      Constants.RELEASE_NOTES_INCLUDE_HISTORY_ONLY_FROM_PREVIOUS_TAG_DEFAULT_VALUE
+
+  internal fun getHistory(commitHistory: String): String = historyFormat
+      .replace(Constants.RELEASE_NOTES_COMMIT_HISTORY_KEY, commitHistory, true)
+
+  internal fun getReleaseNotes(version: String, header: String, history: String, changelog: String): String =
+      releaseNotesFormat
+          .replace(Constants.RELEASE_NOTES_VERSION_KEY, version, true)
+          .replace(Constants.RELEASE_NOTES_HEADER_KEY, header, true)
+          .replace(Constants.RELEASE_NOTES_HISTORY_KEY, history, true)
+          .replace(Constants.RELEASE_NOTES_COMMIT_HISTORY_KEY, changelog, true)
 
   internal fun getVersion(versionName: String, versionCode: Int) = versionFormat
       .replace(Constants.RELEASE_NOTES_VERSION_NAME_KEY, versionName, true)
       .replace(Constants.RELEASE_NOTES_VERSION_CODE_KEY, versionCode.toString(), true)
-
-  internal fun getReleaseNotes(version: String, header: String, changelog: String): String = releaseNotesFormat
-      .replace(Constants.RELEASE_NOTES_VERSION_KEY, version, true)
-      .replace(Constants.RELEASE_NOTES_HEADER_KEY, header, true)
-      .replace(Constants.RELEASE_NOTES_COMMIT_HISTORY_KEY, changelog, true)
 }

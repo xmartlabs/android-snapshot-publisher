@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 [Version 1.0.1 _(Pending release)_]()
 ---
 
+### New Features
+- Added new `history` variable to use in `releaseNotesFormat` given by `historyFormat`.
+It's shown only if the `{commitHistory}` is not empty.
+- Added `includeHistorySinceLastTag` release notes setup variable.
+It enables to generate the history only for the commits after the latest git's tag.  
+It's useful to show only the changes that changed since the last build. (#25)
+
 ### Fixes
 - Fix version name issue in generated release notes. (24)
 

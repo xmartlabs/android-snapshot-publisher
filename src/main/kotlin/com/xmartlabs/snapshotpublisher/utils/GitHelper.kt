@@ -25,6 +25,8 @@ internal object GitHelper {
     return proc.inputStream.bufferedReader().readText().trim()
   }
 
+  private fun getLatestTag() = "git rev-list --tags --max-count=1".execute()
+
   fun getCommitHash() = "git rev-parse --short HEAD".execute()
 
   fun getBranchName() = "git rev-parse --abbrev-ref HEAD".execute()
@@ -32,16 +34,23 @@ internal object GitHelper {
   fun getLog(format: String, numberOfCommits: Int = Int.MAX_VALUE) =
       "git log --pretty=format:'$format' -n $numberOfCommits".execute()
 
-  private fun getTotalNumberOfCommits(from: String = "HEAD", commandArg: String?) =
-      "git rev-list --count $from ${commandArg ?: ""}".execute().toInt()
+  private fun getTotalNumberOfCommits(logRange: String, commandArg: String?) =
+      "git rev-list --count $logRange ${commandArg ?: ""}".execute().toInt()
+
+  private fun getHistoryRange(releaseNotesConfig: ReleaseNotesConfig): String {
+    val startRange = if (releaseNotesConfig.includeHistorySinceLastTag) getLatestTag() else null
+    val endRange = "HEAD" + if (releaseNotesConfig.includeLastCommitInHistory) "" else "^"
+    return if (startRange.isNullOrBlank()) endRange else "$startRange..$endRange"
+  }
 
   fun getHistoryFromPreviousCommit(releaseNotesConfig: ReleaseNotesConfig): String {
     with(releaseNotesConfig) {
       val allowMergeCommitCommandArg = if (includeMergeCommitsInHistory) "" else "--no-merges"
-      val logStartCommand = "HEAD" + if (includeLastCommitInHistory) "" else "^"
-      val numberOfCommits = GitHelper.getTotalNumberOfCommits(logStartCommand, allowMergeCommitCommandArg)
+
+      val logRange = getHistoryRange(this)
+      val numberOfCommits = GitHelper.getTotalNumberOfCommits(logRange, allowMergeCommitCommandArg)
       val requireCommitsCommandArg = if (numberOfCommits <= maxCommitHistoryLines) "" else " -n $maxCommitHistoryLines"
-      val gitLogCommand = "git log --pretty=format:'$commitHistoryFormat'$requireCommitsCommandArg $logStartCommand"
+      val gitLogCommand = "git log --pretty=format:'$commitHistoryFormat'$requireCommitsCommandArg $logRange"
 
       return "$gitLogCommand $allowMergeCommitCommandArg".execute()
     }

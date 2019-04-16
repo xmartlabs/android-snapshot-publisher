@@ -45,6 +45,22 @@ Currently the available services are:
 - [Google Play](https://play.google.com/apps/publish/)
 - [Fabric Beta](https://docs.fabric.io/apple/beta/overview.html)
 
+## Table of content
+
+- [Installation](#installation)
+    - [Setup](#setup)
+        - [Version customization](#version-customization)
+        - [Release notes](#release-notes)
+            - [Version](#version)
+            - [Header](#header)
+            - [History](#history)
+            - [Other](#other)
+        - [Fabric Beta](#fabric-beta)
+        - [Google Play](#google-play)
+- [How to use it?](#how-to-use-it)
+- [Getting involved](#getting-involved)
+- [About](#about)
+
 ## Installation
 
 The plugin is hosted in the Gradle Plugin Portal.
@@ -121,55 +137,76 @@ All fields in that block are optional and their default values are:
 snapshotPublisher {
     releaseNotes {
         releaseNotesFormat = """{version}: {header}
-    
-Last Changes:
-{commitHistory}
+{history}
 """
         versionFormat = '{versionName}'
         headerFormat = '%s%n%nAuthor: %an <%ae>'
+        historyFormat = '\nLast Changes:\n{commitHistory}'
         commitHistoryFormat = '• %s (%an - %ci)'
         maxCommitHistoryLines = 10
-        outputFile = null
         includeLastCommitInHistory = false
         includeMergeCommitsInHistory = true
+        includeHistorySinceLastTag = false
+        outputFile = null
     }
     // ...
 }
 ```
 
-> Note: you can test the generated release notes executing the `generateSnapshotReleaseNotes` gradle task.
+> Note: you can test the generated release notes executing the `generateSnapshotReleaseNotes` gradle task and if you also add the `--info` flag you will see them in the command's output.
 
 - `releaseNotesFormat`: Defines the format of the release notes:
     The possible variables to play with in this case are:
-    - `{version}` given by `versionFormat`.
-    - `{header}` given by `headerFormat`.
+    - [`{version}`](#version) given by `versionFormat`.
+    - [`{header}`](#header) given by `headerFormat`.
     By default it contains information about the most recent commit and their author.
-    - `{commitHistory}` given by the result of apply `commitHistoryFormat` to a range of commits.
-    By default the range includes all commits from the last -not current- commit to `maxCommitHistoryLines` commits before that.
-    If you want to include the last commit in that range, you can set `includeLastCommitInHistory` as `true`.
+    - [`{history}`](#history) given by `historyFormat`.
+    It contains information about the most recent history of the build.
 
+#### Version
+It contains information about the build version.
 - `versionFormat`: Specifies the version's variable format.
     
     `{versionName}` (Android app's Version Name) and `{versionCode}` (Android app's Version Code) can be used to create it.
 
+#### Header
+It contains information about the most recent commit.
+
 - `headerFormat`: Specifies the header's variable format.
 The plugin uses [Git's pretty format] to retrieve the information about the current commit.
 If you want to modify this, you may want to use it.
+
+#### History
+It contains information about the most recent commits, starting from the last -not current- commit to `maxCommitHistoryLines` commits before that.
+If you want to include the last commit in that range, you can set `includeLastCommitInHistory` as `true`.
+The format of these commits is given by `commitHistoryFormat`.
+This section is shown only if there is at least one commit history.
+
+- `historyFormat`: Specifies the history's variable format. 
+It contains the `{commitHistory}`, which is given by the result of applying `commitHistoryFormat` to a certain range of commits of commits.
 
 - `commitHistoryFormat`: Specifies the `{commitHistory}` variable format.
 As `headerFormat` does, it uses [Git's pretty format] to create the `commitHistory` for the previous commits.
 
 - `maxCommitHistoryLines`: Indicates the number of commits included in `{commitHistory}`.
 
+- `includeLastCommitInHistory`: Flag to include the most recent commit in `{commitHistory}`.
+By default this value is `false` because it's used in `{header}`
+
+- `includeMergeCommitsInHistory`: Flag to include merge commits in `{commitHistory}`.
+
+- `includeHistorySinceLastTag`: Indicates the history start point.
+By default it's `false`, which means that all commits are used to get the history.
+However, if its value is `true`, only the commits after the most recent tag will be included in the build history.
+This is useful if you want to include in the history only the changes after the previous release.
+
+#### Other
+
 - `outputFile`: The file where the release notes will be saved.
 By default this value is `null` and that means the release notes will be generated and delivered with the snapshot build but it will not be saved in the file system.
 If you want to save the release notes in the file system, you can set `outputFile = file("release-notes.txt")`.
 You can define it using a relative path (where the start point is the Android application module folder) or an absolute path.
 
-- `includeLastCommitInHistory`: Flag to include the most recent commit in `{commitHistory}`.
-By default this value is `false` because it's used in `{header}`
-
-- `includeMergeCommitsInHistory`: Flag to include merge commits in `{commitHistory}`.
 
 ### Fabric Beta
 This block defines the configuration needed to deploy the artifacts in Fabric's Beta.
