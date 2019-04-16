@@ -183,7 +183,7 @@ The format of these commits is given by `commitHistoryFormat`.
 This section is shown only if there is at least one commit history.
 
 - `historyFormat`: Specifies the history's variable format. 
-It contains the `{commitHistory}`, which is given by the result of apply `commitHistoryFormat` to a certain range of commits of commits.
+It contains the `{commitHistory}`, which is given by the result of applying `commitHistoryFormat` to a certain range of commits of commits.
 
 - `commitHistoryFormat`: Specifies the `{commitHistory}` variable format.
 As `headerFormat` does, it uses [Git's pretty format] to create the `commitHistory` for the previous commits.
