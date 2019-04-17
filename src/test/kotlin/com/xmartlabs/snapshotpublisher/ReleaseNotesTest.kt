@@ -6,6 +6,7 @@ import com.xmartlabs.snapshotpublisher.utils.ReleaseNotesGenerator
 import org.gradle.internal.impldep.org.eclipse.jgit.api.Git
 import org.gradle.internal.impldep.org.eclipse.jgit.lib.PersonIdent
 import org.gradle.internal.impldep.org.eclipse.jgit.lib.Repository
+import org.gradle.internal.impldep.org.eclipse.jgit.revwalk.RevCommit
 import org.gradle.internal.impldep.org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.junit.After
 import org.junit.Before
@@ -25,7 +26,8 @@ class ReleaseNotesTest {
     private val REPO_FOLDER = File("/tmp/${UUID.randomUUID()}/")
     private val REPO_GIT_FOLDER = File("${REPO_FOLDER.absoluteFile}/.git")
     private val COMMIT_TIMEZONE = TimeZone.getTimeZone("GMT-3:00")
-    private const val TAG_POSITION = NUMBER_OF_COMMITS - 3
+    private const val PREVIOUS_TAG = NUMBER_OF_COMMITS - 3
+    private val TAG_POSITIONS = listOf(PREVIOUS_TAG, NUMBER_OF_COMMITS - 1)
     private val COMMIT_DATE = Calendar.getInstance()
         .apply {
           timeZone = COMMIT_TIMEZONE
@@ -54,21 +56,24 @@ class ReleaseNotesTest {
       .setAllowEmpty(true)
       .call()
 
+  private fun Repository?.tag(revCommit: RevCommit) = Git(this).tag()
+      .apply {
+        name = "test.${revCommit.name()}"
+        objectId = revCommit
+        call()
+      }
+
   @Before
   fun setup() {
-    val newlyCreatedRepo = FileRepositoryBuilder.create(
+    val repo = FileRepositoryBuilder.create(
         REPO_GIT_FOLDER
     )
-    newlyCreatedRepo.create()
-    val commits = COMMITS.map { newlyCreatedRepo.addCommit(it) }
+    repo.create()
+    val commits = COMMITS.map { repo.addCommit(it) }
     GitHelper.defaultDir = REPO_FOLDER
 
-    Git(newlyCreatedRepo).tag()
-        .apply {
-          name = "test.tag"
-          objectId = commits[TAG_POSITION]
-          call()
-        }
+    TAG_POSITIONS.map { commits[it] }
+        .forEach { repo.tag(it) }
   }
 
   @After
@@ -245,7 +250,7 @@ Last Changes:
     val lastCommit = COMMITS.size + if (config.includeLastCommitInHistory) 0 else -1
     var initialCommitIndex = Math.max(COMMITS.size - config.maxCommitHistoryLines - 1, 0)
     if (config.includeHistorySinceLastTag) {
-      initialCommitIndex = Math.min(TAG_POSITION, initialCommitIndex)
+      initialCommitIndex = Math.min(PREVIOUS_TAG, initialCommitIndex)
     }
     val realHistory = COMMITS.subList(initialCommitIndex, lastCommit)
         .reversed()

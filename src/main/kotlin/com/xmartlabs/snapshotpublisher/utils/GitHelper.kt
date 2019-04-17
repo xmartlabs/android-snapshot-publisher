@@ -25,7 +25,7 @@ internal object GitHelper {
     return proc.inputStream.bufferedReader().readText().trim()
   }
 
-  private fun getLatestTag() = "git rev-list --tags --max-count=1".execute()
+  private fun getPreviousTag() = "git describe --tags --abbrev=0 HEAD^".execute()
 
   fun getCommitHash() = "git rev-parse --short HEAD".execute()
 
@@ -38,7 +38,7 @@ internal object GitHelper {
       "git rev-list --count $logRange ${commandArg ?: ""}".execute().toInt()
 
   private fun getHistoryRange(releaseNotesConfig: ReleaseNotesConfig): String {
-    val startRange = if (releaseNotesConfig.includeHistorySinceLastTag) getLatestTag() else null
+    val startRange = if (releaseNotesConfig.includeHistorySinceLastTag) getPreviousTag() else null
     val endRange = "HEAD" + if (releaseNotesConfig.includeLastCommitInHistory) "" else "^"
     return if (startRange.isNullOrBlank()) endRange else "$startRange..$endRange"
   }

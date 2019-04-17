@@ -197,7 +197,8 @@ By default this value is `false` because it's used in `{header}`
 
 - `includeHistorySinceLastTag`: Indicates the history start point.
 By default it's `false`, which means that all commits are used to get the history.
-However, if its value is `true`, only the commits after the most recent tag will be included in the build history.
+However, if its value is `true`, only the commits after the previous tag will be included in the build history.
+The previous tag is the latest tag before the current commit.
 This is useful if you want to include in the history only the changes after the previous release.
 
 #### Other
