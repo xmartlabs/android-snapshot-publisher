@@ -2,12 +2,12 @@ Change Log
 ==========
 All notable changes to this project will be documented in this file.
 
-[Version 1.0.1 _(Pending release)_]()
+[Version 1.0.1 _(2018-04-17)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.1)
 ---
 
 ### New Features
 - Added new `history` variable to use in `releaseNotesFormat` given by `historyFormat`.
-It's shown only if the `{commitHistory}` is not empty.
+It's shown only if the `{commitHistory}` is not empty. (#25)
 - Added `includeHistorySinceLastTag` release notes setup variable.
 It enables to generate the history only for the commits after the latest git's tag.  
 It's useful to show only the changes that changed since the last build. (#25)
