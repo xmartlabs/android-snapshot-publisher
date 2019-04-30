@@ -31,11 +31,6 @@ class SnapshotPublisherPlugin : Plugin<Project> {
         createGenerateReleaseNotesTask()
 
         AndroidPluginHelper.getAndroidExtension(this).applicationVariants.all { variant ->
-          if (variant.buildType.isDebuggable) {
-            project.logger.info("Skipping debuggable build type ${variant.buildType.name}.")
-            return@all
-          }
-
           createTasksForVariant(variant)
         }
       } else {
@@ -56,7 +51,12 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       createPrepareBundleSnapshotTask(variant, bundleTask, preparationTasks)
     }
     createFabricDeployTask(variant, assembleTask, preparationTasks)
-    createGooglePlayDeployTask(variant, preparationTasks)
+
+    if (variant.buildType.isDebuggable) {
+      project.logger.info("Skipping debuggable build type ${variant.buildType.name} for Google Play's tasks.")
+    } else {
+      createGooglePlayDeployTask(variant, preparationTasks)
+    }
   }
 
   private fun Project.createGenerateReleaseNotesTask(

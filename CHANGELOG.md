@@ -2,6 +2,12 @@ Change Log
 ==========
 All notable changes to this project will be documented in this file.
 
+[Version 1.0.2 _(UNRELEASED)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.2)
+---
+
+### New Features
+- Allow to use the `debuggable` build types in Fabric's Beta.
+
 [Version 1.0.1 _(2018-04-17)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.1)
 ---
 

@@ -287,6 +287,8 @@ Some auxiliary tasks are:
 - `prepareApkSnapshotBuild[Variant][BuildType]`: Prepares the snapshot build and creates an apk version.
 - `prepareBundleSnapshotBuild[Variant][BuildType]`: Prepares the snapshot build and creates a bundle version.
 
+> Note: Google's PlayStore doesn't allow to upload `debuggable` builds, so `debuggable` build types' gradle tasks are not generated.
+
 ## Getting involved
 
 * If you **want to contribute** please feel free to **submit pull requests**.
