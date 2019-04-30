@@ -11,6 +11,6 @@ internal object FabricBetaPluginHelper {
   fun initializeFabricBetaPublisherPlugin(project: Project) =
       project.pluginManager.apply(CrashlyticsPlugin::class.java)
 
-  fun getBetaDistributionTask(project: Project, variant: ApplicationVariant): Task =
-      project.tasks.getByName("$BETA_DISTRIBUTION_TASK_NAME${variant.capitalizedName}")
+  fun getBetaDistributionTask(project: Project, variant: ApplicationVariant): Task? =
+      project.tasks.findByName("$BETA_DISTRIBUTION_TASK_NAME${variant.capitalizedName}")
 }

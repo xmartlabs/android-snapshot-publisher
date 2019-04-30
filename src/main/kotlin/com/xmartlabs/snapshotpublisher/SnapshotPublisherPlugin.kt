@@ -108,8 +108,14 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       variant: ApplicationVariant,
       assembleTask: Task,
       preparationTasks: List<Task>
-  ): DefaultTask {
+  ): DefaultTask? {
     val releaseFabricTask = FabricBetaPluginHelper.getBetaDistributionTask(project, variant)
+    if (releaseFabricTask == null) {
+      project.logger.info("Skipping build type ${variant.buildType.name} due to Crashlytics being disabled for it." +
+          "\nYou can check if `enableCrashlytics` property is set to false in your module's gradle file.")
+      return null
+    }
+
     val prepareFabricReleaseTask = createTask<PrepareFabricReleaseTask>(
         name = "${Constants.PREPARE_FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
         description = "Prepare the Fabric snapshot release",
