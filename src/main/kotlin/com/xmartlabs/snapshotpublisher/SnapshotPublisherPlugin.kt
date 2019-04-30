@@ -31,11 +31,6 @@ class SnapshotPublisherPlugin : Plugin<Project> {
         createGenerateReleaseNotesTask()
 
         AndroidPluginHelper.getAndroidExtension(this).applicationVariants.all { variant ->
-          if (variant.buildType.isDebuggable) {
-            project.logger.info("Skipping debuggable build type ${variant.buildType.name}.")
-            return@all
-          }
-
           createTasksForVariant(variant)
         }
       } else {
@@ -113,8 +108,14 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       variant: ApplicationVariant,
       assembleTask: Task,
       preparationTasks: List<Task>
-  ): DefaultTask {
+  ): DefaultTask? {
     val releaseFabricTask = FabricBetaPluginHelper.getBetaDistributionTask(project, variant)
+    if (releaseFabricTask == null) {
+      project.logger.info("Skipping build type ${variant.buildType.name} due to Crashlytics being disabled for it. " +
+          "You can check if 'enableCrashlytics' property is set to false in your module's gradle file.")
+      return null
+    }
+
     val prepareFabricReleaseTask = createTask<PrepareFabricReleaseTask>(
         name = "${Constants.PREPARE_FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
         description = "Prepare the Fabric snapshot release",
@@ -141,7 +142,12 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   private fun Project.createGooglePlayDeployTask(
       variant: ApplicationVariant,
       preparationTasks: List<Task>
-  ): DefaultTask {
+  ): DefaultTask? {
+    if (variant.buildType.isDebuggable) {
+      project.logger.info("Skipping debuggable build type '${variant.buildType.name}' for Google Play's tasks.")
+      return null
+    }
+
     val googlePlayConfig = project.snapshotReleaseExtension.googlePlay
     return if (googlePlayConfig.areCredsValid()) {
       val publishGooglePlayTask = if (googlePlayConfig.defaultToAppBundles) {
