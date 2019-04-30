@@ -111,8 +111,8 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   ): DefaultTask? {
     val releaseFabricTask = FabricBetaPluginHelper.getBetaDistributionTask(project, variant)
     if (releaseFabricTask == null) {
-      project.logger.info("Skipping build type ${variant.buildType.name} due to Crashlytics being disabled for it." +
-          "\nYou can check if `enableCrashlytics` property is set to false in your module's gradle file.")
+      project.logger.info("Skipping build type ${variant.buildType.name} due to Crashlytics being disabled for it. " +
+          "You can check if 'enableCrashlytics' property is set to false in your module's gradle file.")
       return null
     }
 
@@ -144,7 +144,7 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       preparationTasks: List<Task>
   ): DefaultTask? {
     if (variant.buildType.isDebuggable) {
-      project.logger.info("Skipping debuggable build type ${variant.buildType.name} for Google Play's tasks.")
+      project.logger.info("Skipping debuggable build type '${variant.buildType.name}' for Google Play's tasks.")
       return null
     }
 
