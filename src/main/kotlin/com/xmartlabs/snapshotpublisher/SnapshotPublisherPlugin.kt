@@ -51,12 +51,7 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       createPrepareBundleSnapshotTask(variant, bundleTask, preparationTasks)
     }
     createFabricDeployTask(variant, assembleTask, preparationTasks)
-
-    if (variant.buildType.isDebuggable) {
-      project.logger.info("Skipping debuggable build type ${variant.buildType.name} for Google Play's tasks.")
-    } else {
-      createGooglePlayDeployTask(variant, preparationTasks)
-    }
+    createGooglePlayDeployTask(variant, preparationTasks)
   }
 
   private fun Project.createGenerateReleaseNotesTask(
@@ -141,7 +136,12 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   private fun Project.createGooglePlayDeployTask(
       variant: ApplicationVariant,
       preparationTasks: List<Task>
-  ): DefaultTask {
+  ): DefaultTask? {
+    if (variant.buildType.isDebuggable) {
+      project.logger.info("Skipping debuggable build type ${variant.buildType.name} for Google Play's tasks.")
+      return null
+    }
+
     val googlePlayConfig = project.snapshotReleaseExtension.googlePlay
     return if (googlePlayConfig.areCredsValid()) {
       val publishGooglePlayTask = if (googlePlayConfig.defaultToAppBundles) {
