@@ -54,9 +54,7 @@ internal object GitHelper {
       val requireCommitsCommandArg = if (numberOfCommits <= maxCommitHistoryLines) "" else " -n $maxCommitHistoryLines"
       val gitLogCommand = "git log --pretty=format:'$commitHistoryFormat'$requireCommitsCommandArg $logRange"
 
-      val s = "$gitLogCommand $allowMergeCommitCommandArg"
-      println(s)
-      return s.execute()
+      return "$gitLogCommand $allowMergeCommitCommandArg".execute()
     }
   }
 }
