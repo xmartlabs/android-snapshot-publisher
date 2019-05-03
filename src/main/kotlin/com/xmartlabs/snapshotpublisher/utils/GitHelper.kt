@@ -25,7 +25,7 @@ internal object GitHelper {
     return proc.inputStream.bufferedReader().readText().trim()
   }
 
-  private fun getPreviousTag() = "git describe --tags --abbrev=0 HEAD^".execute()
+  private fun getPreviousTag() = "git describe --tags --abbrev=0 ${getPreviousCommitHash()}".execute()
 
   private fun getPreviousCommitHash() = "git log --format=%H --skip 1 -1".execute()
 
