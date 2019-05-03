@@ -27,7 +27,7 @@ internal object GitHelper {
 
   private fun getPreviousTag() = "git describe --tags --abbrev=0 HEAD^".execute()
 
-  private fun getPreviousCommitHash() = "git log  --format=\"%H\" --skip 1 -1".execute()
+  private fun getPreviousCommitHash() = "git log --format=%H --skip 1 -1".execute()
 
   fun getCommitHash() = "git rev-parse --short HEAD".execute()
 
