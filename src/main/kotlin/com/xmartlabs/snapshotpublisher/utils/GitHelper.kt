@@ -27,6 +27,8 @@ internal object GitHelper {
 
   private fun getPreviousTag() = "git describe --tags --abbrev=0 HEAD^".execute()
 
+  private fun getPreviousCommitHash() = "git log  --format=\"%H\" --skip 1 -1".execute()
+
   fun getCommitHash() = "git rev-parse --short HEAD".execute()
 
   fun getBranchName() = "git rev-parse --abbrev-ref HEAD".execute()
@@ -39,7 +41,7 @@ internal object GitHelper {
 
   private fun getHistoryRange(releaseNotesConfig: ReleaseNotesConfig): String {
     val startRange = if (releaseNotesConfig.includeHistorySinceLastTag) getPreviousTag() else null
-    val endRange = "HEAD" + if (releaseNotesConfig.includeLastCommitInHistory) "" else "^"
+    val endRange = if (releaseNotesConfig.includeLastCommitInHistory) "HEAD" else getPreviousCommitHash()
     return if (startRange.isNullOrBlank()) endRange else "$startRange..$endRange"
   }
 
@@ -52,7 +54,9 @@ internal object GitHelper {
       val requireCommitsCommandArg = if (numberOfCommits <= maxCommitHistoryLines) "" else " -n $maxCommitHistoryLines"
       val gitLogCommand = "git log --pretty=format:'$commitHistoryFormat'$requireCommitsCommandArg $logRange"
 
-      return "$gitLogCommand $allowMergeCommitCommandArg".execute()
+      val s = "$gitLogCommand $allowMergeCommitCommandArg"
+      println(s)
+      return s.execute()
     }
   }
 }
