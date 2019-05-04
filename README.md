@@ -72,7 +72,7 @@ buildscript {
     maven { url 'https://maven.fabric.io/public' }
   }
   dependencies {
-     classpath "com.xmartlabs:snapshot-publisher:1.0.2"
+     classpath "com.xmartlabs:snapshot-publisher:1.0.3"
   }
 }
 ```
