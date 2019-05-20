@@ -2,7 +2,7 @@ Change Log
 ==========
 All notable changes to this project will be documented in this file.
 
-[Version 1.0.3 _(2018-05-06)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.3)
+[Version 1.0.3 _(2018-05-20)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.3)
 ---
 
 ### Fixes
