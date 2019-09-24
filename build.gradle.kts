@@ -34,7 +34,7 @@ dependencies {
 
   implementation("com.github.triplet.gradle:play-publisher:2.4.1")
   implementation("com.google.apis:google-api-services-androidpublisher:v3-rev46-1.25.0")
-  implementation("io.fabric.tools:gradle:1.27.0")
+  implementation("io.fabric.tools:gradle:1.31.1")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.50")
 
   testImplementation("com.android.tools.build:gradle:3.5.0")
@@ -43,7 +43,7 @@ dependencies {
   testImplementation("org.eclipse.jgit:org.eclipse.jgit:3.5.0.201409260305-r")
   testImplementation("org.jetbrains.kotlin:kotlin-test")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-  testImplementation("org.mockito:mockito-core:2.23.4")
+  testImplementation("org.mockito:mockito-core:3.3.0")
 }
 
 jacoco {
