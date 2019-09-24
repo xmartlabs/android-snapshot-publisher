@@ -15,8 +15,8 @@ open class UpdateAndroidVersionNameTask : DefaultTask() {
   @TaskAction
   fun action() {
     val versionName = AndroidPluginHelper.getVersionName(project, variant)
-    variant.outputs.all { output ->
-      (output as? ApkVariantOutput)?.versionNameOverride = versionName
+    variant.outputs.all {
+      (this as? ApkVariantOutput)?.versionNameOverride = versionName
     }
   }
 }
