@@ -30,8 +30,8 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       if (AndroidPluginHelper.hasAndroidExtension(this)) {
         createGenerateReleaseNotesTask()
 
-        AndroidPluginHelper.getAndroidExtension(this).applicationVariants.all { variant ->
-          createTasksForVariant(variant)
+        AndroidPluginHelper.getAndroidExtension(this).applicationVariants.whenObjectAdded {
+          createTasksForVariant(this)
         }
       } else {
         throw GradleException("Android is not present")

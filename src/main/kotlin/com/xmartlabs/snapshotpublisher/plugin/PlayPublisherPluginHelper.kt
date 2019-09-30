@@ -25,7 +25,7 @@ internal object PlayPublisherPluginHelper {
   private const val RELEASE_NOTES_PATH = "release-notes"
 
   // https://github.com/Triple-T/gradle-play-publisher/blob/4d3f98128c8c86bc1ea37fd34d8f4b16dbf93d1b/plugin/src/main/kotlin/com/github/triplet/gradle/play/internal/Validation.kt#L28
-  fun PlayPublisherExtension.areCredsValid(): Boolean {
+  private fun PlayPublisherExtension.areCredsValid(): Boolean {
     val creds = serviceAccountCredentials ?: return false
     return if (creds.extension.equals("json", true)) {
       serviceAccountEmail == null
@@ -58,7 +58,7 @@ internal object PlayPublisherPluginHelper {
 
   fun initializePlayPublisherPlugin(project: Project) {
     val releaseSetup = project.snapshotReleaseExtension
-    project.afterEvaluate {
+    project.beforeEvaluate {
       val playPublisherExtension = project.playPublisherExtension
       if (!playPublisherExtension.areCredsValid()) {
         playPublisherExtension.serviceAccountCredentials = if (releaseSetup.googlePlay.areCredsValid()) {

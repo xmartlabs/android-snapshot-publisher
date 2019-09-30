@@ -1,6 +1,6 @@
 package com.xmartlabs.snapshotpublisher.utils
 
-import com.android.annotations.VisibleForTesting
+import com.google.common.annotations.VisibleForTesting
 import com.xmartlabs.snapshotpublisher.model.ReleaseNotesConfig
 
 internal object ReleaseNotesGenerator {

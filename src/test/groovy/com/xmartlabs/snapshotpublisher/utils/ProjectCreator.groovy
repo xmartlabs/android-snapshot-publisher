@@ -18,6 +18,7 @@ class ProjectCreator {
       compileSdkVersion 28
 
       defaultConfig {
+        applicationId "com.xmartlabs.snapshotpublisher.test"
         versionCode 1
         versionName '1.0'
         minSdkVersion 28
