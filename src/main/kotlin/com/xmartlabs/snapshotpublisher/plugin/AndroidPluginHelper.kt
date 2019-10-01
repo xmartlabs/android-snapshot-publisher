@@ -1,9 +1,9 @@
 package com.xmartlabs.snapshotpublisher.plugin
 
-import com.android.annotations.VisibleForTesting
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.api.ApkVariantOutput
 import com.android.build.gradle.api.ApplicationVariant
+import com.google.common.annotations.VisibleForTesting
 import com.xmartlabs.snapshotpublisher.model.VersionConfig
 import com.xmartlabs.snapshotpublisher.utils.GitHelper
 import com.xmartlabs.snapshotpublisher.utils.snapshotReleaseExtension
