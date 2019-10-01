@@ -7,6 +7,7 @@ import com.github.triplet.gradle.play.PlayPublisherExtension
 import com.github.triplet.gradle.play.PlayPublisherPlugin
 import com.github.triplet.gradle.play.tasks.PublishApk
 import com.github.triplet.gradle.play.tasks.PublishBundle
+import com.xmartlabs.snapshotpublisher.model.SnapshotReleaseExtension
 import com.xmartlabs.snapshotpublisher.utils.snapshotReleaseExtension
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -73,12 +74,14 @@ internal object PlayPublisherPluginHelper {
   }
 
   private fun checkAgp() {
-    val agpVersion = VersionNumber.parse(try {
-      Version.ANDROID_GRADLE_PLUGIN_VERSION
-    } catch (e: NoClassDefFoundError) {
-      @Suppress("DEPRECATION") // TODO(#708): remove when 3.6 is the minimum
-      com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
-    })
+    val agpVersion = VersionNumber.parse(
+        try {
+          Version.ANDROID_GRADLE_PLUGIN_VERSION
+        } catch (e: NoClassDefFoundError) {
+          @Suppress("DEPRECATION") // TODO(#708): remove when 3.6 is the minimum
+          com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
+        }
+    )
     check(agpVersion >= MIN_AGP_VERSION) {
       "Android Snapshot Publisher's minimum Android Gradle Plugin version is at least " +
           "$MIN_AGP_VERSION and yours is $agpVersion. Find the latest version " +
@@ -96,18 +99,21 @@ internal object PlayPublisherPluginHelper {
     AndroidPluginHelper.getAndroidExtension(project).applicationVariants.whenObjectAdded {
       if (!credentialsInitialized) {
         credentialsInitialized = true
-        val playPublisherExtension = project.playPublisherExtension
-        if (!playPublisherExtension.areCredsValid()) {
-          playPublisherExtension.serviceAccountCredentials = if (releaseSetup.googlePlay.areCredsValid()) {
-            releaseSetup.googlePlay.serviceAccountCredentials
-          } else {
-            File("mock.json") // To skip Google Play Publisher validation
-          }
-        }
+        setupPluginCredentials(project, releaseSetup)
       }
     }
-
     @Suppress("UnstableApiUsage")
     project.pluginManager.apply(PlayPublisherPlugin::class.java)
+  }
+
+  private fun setupPluginCredentials(project: Project, releaseSetup: SnapshotReleaseExtension) {
+    val playPublisherExtension = project.playPublisherExtension
+    if (!playPublisherExtension.areCredsValid()) {
+      playPublisherExtension.serviceAccountCredentials = if (releaseSetup.googlePlay.areCredsValid()) {
+        releaseSetup.googlePlay.serviceAccountCredentials
+      } else {
+        File("mock.json") // To skip Google Play Publisher validation
+      }
+    }
   }
 }
