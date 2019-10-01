@@ -9,10 +9,12 @@ import com.github.triplet.gradle.play.tasks.PublishBundle
 import com.xmartlabs.snapshotpublisher.utils.snapshotReleaseExtension
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.util.GradleVersion
 import java.io.File
 
 internal object PlayPublisherPluginHelper {
   private const val PLAY_EXTENSION_NAME = "play"
+  private val MIN_GRADLE_VERSION = GradleVersion.version("5.6.1")
 
   private const val GENERATE_RESOURCES_TASK_NAME = "generate%sPlayResources"
   private const val PUBLISH_APK_TASK_NAME = "publish%sApk"
@@ -56,7 +58,19 @@ internal object PlayPublisherPluginHelper {
   fun getGenerateResourcesTask(project: Project, variant: ApplicationVariant): Task =
       project.tasks.getByName(GENERATE_RESOURCES_TASK_NAME.format(variant.capitalizedName))
 
+  // Required in https://github.com/Triple-T/gradle-play-publisher/blob/40092f24d68034395c4c3399dbef0c5eb2f2c484/common/validation/src/main/kotlin/com/github/triplet/gradle/common/validation/Validation.kt#L9
+  private fun checkGradleVersion() {
+    val gradleVersion = GradleVersion.current()
+    check(gradleVersion >= MIN_GRADLE_VERSION) {
+      "Android Snapshot Publisher's minimum Gradle version is at least $MIN_GRADLE_VERSION and " +
+          "yours is $gradleVersion. Find the latest version at " +
+          "https://github.com/gradle/gradle/releases, then run " +
+          "'./gradlew wrapper --gradle-version=\$LATEST --distribution-type=ALL'."
+    }
+  }
+
   fun initializePlayPublisherPlugin(project: Project) {
+    checkGradleVersion()
     val releaseSetup = project.snapshotReleaseExtension
     project.beforeEvaluate {
       val playPublisherExtension = project.playPublisherExtension
