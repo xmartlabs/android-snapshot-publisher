@@ -1,7 +1,7 @@
 package com.xmartlabs.snapshotpublisher.task
 
 import com.android.build.gradle.api.ApplicationVariant
-import com.github.triplet.gradle.play.tasks.internal.PlayPublishPackageBase
+import com.github.triplet.gradle.play.tasks.internal.PublishArtifactTaskBase
 import com.xmartlabs.snapshotpublisher.Constants
 import com.xmartlabs.snapshotpublisher.plugin.PlayPublisherPluginHelper
 import com.xmartlabs.snapshotpublisher.utils.AndroidPublisherHelper
@@ -18,7 +18,7 @@ open class PrepareGooglePlayReleaseTask : DefaultTask() {
   }
 
   @get:Internal
-  internal lateinit var publishGooglePlayTask: PlayPublishPackageBase
+  internal lateinit var publishGooglePlayTask: PublishArtifactTaskBase
   @get:Internal
   internal lateinit var variant: ApplicationVariant
 

@@ -1,6 +1,7 @@
 package com.xmartlabs.snapshotpublisher
 
 import com.android.build.gradle.api.ApplicationVariant
+import com.github.triplet.gradle.play.tasks.internal.PublishArtifactTaskBase
 import com.xmartlabs.snapshotpublisher.model.SnapshotReleaseExtension
 import com.xmartlabs.snapshotpublisher.plugin.AndroidPluginHelper
 import com.xmartlabs.snapshotpublisher.plugin.FabricBetaPluginHelper
@@ -111,8 +112,10 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   ): DefaultTask? {
     val releaseFabricTask = FabricBetaPluginHelper.getBetaDistributionTask(project, variant)
     if (releaseFabricTask == null) {
-      project.logger.info("Skipping build type ${variant.buildType.name} due to Crashlytics being disabled for it. " +
-          "You can check if 'enableCrashlytics' property is set to false in your module's gradle file.")
+      project.logger.info(
+          "Skipping build type ${variant.buildType.name} due to Crashlytics being disabled for it. " +
+              "You can check if 'enableCrashlytics' property is set to false in your module's gradle file."
+      )
       return null
     }
 
@@ -150,7 +153,7 @@ class SnapshotPublisherPlugin : Plugin<Project> {
 
     val googlePlayConfig = project.snapshotReleaseExtension.googlePlay
     return if (googlePlayConfig.areCredsValid()) {
-      val publishGooglePlayTask = if (googlePlayConfig.defaultToAppBundles) {
+      val publishGooglePlayTask: PublishArtifactTaskBase = if (googlePlayConfig.defaultToAppBundles) {
         PlayPublisherPluginHelper.getPublishBundleTask(this, variant)
       } else {
         PlayPublisherPluginHelper.getPublishApkTask(this, variant)
