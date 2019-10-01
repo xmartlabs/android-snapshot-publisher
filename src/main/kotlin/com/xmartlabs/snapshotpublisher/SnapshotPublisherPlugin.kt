@@ -1,6 +1,7 @@
 package com.xmartlabs.snapshotpublisher
 
 import com.android.build.gradle.api.ApplicationVariant
+import com.github.triplet.gradle.play.tasks.internal.PublishArtifactTaskBase
 import com.xmartlabs.snapshotpublisher.model.SnapshotReleaseExtension
 import com.xmartlabs.snapshotpublisher.plugin.AndroidPluginHelper
 import com.xmartlabs.snapshotpublisher.plugin.FabricBetaPluginHelper
@@ -58,8 +59,8 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       variant: ApplicationVariant? = null,
       updateVersionNameTask: UpdateAndroidVersionNameTask? = null
   ) = createTask<GenerateReleaseNotesTask>(
-      name = Constants.GENERATE_SNAPSHOT_RELEASE_NOTES_TASK_NAME + (variant?.capitalizedName ?: ""),
-      description = "Generates release notes"
+    name = Constants.GENERATE_SNAPSHOT_RELEASE_NOTES_TASK_NAME + (variant?.capitalizedName ?: ""),
+    description = "Generates release notes"
   ) {
     this.variant = variant
     updateVersionNameTask?.mustRunAfter(this)
@@ -70,8 +71,8 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       assembleTask: Task,
       bundleTask: Task?
   ) = createTask<UpdateAndroidVersionNameTask>(
-      name = "${Constants.UPDATE_ANDROID_VERSION_NAME_TASK_NAME}${variant.capitalizedName}",
-      description = "Update Android Version name"
+    name = "${Constants.UPDATE_ANDROID_VERSION_NAME_TASK_NAME}${variant.capitalizedName}",
+    description = "Update Android Version name"
   ) {
     this.variant = variant
     @Suppress("UnstableApiUsage")
@@ -85,8 +86,8 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       assembleTask: Task,
       preparationTasks: List<Task>
   ) = createTask<DefaultTask>(
-      name = "${Constants.PREPARE_APK_VERSION_TASK_NAME}${variant.capitalizedName}",
-      description = "Prepare, compile and create an apk file."
+    name = "${Constants.PREPARE_APK_VERSION_TASK_NAME}${variant.capitalizedName}",
+    description = "Prepare, compile and create an apk file."
   ) {
     preparationTasks.forEach { dependsOn(it) }
     dependsOn(assembleTask)
@@ -97,8 +98,8 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       bundleTask: Task?,
       preparationTasks: List<Task>
   ) = createTask<DefaultTask>(
-      name = "${Constants.PREPARE_BUNDLE_VERSION_TASK_NAME}${variant.capitalizedName}",
-      description = "Prepare, compile and create a bundle file."
+    name = "${Constants.PREPARE_BUNDLE_VERSION_TASK_NAME}${variant.capitalizedName}",
+    description = "Prepare, compile and create a bundle file."
   ) {
     preparationTasks.forEach { dependsOn(it) }
     dependsOn(bundleTask)
@@ -111,15 +112,17 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   ): DefaultTask? {
     val releaseFabricTask = FabricBetaPluginHelper.getBetaDistributionTask(project, variant)
     if (releaseFabricTask == null) {
-      project.logger.info("Skipping build type ${variant.buildType.name} due to Crashlytics being disabled for it. " +
-          "You can check if 'enableCrashlytics' property is set to false in your module's gradle file.")
+      project.logger.info(
+        "Skipping build type ${variant.buildType.name} due to Crashlytics being disabled for it. " +
+            "You can check if 'enableCrashlytics' property is set to false in your module's gradle file."
+      )
       return null
     }
 
     val prepareFabricReleaseTask = createTask<PrepareFabricReleaseTask>(
-        name = "${Constants.PREPARE_FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
-        description = "Prepare the Fabric snapshot release",
-        group = null
+      name = "${Constants.PREPARE_FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+      description = "Prepare the Fabric snapshot release",
+      group = null
     ) {
       this.releaseFabricTask = releaseFabricTask
 
@@ -129,8 +132,8 @@ class SnapshotPublisherPlugin : Plugin<Project> {
     }
 
     return createTask(
-        name = "${Constants.FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
-        description = "Prepare and deploy a snapshot build to Fabric"
+      name = "${Constants.FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+      description = "Prepare and deploy a snapshot build to Fabric"
     ) {
       releaseFabricTask.mustRunAfter(assembleTask)
       dependsOn(assembleTask)
@@ -150,15 +153,15 @@ class SnapshotPublisherPlugin : Plugin<Project> {
 
     val googlePlayConfig = project.snapshotReleaseExtension.googlePlay
     return if (googlePlayConfig.areCredsValid()) {
-      val publishGooglePlayTask = if (googlePlayConfig.defaultToAppBundles) {
+      val publishGooglePlayTask: PublishArtifactTaskBase = if (googlePlayConfig.defaultToAppBundles) {
         PlayPublisherPluginHelper.getPublishBundleTask(this, variant)
       } else {
         PlayPublisherPluginHelper.getPublishApkTask(this, variant)
       }
       val preparePublishTask = createTask<PrepareGooglePlayReleaseTask>(
-          name = "${Constants.PREPARE_GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
-          group = null,
-          description = "Prepare and deploy snapshot build to Google Play"
+        name = "${Constants.PREPARE_GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+        group = null,
+        description = "Prepare and deploy snapshot build to Google Play"
       ) {
         this.variant = variant
         this.publishGooglePlayTask = publishGooglePlayTask
@@ -174,18 +177,18 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       }
 
       createTask(
-          name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
-          group = Constants.PLUGIN_GROUP,
-          description = "Release a snapshot version to Google Play"
+        name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+        group = Constants.PLUGIN_GROUP,
+        description = "Release a snapshot version to Google Play"
       ) {
         dependsOn(preparePublishTask)
         dependsOn(publishGooglePlayTask)
       }
     } else {
       createTask<ErrorTask>(
-          name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
-          group = Constants.PLUGIN_GROUP,
-          description = "Release a snapshot version to Google Play"
+        name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+        group = Constants.PLUGIN_GROUP,
+        description = "Release a snapshot version to Google Play"
       ) {
         message = "Google Play credentials are not valid."
       }

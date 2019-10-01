@@ -32,7 +32,7 @@ dependencies {
 
   detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.0.0-RC12")
 
-  implementation("com.github.triplet.gradle:play-publisher:2.1.0")
+  implementation("com.github.triplet.gradle:play-publisher:2.4.1")
   implementation("com.google.apis:google-api-services-androidpublisher:v3-rev46-1.25.0")
   implementation("io.fabric.tools:gradle:1.27.0")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.50")
@@ -51,7 +51,7 @@ jacoco {
 }
 
 group = "com.xmartlabs"
-version = "1.0.3"
+version = "1.0.3-SNAPSHOT"
 
 gradlePlugin {
   plugins {
