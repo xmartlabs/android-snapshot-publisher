@@ -22,12 +22,11 @@ import org.gradle.api.Task
 
 @Suppress("unused")
 class SnapshotPublisherPlugin : Plugin<Project> {
-  private var isGooglePlayPublisherInitialized = false
-
   override fun apply(project: Project) {
     with(project) {
       extensions.create(Constants.SNAPSHOT_PUBLISHER_EXTENSION_NAME, SnapshotReleaseExtension::class.java)
       FabricBetaPluginHelper.initializeFabricBetaPublisherPlugin(this)
+      PlayPublisherPluginHelper.initializePlayPublisherPlugin(this)
 
       if (AndroidPluginHelper.hasAndroidExtension(this)) {
         createGenerateReleaseNotesTask()
@@ -154,11 +153,6 @@ class SnapshotPublisherPlugin : Plugin<Project> {
 
     val googlePlayConfig = project.snapshotReleaseExtension.googlePlay
     return if (googlePlayConfig.areCredsValid()) {
-      if (!isGooglePlayPublisherInitialized) {
-        isGooglePlayPublisherInitialized = true
-        PlayPublisherPluginHelper.initializePlayPublisherPlugin(this)
-      }
-
       val publishGooglePlayTask: PublishArtifactTaskBase = if (googlePlayConfig.defaultToAppBundles) {
         PlayPublisherPluginHelper.getPublishBundleTask(this, variant)
       } else {
