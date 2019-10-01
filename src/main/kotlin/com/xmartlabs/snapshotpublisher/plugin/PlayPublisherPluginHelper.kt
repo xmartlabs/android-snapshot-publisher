@@ -93,8 +93,8 @@ internal object PlayPublisherPluginHelper {
 
     var credentialsInitialized = false
     val releaseSetup = project.snapshotReleaseExtension
-    AndroidPluginHelper.getAndroidExtension(project).applicationVariants.whenObjectAdded{
-      if (!credentialsInitialized){
+    AndroidPluginHelper.getAndroidExtension(project).applicationVariants.whenObjectAdded {
+      if (!credentialsInitialized) {
         credentialsInitialized = true
         val playPublisherExtension = project.playPublisherExtension
         if (!playPublisherExtension.areCredsValid()) {
