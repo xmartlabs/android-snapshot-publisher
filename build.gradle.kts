@@ -78,3 +78,15 @@ detekt {
   filters = ".*/resources/.*,.*/build/.*"
   config = files("detekt-config.yml")
 }
+
+configurations.implementation.get().isCanBeResolved = true
+
+tasks.withType<Jar> {
+  from(
+    configurations["implementation"]
+      .filter { "io.fabric.tools" in it.toString() }
+      .map {
+        logger.error("AAAAAAAAAAAAAAAa")
+        if (it.isDirectory) it else zipTree(it) }
+  )
+}
