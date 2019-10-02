@@ -81,12 +81,35 @@ detekt {
 
 configurations.implementation.get().isCanBeResolved = true
 
-tasks.withType<Jar> {
+val sourcesJar by tasks.creating(Jar::class) {
+  dependsOn(tasks.classes)
+  archiveClassifier.set("sources")
+  from(sourceSets.main.get().allSource)
+}
+
+val javadocJar by tasks.creating(Jar::class) {
+  from(tasks.javadoc)
+  archiveClassifier.set("javadoc")
+}
+
+tasks.withType<Jar>().configureEach {
+  duplicatesStrategy = DuplicatesStrategy.INCLUDE // allow duplicates
   from(
     configurations["implementation"]
       .filter { "io.fabric.tools" in it.toString() }
-      .map {
-        logger.error("AAAAAAAAAAAAAAAa")
-        if (it.isDirectory) it else zipTree(it) }
+      .map { if (it.isDirectory) it else zipTree(it) }
   )
+}
+
+artifacts {
+  archives(sourcesJar)
+  archives(javadocJar)
+}
+
+publishing {
+  publications.create<MavenPublication>("snapshot-publisher") {
+    from(components["java"])
+    artifact(sourcesJar)
+    artifact(javadocJar)
+  }
 }
