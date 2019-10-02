@@ -2,19 +2,25 @@ Change Log
 ==========
 All notable changes to this project will be documented in this file.
 
-[Version 1.0.3 _(2018-05-20)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.3)
+[Version 1.0.4 _(2019-05-20)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.4)---
+
+### Changes
+- Upgrade Google Play publisher plugin version to 2.4.1 (#36)
+- Upgrade Fabric plugin version to 1.31.1 (#37)
+
+[Version 1.0.3 _(2019-05-20)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.3)
 ---
 
 ### Fixes
-- Fix release notes issue when previous commit was a merge commit(#31)
+- Fix release notes issue when previous commit was a merge commit (#31)
 
-[Version 1.0.2 _(2018-04-30)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.2)
+[Version 1.0.2 _(2019-04-30)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.2)
 ---
 
 ### New Features
 - Allow to use the `debuggable` build types in Fabric's Beta. (#30)
 
-[Version 1.0.1 _(2018-04-17)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.1)
+[Version 1.0.1 _(2019-04-17)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.1)
 ---
 
 ### New Features
@@ -27,7 +33,7 @@ It's useful to show only the changes that changed since the last build. (#25)
 ### Fixes
 - Fix version name issue in generated release notes. (#24)
 
-[Version 1.0.0 _(2018-04-12)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.0)
+[Version 1.0.0 _(2019-04-12)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.0)
 ---
 
 ### New Features
@@ -44,7 +50,7 @@ It enables you to create snapshot builds and test them locally without the neces
 These values are built by joining all `emails` or `aliases` with commas.
 This change was made in order to make the setup process easier. (#19)
 
-[Version 0.0.1 _(2018-03-08)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v0.0.1)
+[Version 0.0.1 _(2019-03-08)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v0.0.1)
 ---
 
 This is the initial version.
