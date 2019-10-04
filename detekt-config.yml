@@ -196,7 +196,7 @@ exceptions:
 
 formatting:
   active: true
-  android: flase
+  android: false
   autoCorrect: true
   ChainWrapping:
     active: true
@@ -404,6 +404,10 @@ style:
     active: true
     conversionFunctionPrefix: 'to'
   EqualsNullCall:
+    active: true
+  EqualsOnSignatureLine:
+    active: true
+  ExplicitItLambdaParameter:
     active: true
   ExpressionBodySyntax:
     active: true
