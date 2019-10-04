@@ -43,8 +43,8 @@ Last changes:
 This plugin is also meant to easily **deploy** snapshot builds.
 
 Currently the available services are:
+- [Firebase App Distribution](https://firebase.google.com/docs/app-distribution)
 - [Google Play](https://play.google.com/apps/publish/)
-- [Fabric Beta](https://docs.fabric.io/apple/beta/overview.html)
 
 ## Table of content
 
@@ -56,7 +56,7 @@ Currently the available services are:
             - [Header](#header)
             - [History](#history)
             - [Other](#other)
-        - [Fabric Beta](#fabric-beta)
+        - [Firebase App Distribution](#firebase-app-distribution)
         - [Google Play](#google-play)
 - [How to use it?](#how-to-use-it)
 - [Getting involved](#getting-involved)
@@ -68,8 +68,8 @@ The plugin is hosted in the Gradle Plugin Portal.
 ```groovy
 buildscript {
   repositories {
-    maven { url "https://plugins.gradle.org/m2/" }
-    maven { url 'https://maven.fabric.io/public' }
+    gradlePluginPortal()
+    google()
   }
   dependencies {
      classpath "com.xmartlabs:snapshot-publisher:1.0.4"
@@ -82,7 +82,7 @@ Apply the plugin to each individual `com.android.application` module where you w
 apply plugin: 'com.xmartlabs.snapshot-publisher'
 ```
 
-> Note that Fabric's Maven Repository must be added to the project because Android Snapshot Publisher plugin uses Fabric's plugin and it's hosted in their Maven Repository.
+> Note that Google's Maven Repository must be added to the project because Android Snapshot Publisher plugin uses [Firebase's plugin](https://firebase.google.com/docs/app-distribution/android/distribute-gradle) and it's hosted in Google's Maven Repository.
 
 ## Setup
 The plugin defines a `snapshotPublisher` block where you can add the different setup alongside the Android modules.
@@ -95,8 +95,8 @@ snapshotPublisher {
     releaseNotes {
         // Release notes customization
     }
-    fabric {
-        // Fabric Beta setup
+    firebaseAppDistribution {
+        // Firebase App Distribution setup
     }
     googlePlay {
         // Google Play setup
@@ -104,7 +104,7 @@ snapshotPublisher {
 }
 ```
 The [version](#version-customization) and [releaseNotes](#release-notes) blocks are used to perform the preparation process.
-Whereas [fabric](#fabric-beta) and [googlePlay](#google-play) blocks are used to perform the distribution process.
+Whereas [firebaseAppDistribution](#firebase-app-distribution) and [googlePlay](#google-play) blocks are used to perform the distribution process.
 
 ### Version customization
 The `version` block allows you to perform version customizations.
@@ -210,33 +210,36 @@ If you want to save the release notes in the file system, you can set `outputFil
 You can define it using a relative path (where the start point is the Android application module folder) or an absolute path.
 
 
-### Fabric Beta
-This block defines the configuration needed to deploy the artifacts in Fabric's Beta.
-This plugin uses [Fabric's beta plugin](https://docs.fabric.io/android/beta/gradle.html), so to be able to release you must have added the Fabric `ApiKey` in the application manifest and the `apiSecret` in the `fabric.properties` file.
-For more information about it, you can read [Fabric's setup guide](https://docs.fabric.io/android/fabric/settings/api-keys.html#).
-
-All of the block's fields are optional:
+### Firebase App Distribution
+This block defines the configuration needed to deploy the artifacts in Firebase App Distribution's system.
+This plugin uses [Firebase's App Distribution plugin](https://firebase.google.com/docs/app-distribution/android/distribute-gradle).
 
 ```groovy
 snapshotPublisher {
-    fabric {
+    firebaseAppDistribution {
+        appId = null
         distributionEmails = ""
         distributionGroupAliases = ""
-        distributionNotifications = true
+        serviceAccountCredentials = file("your-key.json")
     }
     // ...
 }
 ```
+The only required field is `serviceAccountCredentials`.
 
+To release to Google Play you must create a service account with access to the Play Developer API.
+If you don't have a service account, you can create one following [this guide](https://firebase.google.com/docs/app-distribution/android/distribute-gradle#authenticate_using_a_service_account).
+
+- `appId`: Your app's Firebase App ID.
+Required only if you don't have the google services gradle plugin installed.
+You can find the App ID in the google-services.json file or in the Firebase console on the General Settings page.
+The value in your build.gradle file overrides the value output from the google-services gradle plugin.
 - `distributionEmails`: The list of email addresses of those who'll get the release.
 This value is built by joining all emails with commas.
 For example if you want to distribute the build to `email1@mail.com` and `email2@mail.com`, `distributionEmails` value should be `"email1@mail.com,email2@mail.com"`.
-- `distributionGroupAliases`: The list of names (aliases) of the groups defined inside Fabric's Beta that will get the release.
+- `distributionGroupAliases`: The list of names (aliases) of the groups defined inside Firebase's App Distribution that will get the release.
 As well as `distributionEmails`, all aliases must be joined by commas.
-- `distributionNotifications`: If set to `true`, all build's recipients will get an email notification about the release.
-
-> Note: Fabric's Beta limits your release notes to a maximum of 16384 characters.
-Because of that, the plugin trims them up to the last allowed line.
+- `serviceAccountCredentials`: The path to your service account private key JSON file.
 
 ### Google Play
 
@@ -278,7 +281,7 @@ The naming convention is as follows: `[action][Variant][BuildType]`. For example
 To find available tasks, run `./gradlew tasks` and look under the "Snapshot Publishing" section.
 
 The most important tasks are:
-- `publishSnapshotFabric[Variant][BuildType]`: it'll publish a snapshot version in Fabric's Beta.   
+- `publishSnapshotFirebaseAppDistribution[Variant][BuildType]`: it'll publish a snapshot version in Firebase App Distribution.   
 - `publishSnapshotGooglePlay[Variant][BuildType]`: it'll publish a snapshot version in Google Play.
 
 Some auxiliary tasks are:
