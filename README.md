@@ -104,7 +104,7 @@ snapshotPublisher {
 }
 ```
 The [version](#version-customization) and [releaseNotes](#release-notes) blocks are used to perform the preparation process.
-Whereas [firebaseAppDistribution](#firebase-app-distribution) and [googlePlay](#google-play) blocks are used to perform the distribution process.
+[firebaseAppDistribution](#firebase-app-distribution) and [googlePlay](#google-play) blocks are used to perform the distribution process.
 
 ### Version customization
 The `version` block allows you to perform version customizations.
@@ -227,7 +227,7 @@ snapshotPublisher {
 ```
 The only required field is `serviceAccountCredentials`.
 
-To release to Google Play you must create a service account with access to the Play Developer API.
+To release to Firebase you must create a Google service account with Firebase Quality Admin role.
 If you don't have a service account, you can create one following [this guide](https://firebase.google.com/docs/app-distribution/android/distribute-gradle#authenticate_using_a_service_account).
 
 - `appId`: Your app's Firebase App ID.
