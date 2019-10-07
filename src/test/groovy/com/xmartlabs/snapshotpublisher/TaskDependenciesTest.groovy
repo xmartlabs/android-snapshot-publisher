@@ -16,6 +16,7 @@ class TaskDependenciesTest {
     def project = ProjectCreator.mockProject()
     project.evaluate()
 
+    assertNotNull(getFirebaseSnapshotTask(project))
     assertNotNull(getGooglePlaySnapshotTask(project))
   }
 
@@ -33,6 +34,7 @@ class TaskDependenciesTest {
     project.evaluate()
 
 
+    assertThat(getFirebaseSnapshotTask(project), dependsOn("assemble$ProjectCreator.FLAVOUR_WITH_BUILD_TYPE"))
     assertThat(getGooglePlaySnapshotTask(project), dependsOn("assemble$ProjectCreator.FLAVOUR_WITH_BUILD_TYPE"))
   }
 
@@ -97,6 +99,10 @@ class TaskDependenciesTest {
 
   private static Task getUpdateVersionNameTask(Project project) {
     project.tasks.getByName("$Constants.UPDATE_ANDROID_VERSION_NAME_TASK_NAME$ProjectCreator.FLAVOUR_WITH_BUILD_TYPE")
+  }
+
+  private static Task getFirebaseSnapshotTask(Project project) {
+    project.tasks.getByName("$Constants.FIREBASE_SNAPSHOT_DEPLOY_TASK_NAME$ProjectCreator.FLAVOUR_WITH_BUILD_TYPE")
   }
 
   private static Task getGooglePlaySnapshotTask(Project project) {

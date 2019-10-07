@@ -4,10 +4,12 @@ import com.android.build.gradle.api.ApplicationVariant
 import com.github.triplet.gradle.play.tasks.internal.PublishArtifactTaskBase
 import com.xmartlabs.snapshotpublisher.model.SnapshotReleaseExtension
 import com.xmartlabs.snapshotpublisher.plugin.AndroidPluginHelper
+import com.xmartlabs.snapshotpublisher.plugin.FirebaseAppDistributionPluginHelper
 import com.xmartlabs.snapshotpublisher.plugin.PlayPublisherPluginHelper
 import com.xmartlabs.snapshotpublisher.plugin.capitalizedName
 import com.xmartlabs.snapshotpublisher.task.ErrorTask
 import com.xmartlabs.snapshotpublisher.task.GenerateReleaseNotesTask
+import com.xmartlabs.snapshotpublisher.task.PrepareFirebaseAppDistributionReleaseTask
 import com.xmartlabs.snapshotpublisher.task.PrepareGooglePlayReleaseTask
 import com.xmartlabs.snapshotpublisher.task.UpdateAndroidVersionNameTask
 import com.xmartlabs.snapshotpublisher.utils.createTask
@@ -23,6 +25,7 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     with(project) {
       extensions.create(Constants.SNAPSHOT_PUBLISHER_EXTENSION_NAME, SnapshotReleaseExtension::class.java)
+      FirebaseAppDistributionPluginHelper.initializeAppDistributionPlugin(this)
       PlayPublisherPluginHelper.initializePlayPublisherPlugin(this)
 
       if (AndroidPluginHelper.hasAndroidExtension(this)) {
@@ -49,6 +52,7 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       createPrepareBundleSnapshotTask(variant, bundleTask, preparationTasks)
     }
     createGooglePlayDeployTask(variant, preparationTasks)
+    createFirebaseAppDistributionDeployTask(variant, assembleTask, preparationTasks)
   }
 
   private fun Project.createGenerateReleaseNotesTask(
@@ -151,6 +155,40 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       ) {
         message = "Google Play credentials are not valid."
       }
+    }
+  }
+
+  private fun Project.createFirebaseAppDistributionDeployTask(
+      variant: ApplicationVariant,
+      assembleTask: Task,
+      preparationTasks: List<Task>
+  ): DefaultTask? {
+    val publishTask = FirebaseAppDistributionPluginHelper.getDistributionTask(this, variant)
+    if (publishTask == null) {
+      project.logger.info(
+          "Skipping build type ${variant.buildType.name} due to Firebase App Distribution being disabled for it."
+      )
+      return null
+    }
+
+    val prepareReleaseTask = createTask<PrepareFirebaseAppDistributionReleaseTask>(
+        name = "${Constants.PREPARE_FIREBASE_APP_DISTRIBUTION_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+        description = "Prepare the Firebase App Distribution snapshot release",
+        group = null
+    ) {
+      releaseTask = publishTask
+    }
+
+    return createTask(
+        name = "${Constants.FIREBASE_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+        description = "Prepare and deploy a snapshot build to Firebase App Distribution"
+    ) {
+      publishTask.mustRunAfter(assembleTask)
+      publishTask.mustRunAfter(prepareReleaseTask)
+      dependsOn(assembleTask)
+      dependsOn(prepareReleaseTask)
+      dependsOn(preparationTasks)
+      dependsOn(publishTask)
     }
   }
 }
