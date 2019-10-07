@@ -4,8 +4,11 @@ import java.io.File
 
 internal object Constants {
   const val FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME = "publishSnapshotFabric"
+  const val FIREBASE_SNAPSHOT_DEPLOY_TASK_NAME = "publishSnapshotFirebaseAppDistribution"
   const val GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME = "publishSnapshotGooglePlay"
   const val PREPARE_FABRIC_BETA_SNAPSHOT_DEPLOY_TASK_NAME = "preparePublishSnapshotFabric"
+  const val PREPARE_FIREBASE_APP_DISTRIBUTION_SNAPSHOT_DEPLOY_TASK_NAME =
+      "preparePublishSnapshotFirebaseAppDistribution"
   const val PREPARE_GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME = "preparePublishSnapshotGooglePlay"
 
   const val PLUGIN_NAME = "Android Snapshot Publisher"

@@ -33,6 +33,7 @@ dependencies {
 
   implementation("com.github.triplet.gradle:play-publisher:2.4.1")
   implementation("com.google.apis:google-api-services-androidpublisher:v3-rev46-1.25.0")
+  implementation("com.google.firebase:firebase-appdistribution-gradle:1.0.0")
   implementation("io.fabric.tools:gradle:1.31.1")
 
   testImplementation("com.android.tools.build:gradle:3.5.0")
@@ -48,7 +49,7 @@ jacoco {
 }
 
 group = "com.xmartlabs"
-version = "1.0.4"
+version = "2.0.0-SNAPSHOT"
 
 gradlePlugin {
   plugins {
