@@ -4,13 +4,9 @@ import org.gradle.api.Action
 
 open class SnapshotReleaseExtension {
   val version: VersionConfig = VersionConfig()
-  val fabric: FabricReleaseConfig = FabricReleaseConfig()
   val firebaseAppDistribution: FirebaseAppDistributionReleaseConfig = FirebaseAppDistributionReleaseConfig()
   val releaseNotes: ReleaseNotesConfig = ReleaseNotesConfig()
   val googlePlay: GooglePlayConfig = GooglePlayConfig()
-
-  @Suppress("unused")
-  fun fabric(action: Action<in FabricReleaseConfig>) = action.execute(fabric)
 
   @Suppress("unused")
   fun firebaseAppDistribution(action: Action<in FirebaseAppDistributionReleaseConfig>) =
