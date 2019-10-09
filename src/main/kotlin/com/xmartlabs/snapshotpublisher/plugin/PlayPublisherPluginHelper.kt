@@ -109,8 +109,8 @@ internal object PlayPublisherPluginHelper {
   private fun setupPluginCredentials(project: Project, releaseSetup: SnapshotReleaseExtension) {
     val playPublisherExtension = project.playPublisherExtension
     if (!playPublisherExtension.areCredsValid()) {
-      playPublisherExtension.serviceAccountCredentials = if (releaseSetup.googlePlay.areCredsValid()) {
-        releaseSetup.googlePlay.serviceAccountCredentials
+      playPublisherExtension.serviceAccountCredentials = if (releaseSetup.googlePlay.areCredsValid(project)) {
+        project.file(releaseSetup.googlePlay.serviceAccountCredentials ?: "mock.json")
       } else {
         File("mock.json") // To skip Google Play Publisher validation
       }

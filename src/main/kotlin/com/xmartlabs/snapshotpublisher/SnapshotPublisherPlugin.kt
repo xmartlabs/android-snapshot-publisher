@@ -32,7 +32,7 @@ class SnapshotPublisherPlugin : Plugin<Project> {
         createGenerateReleaseNotesTask()
 
         AndroidPluginHelper.getAndroidExtension(this).applicationVariants.whenObjectAdded {
-          createTasksForVariant(this)
+          createTasksForVariant(it)
         }
       } else {
         throw GradleException("Android is not present")
@@ -115,7 +115,7 @@ class SnapshotPublisherPlugin : Plugin<Project> {
     }
 
     val googlePlayConfig = project.snapshotReleaseExtension.googlePlay
-    return if (googlePlayConfig.areCredsValid()) {
+    return if (googlePlayConfig.areCredsValid(project)) {
       val publishGooglePlayTask: PublishArtifactTaskBase = if (googlePlayConfig.defaultToAppBundles) {
         PlayPublisherPluginHelper.getPublishBundleTask(this, variant)
       } else {

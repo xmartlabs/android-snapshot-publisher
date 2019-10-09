@@ -1,16 +1,18 @@
 package com.xmartlabs.snapshotpublisher.model
 
-import java.io.File
+import org.gradle.api.Project
 
 open class GooglePlayConfig {
-  var serviceAccountCredentials: File? = null
+  var serviceAccountCredentials: String? = null
   var track = "internal"
   var releaseStatus = "completed"
   var defaultToAppBundles = false
   var resolutionStrategy = "auto"
 
-  fun areCredsValid(): Boolean {
-    val creds = serviceAccountCredentials ?: return false
-    return creds.extension.equals("json", true)
+  fun areCredsValid(project: Project): Boolean {
+    val serviceAccountCredentials = serviceAccountCredentials ?: return false
+    val serviceAccountCredentialsFile = project.file(serviceAccountCredentials)
+    return serviceAccountCredentialsFile.exists() &&
+        serviceAccountCredentialsFile.extension.equals("json", true)
   }
 }
