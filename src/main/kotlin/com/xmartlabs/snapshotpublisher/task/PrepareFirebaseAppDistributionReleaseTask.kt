@@ -20,7 +20,8 @@ open class PrepareFirebaseAppDistributionReleaseTask : DefaultTask() {
     val firebaseConfig = project.snapshotReleaseExtension.firebaseAppDistribution
     check(firebaseConfig.serviceAccountCredentials != null) {
       "Firebase serviceAccountCredentials file must be defined.\n" +
-          "Make sure that `serviceAccountCredentials` file is defined in `firebaseAppDistribution` plugin's config block."
+          "Make sure that `serviceAccountCredentials` file is defined in " +
+          "`firebaseAppDistribution` plugin's config block."
     }
 
     check(firebaseConfig.serviceAccountCredentials?.exists() == true) {
