@@ -220,7 +220,7 @@ snapshotPublisher {
         appId = null
         distributionEmails = ""
         distributionGroupAliases = ""
-        serviceAccountCredentials = file("your-key.json")
+        serviceAccountCredentials = "/path/to/your-service-account-key.json"
     }
     // ...
 }
@@ -249,7 +249,7 @@ This plugin uses [Gradle Play Publisher](https://github.com/Triple-T/gradle-play
 ```groovy
 snapshotPublisher {
     googlePlay {
-       serviceAccountCredentials = file("your-key.json")
+       serviceAccountCredentials = "/path/to/your-service-account-key.json"
        track = "internal"
        releaseStatus = "completed"
        defaultToAppBundles = false
@@ -263,7 +263,7 @@ The only required field is `serviceAccountCredentials`.
 To release to Google Play you must create a service account with access to the Play Developer API.
 You can [follow the CodePath guide "Automating Publishing to the Play Store"](https://guides.codepath.com/android/automating-publishing-to-the-play-store).
 
-- `serviceAccountCredentials`: contains the service account JSON file with your private key.
+- `serviceAccountCredentials`: the path to your service account private key JSON file.
 - `track`: refers to the Google play tracks. For example, some possible tracks are `internal`, `alpha`, `beta` and `production`.
 - `releaseStatus`: the type of the release. The possible values are `completed`, `draft`, `inProgress`, `halted`.
 - `defaultToAppBundles`: if set to `true`, the plugin will generate an [App Bundle](https://developer.android.com/platform/technology/app-bundle/) instead of an APK.  
