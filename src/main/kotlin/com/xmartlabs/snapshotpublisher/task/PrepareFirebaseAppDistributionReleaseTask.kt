@@ -18,23 +18,9 @@ open class PrepareFirebaseAppDistributionReleaseTask : DefaultTask() {
   @TaskAction
   fun action() {
     val firebaseConfig = project.snapshotReleaseExtension.firebaseAppDistribution
-    val serviceAccountCredentialsFilePath = firebaseConfig.serviceAccountCredentials
-    check(serviceAccountCredentialsFilePath != null) {
-      "Firebase serviceAccountCredentials file must be defined.\n" +
-          "Make sure that `serviceAccountCredentials` file is defined in " +
-          "`firebaseAppDistribution` plugin's config block."
-    }
-
-    val credentialFile = project.file(serviceAccountCredentialsFilePath)
-
-    check(credentialFile.exists()) {
-      "Firebase serviceAccountCredentials file doesn't exist.\n" +
-          "Make sure that ${credentialFile.absolutePath} exists."
-    }
-
     with(releaseTask.appDistributionProperties) {
       appId = firebaseConfig.appId
-      serviceCredentialsFile = serviceAccountCredentialsFilePath
+      serviceCredentialsFile = firebaseConfig.serviceAccountCredentials
       testers = firebaseConfig.distributionEmails
       groups = firebaseConfig.distributionGroupAliases
       releaseNotesFile = generatedReleaseNotesFile.absolutePath

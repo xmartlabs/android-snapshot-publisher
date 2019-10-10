@@ -188,7 +188,7 @@ class SnapshotPublisherPlugin : Plugin<Project> {
         releaseTask = publishTask
       }
 
-      return createTask(
+      createTask(
           name = "${Constants.FIREBASE_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
           description = "Prepare and deploy a snapshot build to Firebase App Distribution"
       ) {
