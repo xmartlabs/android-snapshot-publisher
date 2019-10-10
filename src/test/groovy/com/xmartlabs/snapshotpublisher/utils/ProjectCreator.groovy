@@ -47,6 +47,9 @@ class ProjectCreator {
         defaultToAppBundles = useBundle
         resolutionStrategy = "auto"
       }
+      firebaseAppDistribution {
+        serviceAccountCredentials = SERVICE_KEY_FILE.path
+      }
     }
 
     return project

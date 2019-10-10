@@ -207,9 +207,9 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       )
 
       createTask<ErrorTask>(
-          name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+          name = "${Constants.FIREBASE_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
           group = Constants.PLUGIN_GROUP,
-          description = "Release a snapshot version to Google Play"
+          description = "Release a snapshot version to Firebase App Distribution"
       ) {
         message = "Firebase App Distribution credentials are not valid.\n${error ?: ""}"
       }
