@@ -9,7 +9,7 @@ buildscript {
 
 plugins {
   id("com.gradle.plugin-publish") version "0.10.1"
-  kotlin("jvm") version "1.3.50"
+  `kotlin-dsl`
   groovy
   id("io.gitlab.arturbosch.detekt") version "1.0.0-RC12"
   jacoco
@@ -59,6 +59,10 @@ gradlePlugin {
       implementationClass = "com.xmartlabs.snapshotpublisher.SnapshotPublisherPlugin"
     }
   }
+}
+
+kotlinDslPluginOptions {
+  experimentalWarning.set(false)
 }
 
 pluginBundle {
