@@ -61,6 +61,10 @@ gradlePlugin {
   }
 }
 
+kotlinDslPluginOptions {
+  experimentalWarning.set(false)
+}
+
 pluginBundle {
   website = "https://github.com/xmartlabs/android-snapshot-publisher"
   vcsUrl = "https://github.com/xmartlabs/android-snapshot-publisher.git"

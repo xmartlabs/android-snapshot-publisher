@@ -56,9 +56,9 @@ internal object AndroidPublisherHelper {
 
   // https://github.com/Triple-T/gradle-play-publisher/blob/4d3f98128c8c86bc1ea37fd34d8f4b16dbf93d1b/plugin/src/main/kotlin/com/github/triplet/gradle/play/tasks/internal/PublishingApi.kt
   @Suppress("MagicNumber")
-  internal fun buildPublisher(googlePlayConfig: GooglePlayConfig): AndroidPublisher {
+  internal fun buildPublisher(project: Project, googlePlayConfig: GooglePlayConfig): AndroidPublisher {
     val transport = buildTransport()
-    val creds = googlePlayConfig.serviceAccountCredentials
+    val creds = googlePlayConfig.serviceAccountCredentials?.let { project.file(it) }
     val factory = JacksonFactory.getDefaultInstance()
 
     val credential = GoogleCredential.fromStream(creds?.inputStream(), transport, factory)
