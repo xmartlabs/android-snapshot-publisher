@@ -23,7 +23,7 @@ open class PrepareGooglePlayReleaseTask : DefaultTask() {
   internal lateinit var variant: ApplicationVariant
 
   private val googlePlayConfig by lazy { project.snapshotReleaseExtension.googlePlay }
-  private val publisher by lazy { AndroidPublisherHelper.buildPublisher(googlePlayConfig) }
+  private val publisher by lazy { AndroidPublisherHelper.buildPublisher(project, googlePlayConfig) }
   private val generatedReleaseNotesFile by lazy { File(project.buildDir, Constants.OUTPUT_RELEASE_NOTES_FILE_PATH) }
 
   @Suppress("unused")
@@ -36,7 +36,7 @@ open class PrepareGooglePlayReleaseTask : DefaultTask() {
       releaseStatus = googlePlayConfig.releaseStatus
       resolutionStrategy = googlePlayConfig.resolutionStrategy
       track = googlePlayConfig.track
-      serviceAccountCredentials = googlePlayConfig.serviceAccountCredentials
+      serviceAccountCredentials = googlePlayConfig.serviceAccountCredentials?.let { project.file(it) }
     }
   }
 
@@ -57,5 +57,5 @@ open class PrepareGooglePlayReleaseTask : DefaultTask() {
   }
 
   private fun getReleaseNotes() =
-    ReleaseNotesGenerator.truncateReleaseNotesIfNeeded(generatedReleaseNotesFile.readText(), MAX_RELEASE_NOTES_LENGTH)
+      ReleaseNotesGenerator.truncateReleaseNotesIfNeeded(generatedReleaseNotesFile.readText(), MAX_RELEASE_NOTES_LENGTH)
 }

@@ -12,6 +12,7 @@ import com.xmartlabs.snapshotpublisher.task.GenerateReleaseNotesTask
 import com.xmartlabs.snapshotpublisher.task.PrepareFirebaseAppDistributionReleaseTask
 import com.xmartlabs.snapshotpublisher.task.PrepareGooglePlayReleaseTask
 import com.xmartlabs.snapshotpublisher.task.UpdateAndroidVersionNameTask
+import com.xmartlabs.snapshotpublisher.utils.ErrorHelper
 import com.xmartlabs.snapshotpublisher.utils.createTask
 import com.xmartlabs.snapshotpublisher.utils.snapshotReleaseExtension
 import org.gradle.api.DefaultTask
@@ -115,7 +116,7 @@ class SnapshotPublisherPlugin : Plugin<Project> {
     }
 
     val googlePlayConfig = project.snapshotReleaseExtension.googlePlay
-    return if (googlePlayConfig.areCredsValid()) {
+    return if (ErrorHelper.isServiceAccountCredentialFileValid(project, googlePlayConfig.serviceAccountCredentials)) {
       val publishGooglePlayTask: PublishArtifactTaskBase = if (googlePlayConfig.defaultToAppBundles) {
         PlayPublisherPluginHelper.getPublishBundleTask(this, variant)
       } else {
@@ -148,12 +149,18 @@ class SnapshotPublisherPlugin : Plugin<Project> {
         dependsOn(publishGooglePlayTask)
       }
     } else {
+      val error = ErrorHelper.getServiceAccountFileErrorMessage(
+          project,
+          googlePlayConfig.serviceAccountCredentials,
+          "googlePlay"
+      )
+
       createTask<ErrorTask>(
           name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
           group = Constants.PLUGIN_GROUP,
           description = "Release a snapshot version to Google Play"
       ) {
-        message = "Google Play credentials are not valid."
+        message = "Google Play credentials are not valid.\n${error ?: ""}"
       }
     }
   }
@@ -171,24 +178,41 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       return null
     }
 
-    val prepareReleaseTask = createTask<PrepareFirebaseAppDistributionReleaseTask>(
-        name = "${Constants.PREPARE_FIREBASE_APP_DISTRIBUTION_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
-        description = "Prepare the Firebase App Distribution snapshot release",
-        group = null
-    ) {
-      releaseTask = publishTask
-    }
+    val firebaseConfig = project.snapshotReleaseExtension.firebaseAppDistribution
+    return if (ErrorHelper.isServiceAccountCredentialFileValid(project, firebaseConfig.serviceAccountCredentials)) {
+      val prepareReleaseTask = createTask<PrepareFirebaseAppDistributionReleaseTask>(
+          name = "${Constants.PREPARE_FIREBASE_APP_DISTRIBUTION_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+          description = "Prepare the Firebase App Distribution snapshot release",
+          group = null
+      ) {
+        releaseTask = publishTask
+      }
 
-    return createTask(
-        name = "${Constants.FIREBASE_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
-        description = "Prepare and deploy a snapshot build to Firebase App Distribution"
-    ) {
-      publishTask.mustRunAfter(assembleTask)
-      publishTask.mustRunAfter(prepareReleaseTask)
-      dependsOn(assembleTask)
-      dependsOn(prepareReleaseTask)
-      dependsOn(preparationTasks)
-      dependsOn(publishTask)
+      createTask(
+          name = "${Constants.FIREBASE_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+          description = "Prepare and deploy a snapshot build to Firebase App Distribution"
+      ) {
+        publishTask.mustRunAfter(assembleTask)
+        publishTask.mustRunAfter(prepareReleaseTask)
+        dependsOn(assembleTask)
+        dependsOn(prepareReleaseTask)
+        dependsOn(preparationTasks)
+        dependsOn(publishTask)
+      }
+    } else {
+      val error = ErrorHelper.getServiceAccountFileErrorMessage(
+          project,
+          firebaseConfig.serviceAccountCredentials,
+          "firebaseAppDistibution"
+      )
+
+      createTask<ErrorTask>(
+          name = "${Constants.FIREBASE_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+          group = Constants.PLUGIN_GROUP,
+          description = "Release a snapshot version to Firebase App Distribution"
+      ) {
+        message = "Firebase App Distribution credentials are not valid.\n${error ?: ""}"
+      }
     }
   }
 }
