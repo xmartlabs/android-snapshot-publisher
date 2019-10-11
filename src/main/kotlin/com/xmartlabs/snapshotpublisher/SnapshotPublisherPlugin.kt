@@ -2,6 +2,8 @@ package com.xmartlabs.snapshotpublisher
 
 import com.android.build.gradle.api.ApplicationVariant
 import com.github.triplet.gradle.play.tasks.internal.PublishArtifactTaskBase
+import com.xmartlabs.snapshotpublisher.model.FirebaseAppDistributionReleaseConfig
+import com.xmartlabs.snapshotpublisher.model.GooglePlayConfig
 import com.xmartlabs.snapshotpublisher.model.SnapshotReleaseExtension
 import com.xmartlabs.snapshotpublisher.plugin.AndroidPluginHelper
 import com.xmartlabs.snapshotpublisher.plugin.FirebaseAppDistributionPluginHelper
@@ -53,7 +55,7 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       createPrepareBundleSnapshotTask(variant, bundleTask, preparationTasks)
     }
     createGooglePlayDeployTask(variant, preparationTasks)
-    createFirebaseAppDistributionDeployTask(variant, assembleTask, preparationTasks)
+    createFirebaseDeployTask(variant, assembleTask, preparationTasks)
   }
 
   private fun Project.createGenerateReleaseNotesTask(
@@ -149,35 +151,40 @@ class SnapshotPublisherPlugin : Plugin<Project> {
         dependsOn(publishGooglePlayTask)
       }
     } else {
-      val error = ErrorHelper.getServiceAccountFileErrorMessage(
-          project,
-          googlePlayConfig.serviceAccountCredentials,
-          "googlePlay"
-      )
-
-      createTask<ErrorTask>(
-          name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
-          group = Constants.PLUGIN_GROUP,
-          description = "Release a snapshot version to Google Play"
-      ) {
-        message = "Google Play credentials are not valid.\n${error ?: ""}"
-      }
+      createGooglePlayErrorTask(googlePlayConfig, variant)
     }
   }
 
-  private fun Project.createFirebaseAppDistributionDeployTask(
+  private fun Project.createGooglePlayErrorTask(
+      googlePlayConfig: GooglePlayConfig,
+      variant: ApplicationVariant
+  ): ErrorTask {
+    val error = ErrorHelper.getServiceAccountFileErrorMessage(
+        project,
+        googlePlayConfig.serviceAccountCredentials,
+        "googlePlay"
+    )
+
+    return createTask<ErrorTask>(
+        name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+        group = Constants.PLUGIN_GROUP,
+        description = "Release a snapshot version to Google Play"
+    ) {
+      message = "Google Play credentials are not valid.\n${error ?: ""}"
+    }
+  }
+
+  private fun Project.createFirebaseDeployTask(
       variant: ApplicationVariant,
       assembleTask: Task,
       preparationTasks: List<Task>
   ): DefaultTask? {
     val publishTask = FirebaseAppDistributionPluginHelper.getDistributionTask(this, variant)
     if (publishTask == null) {
-      project.logger.info(
-          "Skipping build type ${variant.buildType.name} due to Firebase App Distribution being disabled for it."
-      )
+      logger
+          .info("Skipping build type ${variant.buildType.name} due to Firebase App Distribution being disabled for it")
       return null
     }
-
     val firebaseConfig = project.snapshotReleaseExtension.firebaseAppDistribution
     return if (ErrorHelper.isServiceAccountCredentialFileValid(project, firebaseConfig.serviceAccountCredentials)) {
       val prepareReleaseTask = createTask<PrepareFirebaseAppDistributionReleaseTask>(
@@ -192,27 +199,30 @@ class SnapshotPublisherPlugin : Plugin<Project> {
           name = "${Constants.FIREBASE_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
           description = "Prepare and deploy a snapshot build to Firebase App Distribution"
       ) {
-        publishTask.mustRunAfter(assembleTask)
-        publishTask.mustRunAfter(prepareReleaseTask)
-        dependsOn(assembleTask)
-        dependsOn(prepareReleaseTask)
-        dependsOn(preparationTasks)
-        dependsOn(publishTask)
+        publishTask.mustRunAfter(assembleTask, prepareReleaseTask)
+        dependsOn(assembleTask, prepareReleaseTask, preparationTasks, publishTask)
       }
     } else {
-      val error = ErrorHelper.getServiceAccountFileErrorMessage(
-          project,
-          firebaseConfig.serviceAccountCredentials,
-          "firebaseAppDistibution"
-      )
+      createFirebaseErrorTask(firebaseConfig, variant)
+    }
+  }
 
-      createTask<ErrorTask>(
-          name = "${Constants.FIREBASE_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
-          group = Constants.PLUGIN_GROUP,
-          description = "Release a snapshot version to Firebase App Distribution"
-      ) {
-        message = "Firebase App Distribution credentials are not valid.\n${error ?: ""}"
-      }
+  private fun Project.createFirebaseErrorTask(
+      firebaseConfig: FirebaseAppDistributionReleaseConfig,
+      variant: ApplicationVariant
+  ): ErrorTask {
+    val error = ErrorHelper.getServiceAccountFileErrorMessage(
+        project,
+        firebaseConfig.serviceAccountCredentials,
+        "firebaseAppDistibution"
+    )
+
+    return createTask<ErrorTask>(
+        name = "${Constants.FIREBASE_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+        group = Constants.PLUGIN_GROUP,
+        description = "Release a snapshot version to Firebase App Distribution"
+    ) {
+      message = "Firebase App Distribution credentials are not valid.\n${error ?: ""}"
     }
   }
 }
