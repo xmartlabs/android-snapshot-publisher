@@ -58,7 +58,7 @@ internal object AndroidPublisherHelper {
   @Suppress("MagicNumber")
   internal fun buildPublisher(project: Project, googlePlayConfig: GooglePlayConfig): AndroidPublisher {
     val transport = buildTransport()
-    val creds = googlePlayConfig.serviceAccountCredentials?.let { project.file(it) }
+    val creds = getCreds(googlePlayConfig, project)
     val factory = JacksonFactory.getDefaultInstance()
 
     val credential = GoogleCredential.fromStream(creds?.inputStream(), transport, factory)
@@ -71,6 +71,9 @@ internal object AndroidPublisherHelper {
       })
     }.setApplicationName(Constants.PLUGIN_NAME).build()
   }
+
+  private fun getCreds(googlePlayConfig: GooglePlayConfig, project: Project) =
+      googlePlayConfig.serviceAccountCredentials?.let { project.file(it) }
 
   private fun buildTransport(): NetHttpTransport {
     val trustStore: String? = System.getProperty("javax.net.ssl.trustStore", null)
