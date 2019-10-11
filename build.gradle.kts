@@ -47,7 +47,7 @@ jacoco {
 }
 
 group = "com.xmartlabs"
-version = "2.0.0-SNAPSHOT"
+version = "2.0.0"
 
 gradlePlugin {
   plugins {
