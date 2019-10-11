@@ -134,8 +134,10 @@ class SnapshotPublisherPlugin : Plugin<Project> {
 
         val generateResourcesTask = PlayPublisherPluginHelper.getGenerateResourcesTask(project, variant)
         mustRunAfter(generateResourcesTask)
-        generateResourcesTask.mustRunAfter(preparationTasks)
-        dependsOn(preparationTasks)
+        preparationTasks.forEach { task ->
+          generateResourcesTask.mustRunAfter(task)
+          dependsOn(task)
+        }
       }
 
       createTask<DefaultTask>(
@@ -189,15 +191,19 @@ class SnapshotPublisherPlugin : Plugin<Project> {
           group = null
       ) {
         releaseTask = publishTask
-        dependsOn(preparationTasks)
+        preparationTasks.forEach { task -> dependsOn(task) }
       }
 
       createTask<DefaultTask>(
           name = "${Constants.FIREBASE_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
           description = "Prepare and deploy a snapshot build to Firebase App Distribution"
       ) {
-        publishTask.mustRunAfter(assembleTask, prepareReleaseTask)
-        dependsOn(assembleTask, prepareReleaseTask, preparationTasks, publishTask)
+        publishTask.mustRunAfter(assembleTask)
+        publishTask.mustRunAfter(prepareReleaseTask)
+        dependsOn(assembleTask)
+        dependsOn(prepareReleaseTask)
+        dependsOn(preparationTasks)
+        dependsOn(publishTask)
       }
     } else {
       createFirebaseErrorTask(firebaseConfig, variant)
