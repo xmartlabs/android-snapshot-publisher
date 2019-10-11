@@ -11,7 +11,7 @@ Google deprecated and migrated [Fabric Craslytics Beta](https://get.fabric.io/ro
 The [documentation](README.md#firebase-app-distribution) specifies the required changes to use the new tool. 
 
 Migration:
-Change the previous `fabric` block to the new `firebaseAppDistributionBlock`:
+Change the previous `fabric` block to the new `firebaseAppDistribution` block:
 
 - Version 1x:
 ```groovy
