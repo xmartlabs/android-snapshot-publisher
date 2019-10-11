@@ -2,7 +2,75 @@ Change Log
 ==========
 All notable changes to this project will be documented in this file.
 
-[Version 1.0.4 _(2019-05-20)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.4)---
+[Version 2.0.0 _(2019-10-10)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.4)
+---
+
+### Changes
+#### Firebase app distribution migration
+Google deprecated and migrated [Fabric Craslytics Beta](https://get.fabric.io/roadmap) to [Firebase app distribution](https://firebase.google.com/docs/app-distribution).  
+The [documentation](README.md#firebase-app-distribution) specifies the required changes to use the new tool. 
+
+Migration:
+Change the previous `fabric` block to the new `firebaseAppDistribution` block:
+
+- Version 1x:
+```groovy
+snapshotPublisher {
+    fabric {
+        distributionEmails = "mail@xmartlabs.com"
+        distributionGroupAliases = "tester-group"
+        distributionNotifications = true // Must be deleted
+    }
+    // ...
+}
+```
+
+- Version 2x:
+```groovy
+snapshotPublisher {
+    firebaseAppDistribution {
+        distributionEmails =  "mail@xmartlabs.com"
+        distributionGroupAliases = "tester-group"
+        appId = null // New parameter
+        serviceAccountCredentials = "/path/to/your-service-account-key.json" // new parameter
+    }
+    // ...
+}
+```
+- `appId`: Your app's Firebase App ID.
+Required only if you don't have the google services gradle plugin installed.
+You can find the App ID in the google-services.json file or in the Firebase console on the General Settings page.
+The value in your build.gradle file overrides the value output from the google-services gradle plugin.
+- `serviceAccountCredentials`: The path to your service account private key JSON file.
+To release to Firebase you must create a Google service account with Firebase Quality Admin role.
+If you don't have a service account, you can create one following [this guide](https://firebase.google.com/docs/app-distribution/android/distribute-gradle#authenticate_using_a_service_account).
+
+### Breaking changes
+- Fabric Craslytics Beta integration was removed
+- Google Play's service credential account file path was changed to a credential file path.
+
+Migration:
+- Version 1x:
+```groovy
+snapshotPublisher {
+    googlePlay {
+       serviceAccountCredentials = file("/path/to/your-service-account-key.json")
+    }
+    // ...
+}
+```
+- version 2x:
+```groovy
+snapshotPublisher {
+    googlePlay {
+       serviceAccountCredentials = "/path/to/your-service-account-key.json"
+    }
+    // ...
+}
+```
+
+[Version 1.0.4 _(2019-09-20)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v1.0.4)
+---
 
 ### Changes
 - Upgrade Google Play publisher plugin version to 2.4.1 (#36)
