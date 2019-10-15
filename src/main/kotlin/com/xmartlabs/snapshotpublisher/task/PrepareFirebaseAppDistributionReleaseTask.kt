@@ -20,7 +20,7 @@ open class PrepareFirebaseAppDistributionReleaseTask : DefaultTask() {
     val firebaseConfig = project.snapshotReleaseExtension.firebaseAppDistribution
     with(releaseTask.appDistributionProperties) {
       appId = firebaseConfig.appId
-      serviceCredentialsFile = firebaseConfig.serviceAccountCredentials
+      serviceCredentialsFile = project.file(requireNotNull(firebaseConfig.serviceAccountCredentials)).absolutePath
       testers = firebaseConfig.distributionEmails
       groups = firebaseConfig.distributionGroupAliases
       releaseNotesFile = generatedReleaseNotesFile.absolutePath

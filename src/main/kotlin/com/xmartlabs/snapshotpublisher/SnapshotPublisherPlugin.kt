@@ -111,14 +111,14 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   private fun Project.createGooglePlayDeployTask(
       variant: ApplicationVariant,
       preparationTasks: List<Task>
-  ): DefaultTask? {
+  ) {
     if (variant.buildType.isDebuggable) {
       project.logger.info("Skipping debuggable build type '${variant.buildType.name}' for Google Play's tasks.")
-      return null
+      return
     }
 
     val googlePlayConfig = project.snapshotReleaseExtension.googlePlay
-    return if (ErrorHelper.isServiceAccountCredentialFileValid(project, googlePlayConfig.serviceAccountCredentials)) {
+    if (ErrorHelper.isServiceAccountCredentialFileValid(project, googlePlayConfig.serviceAccountCredentials)) {
       val publishGooglePlayTask: PublishArtifactTaskBase = if (googlePlayConfig.defaultToAppBundles) {
         PlayPublisherPluginHelper.getPublishBundleTask(this, variant)
       } else {
@@ -133,16 +133,14 @@ class SnapshotPublisherPlugin : Plugin<Project> {
         this.publishGooglePlayTask = publishGooglePlayTask
 
         val generateResourcesTask = PlayPublisherPluginHelper.getGenerateResourcesTask(project, variant)
-
         mustRunAfter(generateResourcesTask)
-        @Suppress("UnstableApiUsage")
-        preparationTasks.forEach { preparationTask ->
-          generateResourcesTask.mustRunAfter(preparationTask)
-          dependsOn(preparationTask)
+        preparationTasks.forEach { task ->
+          generateResourcesTask.mustRunAfter(task)
+          dependsOn(task)
         }
       }
 
-      createTask(
+      createTask<DefaultTask>(
           name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
           group = Constants.PLUGIN_GROUP,
           description = "Release a snapshot version to Google Play"
@@ -158,14 +156,14 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   private fun Project.createGooglePlayErrorTask(
       googlePlayConfig: GooglePlayConfig,
       variant: ApplicationVariant
-  ): ErrorTask {
+  ) {
     val error = ErrorHelper.getServiceAccountFileErrorMessage(
         project,
         googlePlayConfig.serviceAccountCredentials,
         "googlePlay"
     )
 
-    return createTask<ErrorTask>(
+    createTask<ErrorTask>(
         name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
         group = Constants.PLUGIN_GROUP,
         description = "Release a snapshot version to Google Play"
@@ -178,29 +176,34 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       variant: ApplicationVariant,
       assembleTask: Task,
       preparationTasks: List<Task>
-  ): DefaultTask? {
+  ) {
     val publishTask = FirebaseAppDistributionPluginHelper.getDistributionTask(this, variant)
     if (publishTask == null) {
       logger
           .info("Skipping build type ${variant.buildType.name} due to Firebase App Distribution being disabled for it")
-      return null
+      return
     }
     val firebaseConfig = project.snapshotReleaseExtension.firebaseAppDistribution
-    return if (ErrorHelper.isServiceAccountCredentialFileValid(project, firebaseConfig.serviceAccountCredentials)) {
+    if (ErrorHelper.isServiceAccountCredentialFileValid(project, firebaseConfig.serviceAccountCredentials)) {
       val prepareReleaseTask = createTask<PrepareFirebaseAppDistributionReleaseTask>(
           name = "${Constants.PREPARE_FIREBASE_APP_DISTRIBUTION_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
           description = "Prepare the Firebase App Distribution snapshot release",
           group = null
       ) {
         releaseTask = publishTask
+        preparationTasks.forEach { task -> dependsOn(task) }
       }
 
-      createTask(
+      createTask<DefaultTask>(
           name = "${Constants.FIREBASE_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
           description = "Prepare and deploy a snapshot build to Firebase App Distribution"
       ) {
-        publishTask.mustRunAfter(assembleTask, prepareReleaseTask)
-        dependsOn(assembleTask, prepareReleaseTask, preparationTasks, publishTask)
+        publishTask.mustRunAfter(assembleTask)
+        publishTask.mustRunAfter(prepareReleaseTask)
+        dependsOn(assembleTask)
+        dependsOn(prepareReleaseTask)
+        dependsOn(preparationTasks)
+        dependsOn(publishTask)
       }
     } else {
       createFirebaseErrorTask(firebaseConfig, variant)
@@ -210,14 +213,14 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   private fun Project.createFirebaseErrorTask(
       firebaseConfig: FirebaseAppDistributionReleaseConfig,
       variant: ApplicationVariant
-  ): ErrorTask {
+  ) {
     val error = ErrorHelper.getServiceAccountFileErrorMessage(
         project,
         firebaseConfig.serviceAccountCredentials,
-        "firebaseAppDistibution"
+        "firebaseAppDistribution"
     )
 
-    return createTask<ErrorTask>(
+    createTask<ErrorTask>(
         name = "${Constants.FIREBASE_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
         group = Constants.PLUGIN_GROUP,
         description = "Release a snapshot version to Firebase App Distribution"
