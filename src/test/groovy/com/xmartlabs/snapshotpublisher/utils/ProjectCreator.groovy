@@ -9,8 +9,10 @@ class ProjectCreator {
   public static final String BUILD_TYPE = "Release"
   public static final String FLAVOUR = "Dev"
   public static final String FLAVOUR_WITH_BUILD_TYPE = "$FLAVOUR$BUILD_TYPE"
+  private static final File SERVICE_KEY_FILE = new File("/tmp/${UUID.randomUUID()}/service_key.json")
 
   static Project mockProject(boolean useBundle = false) {
+    SERVICE_KEY_FILE.mkdirs()
     def project = ProjectBuilder.builder().build()
     project.apply plugin: 'com.android.application'
     project.pluginManager.apply(SnapshotPublisherPlugin.class)
@@ -39,11 +41,14 @@ class ProjectCreator {
     }
     project.snapshotPublisher {
       googlePlay {
-        serviceAccountCredentials = new File("fake.json")
+        serviceAccountCredentials = SERVICE_KEY_FILE.path
         track = "internal"
         releaseStatus = "completed"
         defaultToAppBundles = useBundle
         resolutionStrategy = "auto"
+      }
+      firebaseAppDistribution {
+        serviceAccountCredentials = SERVICE_KEY_FILE.path
       }
     }
 

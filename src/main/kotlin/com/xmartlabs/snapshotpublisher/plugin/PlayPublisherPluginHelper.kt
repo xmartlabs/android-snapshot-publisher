@@ -8,6 +8,7 @@ import com.github.triplet.gradle.play.PlayPublisherPlugin
 import com.github.triplet.gradle.play.tasks.PublishApk
 import com.github.triplet.gradle.play.tasks.PublishBundle
 import com.xmartlabs.snapshotpublisher.model.SnapshotReleaseExtension
+import com.xmartlabs.snapshotpublisher.utils.ErrorHelper
 import com.xmartlabs.snapshotpublisher.utils.snapshotReleaseExtension
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -109,11 +110,13 @@ internal object PlayPublisherPluginHelper {
   private fun setupPluginCredentials(project: Project, releaseSetup: SnapshotReleaseExtension) {
     val playPublisherExtension = project.playPublisherExtension
     if (!playPublisherExtension.areCredsValid()) {
-      playPublisherExtension.serviceAccountCredentials = if (releaseSetup.googlePlay.areCredsValid()) {
-        releaseSetup.googlePlay.serviceAccountCredentials
-      } else {
-        File("mock.json") // To skip Google Play Publisher validation
-      }
+      val credentialFile = releaseSetup.googlePlay.serviceAccountCredentials
+      playPublisherExtension.serviceAccountCredentials =
+          if (ErrorHelper.isServiceAccountCredentialFileValid(project, credentialFile)) {
+            project.file(credentialFile ?: "mock.json")
+          } else {
+            File("mock.json") // To skip Google Play Publisher validation
+          }
     }
   }
 }

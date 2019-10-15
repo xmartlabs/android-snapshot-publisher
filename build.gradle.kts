@@ -22,7 +22,6 @@ repositories {
   gradlePluginPortal()
   google()
   mavenCentral()
-  maven("https://maven.fabric.io/public")
   jcenter()
 }
 
@@ -33,7 +32,7 @@ dependencies {
 
   implementation("com.github.triplet.gradle:play-publisher:2.4.1")
   implementation("com.google.apis:google-api-services-androidpublisher:v3-rev46-1.25.0")
-  implementation("io.fabric.tools:gradle:1.31.1")
+  implementation("com.google.firebase:firebase-appdistribution-gradle:1.0.0")
 
   testImplementation("com.android.tools.build:gradle:3.5.0")
   testImplementation("junit:junit:4.12")
@@ -48,7 +47,7 @@ jacoco {
 }
 
 group = "com.xmartlabs"
-version = "1.0.4"
+version = "2.0.0"
 
 gradlePlugin {
   plugins {
@@ -62,11 +61,15 @@ gradlePlugin {
   }
 }
 
+kotlinDslPluginOptions {
+  experimentalWarning.set(false)
+}
+
 pluginBundle {
   website = "https://github.com/xmartlabs/android-snapshot-publisher"
   vcsUrl = "https://github.com/xmartlabs/android-snapshot-publisher.git"
   @Suppress("UnstableApiUsage")
-  tags = listOf("android", "google-play", "beta-fabric", "snapshot-build", "publisher")
+  tags = listOf("android", "google-play", "firebase", "firebase-app-distribution", "snapshot-build", "publisher")
 }
 
 detekt {
