@@ -11,6 +11,33 @@ Google deprecated and migrated [Fabric Craslytics Beta](https://get.fabric.io/ro
 The [documentation](README.md#firebase-app-distribution) specifies the required changes to use the new tool. 
 
 Migration:
+
+Change plugin dependency setup:
+- Version 1x:
+```groovy
+buildscript {
+  repositories {
+    maven { url "https://plugins.gradle.org/m2/" }
+    maven { url 'https://maven.fabric.io/public' } // Remove it
+  }
+  dependencies {
+     classpath "com.xmartlabs:snapshot-publisher:1.0.4" // Replace version
+  }
+}
+```
+- Version 2x:
+```groovy
+buildscript {
+  repositories {
+    gradlePluginPortal()
+    google() // Add it
+  }
+  dependencies {
+     classpath "com.xmartlabs:snapshot-publisher:2.0.0" // Replace version
+  }
+}
+```
+
 Change the previous `fabric` block to the new `firebaseAppDistribution` block:
 
 - Version 1x:
