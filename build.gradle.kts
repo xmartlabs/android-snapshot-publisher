@@ -11,7 +11,7 @@ plugins {
   id("com.gradle.plugin-publish") version "0.10.1"
   `kotlin-dsl`
   groovy
-  id("io.gitlab.arturbosch.detekt") version "1.0.0-RC12"
+  id("io.gitlab.arturbosch.detekt") version "1.0.1"
   jacoco
   `java-gradle-plugin`
   `maven-publish`
@@ -73,7 +73,7 @@ pluginBundle {
 }
 
 detekt {
-  toolVersion = "1.0.0-RC12"
+  toolVersion = "1.0.1"
   input = files("$projectDir")
   filters = ".*/resources/.*,.*/build/.*"
   config = files("detekt-config.yml")
