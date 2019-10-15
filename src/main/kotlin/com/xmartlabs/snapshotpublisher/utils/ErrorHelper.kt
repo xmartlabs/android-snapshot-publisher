@@ -15,7 +15,8 @@ object ErrorHelper {
         ServiceAccountError.FILE_NOT_DEFINED ->
           "Make sure that `serviceAccountCredentials` file is defined in " +
               "`$configBlockName` plugin's config block."
-        ServiceAccountError.FILE_DOES_NOT_EXIST -> "Make sure that $filePath exists."
+        ServiceAccountError.FILE_DOES_NOT_EXIST ->
+          "Make sure that ${project.file(requireNotNull(filePath)).absolutePath} exists."
         ServiceAccountError.FILE_MUST_HAVE_JSON_EXTENSION -> "Service account file must have json extension"
         else -> null
       }
