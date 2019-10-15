@@ -72,7 +72,7 @@ buildscript {
     google()
   }
   dependencies {
-     classpath "com.xmartlabs:snapshot-publisher:1.0.4"
+     classpath "com.xmartlabs:snapshot-publisher:2.0.0"
   }
 }
 ```
