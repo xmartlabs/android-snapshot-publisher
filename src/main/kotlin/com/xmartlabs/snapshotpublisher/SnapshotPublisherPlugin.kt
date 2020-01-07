@@ -1,7 +1,6 @@
 package com.xmartlabs.snapshotpublisher
 
 import com.android.build.gradle.api.ApplicationVariant
-import com.github.triplet.gradle.play.tasks.internal.PublishArtifactTaskBase
 import com.xmartlabs.snapshotpublisher.model.FirebaseAppDistributionReleaseConfig
 import com.xmartlabs.snapshotpublisher.model.GooglePlayConfig
 import com.xmartlabs.snapshotpublisher.model.SnapshotReleaseExtension
@@ -119,7 +118,7 @@ class SnapshotPublisherPlugin : Plugin<Project> {
 
     val googlePlayConfig = project.snapshotReleaseExtension.googlePlay
     if (ErrorHelper.isServiceAccountCredentialFileValid(project, googlePlayConfig.serviceAccountCredentials)) {
-      val publishGooglePlayTask: PublishArtifactTaskBase = if (googlePlayConfig.defaultToAppBundles) {
+      val publishGooglePlayTask: Task = if (googlePlayConfig.defaultToAppBundles) {
         PlayPublisherPluginHelper.getPublishBundleTask(this, variant)
       } else {
         PlayPublisherPluginHelper.getPublishApkTask(this, variant)

@@ -1,15 +1,17 @@
 package com.xmartlabs.snapshotpublisher.task
 
 import com.android.build.gradle.api.ApplicationVariant
-import com.github.triplet.gradle.play.tasks.internal.PublishArtifactTaskBase
+import com.github.triplet.gradle.play.PlayPublisherExtension
 import com.xmartlabs.snapshotpublisher.Constants
 import com.xmartlabs.snapshotpublisher.plugin.PlayPublisherPluginHelper
 import com.xmartlabs.snapshotpublisher.utils.AndroidPublisherHelper
 import com.xmartlabs.snapshotpublisher.utils.ReleaseNotesGenerator
 import com.xmartlabs.snapshotpublisher.utils.snapshotReleaseExtension
 import org.gradle.api.DefaultTask
+import org.gradle.api.Task
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
+import org.gradle.kotlin.dsl.getByType
 import java.io.File
 
 open class PrepareGooglePlayReleaseTask : DefaultTask() {
@@ -18,7 +20,7 @@ open class PrepareGooglePlayReleaseTask : DefaultTask() {
   }
 
   @get:Internal
-  internal lateinit var publishGooglePlayTask: PublishArtifactTaskBase
+  internal lateinit var publishGooglePlayTask: Task
   @get:Internal
   internal lateinit var variant: ApplicationVariant
 
@@ -30,8 +32,7 @@ open class PrepareGooglePlayReleaseTask : DefaultTask() {
   @TaskAction
   fun action() {
     createReleaseNotesFile()
-
-    with(publishGooglePlayTask.extension) {
+    with(project.extensions.getByType<PlayPublisherExtension>()) {
       defaultToAppBundles = googlePlayConfig.defaultToAppBundles
       releaseStatus = googlePlayConfig.releaseStatus
       resolutionStrategy = googlePlayConfig.resolutionStrategy
