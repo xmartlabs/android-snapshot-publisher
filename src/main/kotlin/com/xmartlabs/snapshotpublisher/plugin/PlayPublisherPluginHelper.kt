@@ -12,7 +12,6 @@ import org.gradle.api.Task
 import org.gradle.util.GradleVersion
 import org.gradle.util.VersionNumber
 import java.io.File
-import java.lang.reflect.Constructor
 
 internal object PlayPublisherPluginHelper {
   private const val PLAY_EXTENSION_NAME = "play"
