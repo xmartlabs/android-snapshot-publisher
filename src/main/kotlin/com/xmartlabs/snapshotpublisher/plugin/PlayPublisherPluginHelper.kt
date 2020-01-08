@@ -46,14 +46,17 @@ internal object PlayPublisherPluginHelper {
   private val Project.playPublisherExtension
     get() = project.extensions.findByName(PLAY_EXTENSION_NAME) as PlayPublisherExtension
 
+  private fun Project.getTask(variant: ApplicationVariant, taskName: String): Task =
+      project.tasks.getByName(taskName.format(variant.capitalizedName))
+
   fun getPublishBundleTask(project: Project, variant: ApplicationVariant): Task =
-      project.tasks.getByName(PUBLISH_BUNDLE_TASK_NAME.format(variant.capitalizedName))
+      project.getTask(variant, PUBLISH_BUNDLE_TASK_NAME)
 
   fun getPublishApkTask(project: Project, variant: ApplicationVariant): Task =
-      project.tasks.getByName(PUBLISH_APK_TASK_NAME.format(variant.capitalizedName))
+      project.getTask(variant, PUBLISH_APK_TASK_NAME)
 
   fun getGenerateResourcesTask(project: Project, variant: ApplicationVariant): Task =
-      project.tasks.getByName(GENERATE_RESOURCES_TASK_NAME.format(variant.capitalizedName))
+      project.getTask(variant, GENERATE_RESOURCES_TASK_NAME)
 
   // Required in https://github.com/Triple-T/gradle-play-publisher/blob/40092f24d68034395c4c3399dbef0c5eb2f2c484/common/validation/src/main/kotlin/com/github/triplet/gradle/common/validation/Validation.kt#L9
   private fun checkGradleVersion() {
