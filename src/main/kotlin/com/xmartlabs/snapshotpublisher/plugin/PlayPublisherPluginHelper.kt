@@ -22,6 +22,7 @@ internal object PlayPublisherPluginHelper {
   private const val GENERATE_RESOURCES_TASK_NAME = "generate%sPlayResources"
   private const val PUBLISH_APK_TASK_NAME = "publish%sApk"
   private const val PUBLISH_BUNDLE_TASK_NAME = "publish%sBundle"
+  private const val PLAY_PUBLISHER_PLUGIN_CLASS = "com.github.triplet.gradle.play.PlayPublisherPlugin"
 
   // https://github.com/Triple-T/gradle-play-publisher/blob/3e86503431794792dc63dd6b5bb51e03493f1ed7/plugin/src/main/kotlin/com/github/triplet/gradle/play/internal/Constants.kt
   private const val RESOURCE_PATH = "res"
@@ -94,11 +95,8 @@ internal object PlayPublisherPluginHelper {
         setupPluginCredentials(project, releaseSetup)
       }
     }
-    val playPublisherPluginClass = Class.forName("com.github.triplet.gradle.play.PlayPublisherPlugin")
-    val constructor: Constructor<*> = playPublisherPluginClass.getDeclaredConstructor()
-    constructor.isAccessible = true
     @Suppress("UnstableApiUsage")
-    project.pluginManager.apply(playPublisherPluginClass)
+    project.pluginManager.apply(Class.forName(PLAY_PUBLISHER_PLUGIN_CLASS))
   }
 
   private fun setupPluginCredentials(project: Project, releaseSetup: SnapshotReleaseExtension) {
