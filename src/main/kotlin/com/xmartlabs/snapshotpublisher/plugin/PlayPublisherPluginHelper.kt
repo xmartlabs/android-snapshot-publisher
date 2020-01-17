@@ -4,9 +4,6 @@ import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.api.BaseVariant
 import com.android.builder.model.Version
 import com.github.triplet.gradle.play.PlayPublisherExtension
-import com.github.triplet.gradle.play.PlayPublisherPlugin
-import com.github.triplet.gradle.play.tasks.PublishApk
-import com.github.triplet.gradle.play.tasks.PublishBundle
 import com.xmartlabs.snapshotpublisher.model.SnapshotReleaseExtension
 import com.xmartlabs.snapshotpublisher.utils.ErrorHelper
 import com.xmartlabs.snapshotpublisher.utils.snapshotReleaseExtension
@@ -18,12 +15,13 @@ import java.io.File
 
 internal object PlayPublisherPluginHelper {
   private const val PLAY_EXTENSION_NAME = "play"
-  private val MIN_GRADLE_VERSION = GradleVersion.version("5.6.1")
+  private val MIN_GRADLE_VERSION = GradleVersion.version("6.0")
   private val MIN_AGP_VERSION = VersionNumber.parse("3.5.0")
 
   private const val GENERATE_RESOURCES_TASK_NAME = "generate%sPlayResources"
   private const val PUBLISH_APK_TASK_NAME = "publish%sApk"
   private const val PUBLISH_BUNDLE_TASK_NAME = "publish%sBundle"
+  private const val PLAY_PUBLISHER_PLUGIN_CLASS = "com.github.triplet.gradle.play.PlayPublisherPlugin"
 
   // https://github.com/Triple-T/gradle-play-publisher/blob/3e86503431794792dc63dd6b5bb51e03493f1ed7/plugin/src/main/kotlin/com/github/triplet/gradle/play/internal/Constants.kt
   private const val RESOURCE_PATH = "res"
@@ -31,14 +29,9 @@ internal object PlayPublisherPluginHelper {
   private const val RESOURCES_OUTPUT_PATH = "generated/$OUTPUT_PATH"
   private const val RELEASE_NOTES_PATH = "release-notes"
 
-  // https://github.com/Triple-T/gradle-play-publisher/blob/4d3f98128c8c86bc1ea37fd34d8f4b16dbf93d1b/plugin/src/main/kotlin/com/github/triplet/gradle/play/internal/Validation.kt#L28
   private fun PlayPublisherExtension.areCredsValid(): Boolean {
     val creds = serviceAccountCredentials ?: return false
-    return if (creds.extension.equals("json", true)) {
-      serviceAccountEmail == null
-    } else {
-      serviceAccountEmail != null
-    }
+    return creds.extension.equals("json", true)
   }
 
   private val BaseVariant.playPath get() = "$RESOURCES_OUTPUT_PATH/$name"
@@ -52,16 +45,17 @@ internal object PlayPublisherPluginHelper {
   private val Project.playPublisherExtension
     get() = project.extensions.findByName(PLAY_EXTENSION_NAME) as PlayPublisherExtension
 
-  @Suppress("UnsafeCast")
-  fun getPublishBundleTask(project: Project, variant: ApplicationVariant): PublishBundle =
-      project.tasks.getByName(PUBLISH_BUNDLE_TASK_NAME.format(variant.capitalizedName)) as PublishBundle
+  private fun Project.getTask(variant: ApplicationVariant, taskName: String): Task =
+      project.tasks.getByName(taskName.format(variant.capitalizedName))
 
-  @Suppress("UnsafeCast")
-  fun getPublishApkTask(project: Project, variant: ApplicationVariant): PublishApk =
-      project.tasks.getByName(PUBLISH_APK_TASK_NAME.format(variant.capitalizedName)) as PublishApk
+  fun getPublishBundleTask(project: Project, variant: ApplicationVariant): Task =
+      project.getTask(variant, PUBLISH_BUNDLE_TASK_NAME)
+
+  fun getPublishApkTask(project: Project, variant: ApplicationVariant): Task =
+      project.getTask(variant, PUBLISH_APK_TASK_NAME)
 
   fun getGenerateResourcesTask(project: Project, variant: ApplicationVariant): Task =
-      project.tasks.getByName(GENERATE_RESOURCES_TASK_NAME.format(variant.capitalizedName))
+      project.getTask(variant, GENERATE_RESOURCES_TASK_NAME)
 
   // Required in https://github.com/Triple-T/gradle-play-publisher/blob/40092f24d68034395c4c3399dbef0c5eb2f2c484/common/validation/src/main/kotlin/com/github/triplet/gradle/common/validation/Validation.kt#L9
   private fun checkGradleVersion() {
@@ -104,7 +98,7 @@ internal object PlayPublisherPluginHelper {
       }
     }
     @Suppress("UnstableApiUsage")
-    project.pluginManager.apply(PlayPublisherPlugin::class.java)
+    project.pluginManager.apply(Class.forName(PLAY_PUBLISHER_PLUGIN_CLASS))
   }
 
   private fun setupPluginCredentials(project: Project, releaseSetup: SnapshotReleaseExtension) {

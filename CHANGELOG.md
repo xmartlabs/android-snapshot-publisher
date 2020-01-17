@@ -2,6 +2,14 @@ Change Log
 ==========
 All notable changes to this project will be documented in this file.
 
+[Version 2.1.0 _(TBD)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v2.1.0)
+---
+
+### Changes
+- Upgrade Google Play Publisher dependency to [v2.6.2](https://github.com/Triple-T/gradle-play-publisher/releases/tag/2.6.2).
+- Change min required gradle version to 6.0.
+
+
 [Version 2.0.0 _(2019-10-15)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v2.0.0)
 ---
 
