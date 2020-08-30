@@ -40,7 +40,7 @@ internal object AndroidPluginHelper {
   fun getVersionName(versionConfig: VersionConfig, currentVersionName: String) =
       versionConfig.getVersionName(currentVersionName, GitHelper.getCommitHash(), GitHelper.getBranchName())
 
-  fun getVersionCode(project: Project, variant: ApplicationVariant? = null): Int =
+  fun getVersionCode(project: Project, variant: ApplicationVariant? = null): Int? =
       variant?.versionCode ?: getAndroidExtension(project).defaultConfig.versionCode
 
   fun getBundleTask(project: Project, variant: ApplicationVariant) =
