@@ -27,15 +27,16 @@ repositories {
 }
 
 dependencies {
-  compileOnly("com.android.tools.build:gradle:4.2.0-alpha01")
+  compileOnly("com.android.tools.build:gradle:4.1.0-beta01")
 
   detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.0.0-RC12")
 
   implementation("com.github.triplet.gradle:play-publisher:2.8.0")
   implementation("com.google.apis:google-api-services-androidpublisher:v3-rev20200526-1.30.9")
   implementation("com.google.firebase:firebase-appdistribution-gradle:2.0.1")
+  implementation("com.google.guava:guava:29.0-jre")
 
-  testImplementation("com.android.tools.build:gradle:4.2.0-alpha01")
+  testImplementation("com.android.tools.build:gradle:4.1.0-beta01")
   testImplementation("junit:junit:4.13")
   testImplementation("org.assertj:assertj-core:3.11.1")
   testImplementation("org.eclipse.jgit:org.eclipse.jgit:3.5.0.201409260305-r")

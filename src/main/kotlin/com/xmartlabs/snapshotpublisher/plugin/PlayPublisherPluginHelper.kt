@@ -1,8 +1,8 @@
 package com.xmartlabs.snapshotpublisher.plugin
 
+import com.android.Version
 import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.api.BaseVariant
-import com.android.builder.model.Version
 import com.github.triplet.gradle.play.PlayPublisherExtension
 import com.xmartlabs.snapshotpublisher.model.SnapshotReleaseExtension
 import com.xmartlabs.snapshotpublisher.utils.ErrorHelper
@@ -15,8 +15,8 @@ import java.io.File
 
 internal object PlayPublisherPluginHelper {
   private const val PLAY_EXTENSION_NAME = "play"
-  private val MIN_GRADLE_VERSION = GradleVersion.version("6.0")
-  private val MIN_AGP_VERSION = VersionNumber.parse("3.5.0")
+  private val MIN_GRADLE_VERSION = GradleVersion.version("6.5")
+  private val MIN_AGP_VERSION = VersionNumber.parse("4.1.0-beta01")
 
   private const val GENERATE_RESOURCES_TASK_NAME = "generate%sPlayResources"
   private const val PUBLISH_APK_TASK_NAME = "publish%sApk"
