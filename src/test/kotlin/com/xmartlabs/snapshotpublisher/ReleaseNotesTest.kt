@@ -54,6 +54,7 @@ class ReleaseNotesTest {
       .setAuthor(commit.author.name, commit.author.mail)
       .setCommitter(PersonIdent(commit.author.name, commit.author.mail, COMMIT_DATE, COMMIT_TIMEZONE))
       .setAllowEmpty(true)
+      .setSign(false)
       .call()
 
   private fun Repository?.tag(revCommit: RevCommit) = Git(this).tag()

@@ -10,14 +10,16 @@ buildscript {
 plugins {
   id("com.gradle.plugin-publish") version "0.10.1"
   `kotlin-dsl`
-  kotlin("jvm") version "1.4.0"
+  kotlin("jvm") version "1.4.10"
   groovy
   id("io.gitlab.arturbosch.detekt") version "1.0.1"
   jacoco
   `java-gradle-plugin`
   `maven-publish`
-  id("com.github.ben-manes.versions") version "0.29.0"
+  id("com.github.ben-manes.versions") version "0.33.0"
 }
+
+apply(from = "./scripts/dependency_updates.gradle")
 
 repositories {
   gradlePluginPortal()
@@ -31,7 +33,7 @@ dependencies {
 
   detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.0.0-RC12")
 
-  implementation("com.github.triplet.gradle:play-publisher:2.8.0")
+  implementation("com.github.triplet.gradle:play-publisher:3.0.0")
   implementation("com.google.apis:google-api-services-androidpublisher:v3-rev20200526-1.30.9")
   implementation("com.google.firebase:firebase-appdistribution-gradle:2.0.1")
   implementation("com.google.guava:guava:29.0-jre")

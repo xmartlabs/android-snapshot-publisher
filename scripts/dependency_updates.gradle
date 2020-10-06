@@ -1,0 +1,23 @@
+apply plugin: "com.github.ben-manes.versions"
+
+def isNonStable = { String version ->
+  return ['alpha', 'beta', 'rc', 'cr', 'm', 'preview', 'b', 'ea'].any { qualifier ->
+    version ==~ /(?i).*[.-]$qualifier[.\d-+]*/
+  }
+}
+
+dependencyUpdates {
+  resolutionStrategy {
+    componentSelection {
+      all {
+        if (isNonStable(candidate.version) && !isNonStable(currentVersion)) {
+          reject('Release candidate')
+        }
+      }
+    }
+  }
+  checkForGradleUpdate = true
+  outputFormatter = "html"
+  outputDir = "build/reports/dependencyUpdates"
+  reportfileName = "report"
+}

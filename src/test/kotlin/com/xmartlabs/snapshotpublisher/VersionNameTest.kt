@@ -33,6 +33,7 @@ class VersionNameTest {
         .commit()
         .setMessage("Test message")
         .setAllowEmpty(true)
+        .setSign(false)
         .call()
 
     Git(newlyCreatedRepo)
