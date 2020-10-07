@@ -30,7 +30,7 @@ internal object PlayPublisherPluginHelper {
   private const val RELEASE_NOTES_PATH = "release-notes"
 
   private fun PlayPublisherExtension.areCredsValid(): Boolean {
-    val creds = serviceAccountCredentials ?: return false
+    val creds = serviceAccountCredentials.get().asFile
     return creds.extension.equals("json", true)
   }
 
@@ -105,12 +105,13 @@ internal object PlayPublisherPluginHelper {
     val playPublisherExtension = project.playPublisherExtension
     if (!playPublisherExtension.areCredsValid()) {
       val credentialFile = releaseSetup.googlePlay.serviceAccountCredentials
-      playPublisherExtension.serviceAccountCredentials =
+      playPublisherExtension.serviceAccountCredentials.set(
           if (ErrorHelper.isServiceAccountCredentialFileValid(project, credentialFile)) {
             project.file(credentialFile ?: "mock.json")
           } else {
             File("mock.json") // To skip Google Play Publisher validation
           }
+      )
     }
   }
 }

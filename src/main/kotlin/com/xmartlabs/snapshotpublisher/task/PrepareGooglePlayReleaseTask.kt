@@ -1,8 +1,11 @@
 package com.xmartlabs.snapshotpublisher.task
 
 import com.android.build.gradle.api.ApplicationVariant
+import com.github.triplet.gradle.androidpublisher.ReleaseStatus
+import com.github.triplet.gradle.androidpublisher.ResolutionStrategy
 import com.github.triplet.gradle.play.PlayPublisherExtension
 import com.xmartlabs.snapshotpublisher.Constants
+import com.xmartlabs.snapshotpublisher.model.GooglePlayConfig
 import com.xmartlabs.snapshotpublisher.plugin.PlayPublisherPluginHelper
 import com.xmartlabs.snapshotpublisher.utils.AndroidPublisherHelper
 import com.xmartlabs.snapshotpublisher.utils.ReleaseNotesGenerator
@@ -21,6 +24,7 @@ open class PrepareGooglePlayReleaseTask : DefaultTask() {
 
   @get:Internal
   internal lateinit var publishGooglePlayTask: Task
+
   @get:Internal
   internal lateinit var variant: ApplicationVariant
 
@@ -33,11 +37,11 @@ open class PrepareGooglePlayReleaseTask : DefaultTask() {
   fun action() {
     createReleaseNotesFile()
     with(project.extensions.getByType<PlayPublisherExtension>()) {
-      defaultToAppBundles = googlePlayConfig.defaultToAppBundles
-      releaseStatus = googlePlayConfig.releaseStatus
-      resolutionStrategy = googlePlayConfig.resolutionStrategy
-      track = googlePlayConfig.track
-      serviceAccountCredentials = googlePlayConfig.serviceAccountCredentials?.let { project.file(it) }
+      defaultToAppBundles.set(googlePlayConfig.defaultToAppBundles)
+      releaseStatus.set(googlePlayConfig.toPublisherReleaseStatus())
+      resolutionStrategy.set(googlePlayConfig.toPublisherResolutionStrategy())
+      track.set(googlePlayConfig.track)
+      serviceAccountCredentials.set(googlePlayConfig.serviceAccountCredentials?.let { project.file(it) })
     }
   }
 
@@ -59,4 +63,20 @@ open class PrepareGooglePlayReleaseTask : DefaultTask() {
 
   private fun getReleaseNotes() =
       ReleaseNotesGenerator.truncateReleaseNotesIfNeeded(generatedReleaseNotesFile.readText(), MAX_RELEASE_NOTES_LENGTH)
+
+  private fun GooglePlayConfig.toPublisherReleaseStatus(): ReleaseStatus {
+    val releaseStatus = ReleaseStatus.values()
+        .firstOrNull { it.publishedName == releaseStatus }
+    return requireNotNull(releaseStatus) {
+      "Invalid Release status: $releaseStatus"
+    }
+  }
+
+  private fun GooglePlayConfig.toPublisherResolutionStrategy(): ResolutionStrategy {
+    val releaseStatus = ResolutionStrategy.values()
+        .firstOrNull { it.publishedName == resolutionStrategy }
+    return requireNotNull(releaseStatus) {
+      "Invalid Resolution status: $releaseStatus"
+    }
+  }
 }
