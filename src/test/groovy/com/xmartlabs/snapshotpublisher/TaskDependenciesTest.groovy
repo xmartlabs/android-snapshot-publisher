@@ -7,8 +7,8 @@ import org.junit.Test
 
 import static com.xmartlabs.snapshotpublisher.matchers.DependsOnMatcher.dependsOn
 import static com.xmartlabs.snapshotpublisher.matchers.MustRunAfterMatcher.mustRunAfter
+import static org.hamcrest.MatcherAssert.assertThat
 import static org.junit.Assert.assertNotNull
-import static org.junit.Assert.assertThat
 
 class TaskDependenciesTest {
   @Test

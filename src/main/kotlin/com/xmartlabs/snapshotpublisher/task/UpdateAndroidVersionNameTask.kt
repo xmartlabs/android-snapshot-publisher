@@ -1,6 +1,6 @@
 package com.xmartlabs.snapshotpublisher.task
 
-import com.android.build.gradle.api.ApkVariantOutput
+import com.android.build.api.variant.VariantOutput
 import com.android.build.gradle.api.ApplicationVariant
 import com.xmartlabs.snapshotpublisher.plugin.AndroidPluginHelper
 import org.gradle.api.DefaultTask
@@ -16,7 +16,7 @@ open class UpdateAndroidVersionNameTask : DefaultTask() {
   fun action() {
     val versionName = AndroidPluginHelper.getVersionName(project, variant)
     variant.outputs.all {
-      (this as? ApkVariantOutput)?.versionNameOverride = versionName
+      (this as? VariantOutput)?.versionName?.set(versionName)
     }
   }
 }

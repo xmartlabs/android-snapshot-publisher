@@ -1,7 +1,7 @@
 package com.xmartlabs.snapshotpublisher.plugin
 
+import com.android.build.api.variant.VariantOutput
 import com.android.build.gradle.AppExtension
-import com.android.build.gradle.api.ApkVariantOutput
 import com.android.build.gradle.api.ApplicationVariant
 import com.google.common.annotations.VisibleForTesting
 import com.xmartlabs.snapshotpublisher.model.VersionConfig
@@ -23,12 +23,12 @@ internal object AndroidPluginHelper {
 
   fun getVersionName(project: Project, variant: ApplicationVariant? = null): String {
     val releaseSetup = project.snapshotReleaseExtension
-    val versionNameOverride = variant?.outputs
-        ?.map { (it as? ApkVariantOutput)?.versionNameOverride }
-        ?.filterNot { it.isNullOrBlank() }
-        ?.first()
+    val versionName = variant?.outputs
+        ?.map { (it as? VariantOutput)?.versionName?.orNull }
+        ?.filterNot(String?::isNullOrBlank)
+        ?.firstOrNull()
 
-    val currentVersionName = versionNameOverride
+    val currentVersionName = versionName
         .orElse { variant?.versionName }
         .orElse { getAndroidExtension(project).defaultConfig.versionName }
         .orEmpty()
