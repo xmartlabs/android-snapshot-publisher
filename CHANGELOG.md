@@ -2,6 +2,13 @@ Change Log
 ==========
 All notable changes to this project will be documented in this file.
 
+[Version 2.2.0 _UNDELIVERED_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v2.2.0)
+- Upgrade Google Play Publisher dependency to [v3.0.0](https://github.com/Triple-T/gradle-play-publisher/releases/tag/3.0.0).
+- Change min required gradle version to `6.5.0`.
+- Change min Android Gradle plugin gradle version to `4.1.0`.
+
+---
+
 [Version 2.1.0 _(2020-01-31)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v2.1.0)
 ---
 

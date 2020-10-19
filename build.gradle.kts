@@ -29,7 +29,7 @@ repositories {
 }
 
 dependencies {
-  compileOnly("com.android.tools.build:gradle:4.1.0-beta01") // Compile only to not force a specific AGP version
+  compileOnly("com.android.tools.build:gradle:4.1.0") // Compile only to not force a specific AGP version
 
   detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.0.0-RC12")
 

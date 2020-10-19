@@ -18,7 +18,7 @@ import java.io.File
 internal object PlayPublisherPluginHelper {
   private const val PLAY_EXTENSION_NAME = "play"
   private val MIN_GRADLE_VERSION = GradleVersion.version("6.5")
-  private val MIN_AGP_VERSION = VersionNumber.parse("4.1.0-beta01")
+  private val MIN_AGP_VERSION = VersionNumber.parse("4.1.0")
 
   private const val GENERATE_RESOURCES_TASK_NAME = "generate%sPlayResources"
   private const val PUBLISH_APK_TASK_NAME = "publish%sApk"
