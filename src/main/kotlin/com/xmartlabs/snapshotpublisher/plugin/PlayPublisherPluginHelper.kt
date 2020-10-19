@@ -3,12 +3,14 @@ package com.xmartlabs.snapshotpublisher.plugin
 import com.android.Version
 import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.api.BaseVariant
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.github.triplet.gradle.play.PlayPublisherExtension
 import com.xmartlabs.snapshotpublisher.model.SnapshotReleaseExtension
 import com.xmartlabs.snapshotpublisher.utils.ErrorHelper
 import com.xmartlabs.snapshotpublisher.utils.snapshotReleaseExtension
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.kotlin.dsl.the
 import org.gradle.util.GradleVersion
 import org.gradle.util.VersionNumber
 import java.io.File
@@ -30,7 +32,7 @@ internal object PlayPublisherPluginHelper {
   private const val RELEASE_NOTES_PATH = "release-notes"
 
   private fun PlayPublisherExtension.areCredsValid(): Boolean {
-    val creds = serviceAccountCredentials.get().asFile
+    val creds = serviceAccountCredentials.orNull?.asFile  ?: return false
     return creds.extension.equals("json", true)
   }
 
@@ -90,8 +92,10 @@ internal object PlayPublisherPluginHelper {
     checkAgp()
 
     var credentialsInitialized = false
-    val releaseSetup = project.snapshotReleaseExtension
-    AndroidPluginHelper.getAndroidExtension(project).applicationVariants.whenObjectAdded {
+
+    val android = project.the<BaseAppModuleExtension>()
+    android.onVariants v@{
+      val releaseSetup = project.snapshotReleaseExtension
       if (!credentialsInitialized) {
         credentialsInitialized = true
         setupPluginCredentials(project, releaseSetup)

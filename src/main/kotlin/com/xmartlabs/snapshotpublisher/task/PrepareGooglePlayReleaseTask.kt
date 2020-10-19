@@ -41,8 +41,14 @@ open class PrepareGooglePlayReleaseTask : DefaultTask() {
       releaseStatus.set(googlePlayConfig.toPublisherReleaseStatus())
       resolutionStrategy.set(googlePlayConfig.toPublisherResolutionStrategy())
       track.set(googlePlayConfig.track)
-      serviceAccountCredentials.set(googlePlayConfig.serviceAccountCredentials?.let { project.file(it) })
+      setupCredentialFile(this)
     }
+  }
+
+  private fun setupCredentialFile(extension: PlayPublisherExtension) {
+    val credentialsFile: File? = googlePlayConfig.serviceAccountCredentials
+        ?.let(project::file)
+    extension.serviceAccountCredentials.set(credentialsFile)
   }
 
   private fun createReleaseNotesFile() {

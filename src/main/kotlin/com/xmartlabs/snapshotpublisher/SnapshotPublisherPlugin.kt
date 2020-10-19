@@ -49,11 +49,11 @@ class SnapshotPublisherPlugin : Plugin<Project> {
     val generateReleaseNotesTask = createGenerateReleaseNotesTask(variant, updateVersionNameTask)
     val preparationTasks = listOf(generateReleaseNotesTask, updateVersionNameTask)
 
-    createPrepareApkSnapshotTask(variant, assembleTask, preparationTasks)
-    if (bundleTask != null) {
+    val prepareApkTask = createPrepareApkSnapshotTask(variant, assembleTask, preparationTasks)
+    val prepareBundleTask = if (bundleTask != null) {
       createPrepareBundleSnapshotTask(variant, bundleTask, preparationTasks)
-    }
-    createGooglePlayDeployTask(variant, preparationTasks)
+    } else null
+    createGooglePlayDeployTask(variant, assembleTask, prepareBundleTask, preparationTasks)
     createFirebaseDeployTask(variant, assembleTask, preparationTasks)
   }
 
@@ -109,6 +109,8 @@ class SnapshotPublisherPlugin : Plugin<Project> {
 
   private fun Project.createGooglePlayDeployTask(
       variant: ApplicationVariant,
+      assembleApkTask: Task,
+      appBundleTask: Task?,
       preparationTasks: List<Task>
   ) {
     if (variant.buildType.isDebuggable) {
@@ -123,21 +125,13 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       } else {
         PlayPublisherPluginHelper.getPublishApkTask(this, variant)
       }
-      val preparePublishTask = createTask<PrepareGooglePlayReleaseTask>(
-          name = "${Constants.PREPARE_GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
-          group = null,
-          description = "Prepare and deploy snapshot build to Google Play"
-      ) {
-        this.variant = variant
-        this.publishGooglePlayTask = publishGooglePlayTask
+      val compilationTask = if (googlePlayConfig.defaultToAppBundles) appBundleTask else assembleApkTask
 
-        val generateResourcesTask = PlayPublisherPluginHelper.getGenerateResourcesTask(project, variant)
-        mustRunAfter(generateResourcesTask)
-        preparationTasks.forEach { task ->
-          generateResourcesTask.mustRunAfter(task)
-          dependsOn(task)
-        }
-      }
+      val preparePublishTask = createGooglePlayReleasePreparationTask(
+          variant,
+          publishGooglePlayTask,
+          (preparationTasks + compilationTask).requireNoNulls()
+      )
 
       createTask<DefaultTask>(
           name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
@@ -150,6 +144,28 @@ class SnapshotPublisherPlugin : Plugin<Project> {
     } else {
       createGooglePlayErrorTask(googlePlayConfig, variant)
     }
+  }
+
+  private fun Project.createGooglePlayReleasePreparationTask(
+      variant: ApplicationVariant,
+      publishGooglePlayTask: Task,
+      preparationTasks: List<Task>
+  ): PrepareGooglePlayReleaseTask = createTask<PrepareGooglePlayReleaseTask>(
+      name = "${Constants.PREPARE_GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+      group = null,
+      description = "Prepare and deploy snapshot build to Google Play"
+  ) {
+    this.variant = variant
+    this.publishGooglePlayTask = publishGooglePlayTask
+
+    val generateResourcesTask = PlayPublisherPluginHelper.getGenerateResourcesTask(project, variant)
+    mustRunAfter(generateResourcesTask)
+
+    preparationTasks
+        .forEach { task ->
+          generateResourcesTask.mustRunAfter(task)
+          dependsOn(task)
+        }
   }
 
   private fun Project.createGooglePlayErrorTask(
