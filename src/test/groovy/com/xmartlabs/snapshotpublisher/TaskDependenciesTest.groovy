@@ -1,8 +1,10 @@
 package com.xmartlabs.snapshotpublisher
 
+import com.xmartlabs.snapshotpublisher.utils.GitHelper
 import com.xmartlabs.snapshotpublisher.utils.ProjectCreator
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.junit.Before
 import org.junit.Test
 
 import static com.xmartlabs.snapshotpublisher.matchers.DependsOnMatcher.dependsOn
@@ -10,6 +12,11 @@ import static org.hamcrest.MatcherAssert.assertThat
 import static org.junit.Assert.assertNotNull
 
 class TaskDependenciesTest {
+  @Before
+  void setup() {
+    GitHelper.setupCommandRunner({ command, file -> "dummy-output" })
+  }
+
   @Test
   void testCreateDefaultTask() {
     def project = ProjectCreator.mockProject()
