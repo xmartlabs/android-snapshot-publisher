@@ -39,7 +39,7 @@ dependencies {
   implementation("com.google.firebase:firebase-appdistribution-gradle:2.0.1")
   implementation("com.google.guava:guava:29.0-jre")
 
-  testImplementation("com.android.tools.build:gradle:4.1.0-beta01")
+  testImplementation("com.android.tools.build:gradle:4.1.0")
   testImplementation("junit:junit:4.13")
   testImplementation("org.assertj:assertj-core:3.11.1")
   testImplementation("org.eclipse.jgit:org.eclipse.jgit:3.5.0.201409260305-r")

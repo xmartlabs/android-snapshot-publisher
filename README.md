@@ -130,6 +130,11 @@ snapshotPublisher {
     This value can be updated using these optional variables.
     For example, if you want to keep the current version name and the hash commit and add a custom suffix such as `-SNAPSHOT`, you must assign the value `'{currentVersionName}-{commitHash}-SNAPSHOT'` to the `versionNameFormat` variable.
 
+**Known Issue:** after AGP 4.1 the version name cannot be applied only to specific plugin tasks. 
+In turn, it's applied in the configuration step, causing all builds to contain `versionNameFormat`.
+AGP 4.2 fixes this issue but is still in alpha.
+If you're using a lower version of AGP, you can use the version of [2.1.0](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v2.1.0).
+
 ### Release notes
 The `releaseNotes` block allows you to perform build release notes customizations.
 All fields in that block are optional and their default values are:

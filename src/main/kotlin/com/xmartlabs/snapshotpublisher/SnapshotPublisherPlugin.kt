@@ -1,5 +1,6 @@
 package com.xmartlabs.snapshotpublisher
 
+import com.android.build.gradle.api.ApkVariantOutput
 import com.android.build.gradle.api.ApplicationVariant
 import com.xmartlabs.snapshotpublisher.model.FirebaseAppDistributionReleaseConfig
 import com.xmartlabs.snapshotpublisher.model.GooglePlayConfig
@@ -12,7 +13,6 @@ import com.xmartlabs.snapshotpublisher.task.ErrorTask
 import com.xmartlabs.snapshotpublisher.task.GenerateReleaseNotesTask
 import com.xmartlabs.snapshotpublisher.task.PrepareFirebaseAppDistributionReleaseTask
 import com.xmartlabs.snapshotpublisher.task.PrepareGooglePlayReleaseTask
-import com.xmartlabs.snapshotpublisher.task.UpdateAndroidVersionNameTask
 import com.xmartlabs.snapshotpublisher.utils.ErrorHelper
 import com.xmartlabs.snapshotpublisher.utils.createTask
 import com.xmartlabs.snapshotpublisher.utils.snapshotReleaseExtension
@@ -43,13 +43,13 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   }
 
   private fun Project.createTasksForVariant(variant: ApplicationVariant) {
+    updateVariantVersionName(variant)
     val assembleTask = AndroidPluginHelper.getAssembleTask(this, variant)
     val bundleTask = AndroidPluginHelper.getBundleTask(this, variant)
-    val updateVersionNameTask = createAndroidVersionTask(variant, assembleTask, bundleTask)
-    val generateReleaseNotesTask = createGenerateReleaseNotesTask(variant, updateVersionNameTask)
-    val preparationTasks = listOf(generateReleaseNotesTask, updateVersionNameTask)
+    val generateReleaseNotesTask = createGenerateReleaseNotesTask(variant)
+    val preparationTasks = listOf(generateReleaseNotesTask)
 
-    val prepareApkTask = createPrepareApkSnapshotTask(variant, assembleTask, preparationTasks)
+    createPrepareApkSnapshotTask(variant, assembleTask, preparationTasks)
     val prepareBundleTask = if (bundleTask != null) {
       createPrepareBundleSnapshotTask(variant, bundleTask, preparationTasks)
     } else null
@@ -58,29 +58,20 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   }
 
   private fun Project.createGenerateReleaseNotesTask(
-      variant: ApplicationVariant? = null,
-      updateVersionNameTask: UpdateAndroidVersionNameTask? = null
+      variant: ApplicationVariant? = null
   ) = createTask<GenerateReleaseNotesTask>(
       name = Constants.GENERATE_SNAPSHOT_RELEASE_NOTES_TASK_NAME + (variant?.capitalizedName ?: ""),
       description = "Generates release notes"
   ) {
     this.variant = variant
-    updateVersionNameTask?.mustRunAfter(this)
   }
 
-  private fun Project.createAndroidVersionTask(
-      variant: ApplicationVariant,
-      assembleTask: Task,
-      bundleTask: Task?
-  ) = createTask<UpdateAndroidVersionNameTask>(
-      name = "${Constants.UPDATE_ANDROID_VERSION_NAME_TASK_NAME}${variant.capitalizedName}",
-      description = "Update Android Version name"
-  ) {
-    this.variant = variant
-    @Suppress("UnstableApiUsage")
-    assembleTask.mustRunAfter(this)
-    @Suppress("UnstableApiUsage")
-    bundleTask?.mustRunAfter(this)
+  private fun Project.updateVariantVersionName(variant: ApplicationVariant) {
+    // TODO: This should be changed in AGP 4.2. It allows to change it in a specific task.
+    val versionName = AndroidPluginHelper.getVersionName(project, variant)
+    variant.outputs.all {
+      (this as? ApkVariantOutput)?.versionNameOverride = versionName
+    }
   }
 
   private fun Project.createPrepareApkSnapshotTask(
