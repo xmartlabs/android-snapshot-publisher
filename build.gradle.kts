@@ -10,13 +10,16 @@ buildscript {
 plugins {
   id("com.gradle.plugin-publish") version "0.10.1"
   `kotlin-dsl`
+  kotlin("jvm") version "1.4.10"
   groovy
   id("io.gitlab.arturbosch.detekt") version "1.0.1"
   jacoco
   `java-gradle-plugin`
   `maven-publish`
-  id("com.github.ben-manes.versions") version "0.25.0"
+  id("com.github.ben-manes.versions") version "0.33.0"
 }
+
+apply(from = "./scripts/dependency_updates.gradle")
 
 repositories {
   gradlePluginPortal()
@@ -26,16 +29,19 @@ repositories {
 }
 
 dependencies {
-  compileOnly("com.android.tools.build:gradle:3.5.0")
+  compileOnly("com.android.tools.build:gradle:4.1.0") // Compile only to not force a specific AGP version
 
   detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.0.0-RC12")
 
-  implementation("com.github.triplet.gradle:play-publisher:2.6.2")
-  implementation("com.google.apis:google-api-services-androidpublisher:v3-rev46-1.25.0")
-  implementation("com.google.firebase:firebase-appdistribution-gradle:1.0.0")
+  implementation("com.github.triplet.gradle:android-publisher:3.0.0")
+  implementation("com.github.triplet.gradle:play-publisher:3.0.0")
+  implementation("com.google.apis:google-api-services-androidpublisher:v3-rev20200526-1.30.9")
+  implementation("com.google.firebase:firebase-appdistribution-gradle:2.0.1")
+  implementation("com.google.guava:guava:29.0-jre")
 
-  testImplementation("com.android.tools.build:gradle:3.5.0")
-  testImplementation("junit:junit:4.12")
+  testImplementation("com.android.tools.build:gradle:4.1.0")
+  testImplementation( "org.mockito:mockito-inline:3.5.15")
+  testImplementation("junit:junit:4.13")
   testImplementation("org.assertj:assertj-core:3.11.1")
   testImplementation("org.eclipse.jgit:org.eclipse.jgit:3.5.0.201409260305-r")
   testImplementation("org.jetbrains.kotlin:kotlin-test")

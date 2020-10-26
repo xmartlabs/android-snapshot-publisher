@@ -4,7 +4,7 @@ import com.google.common.annotations.VisibleForTesting
 import com.xmartlabs.snapshotpublisher.model.ReleaseNotesConfig
 
 internal object ReleaseNotesGenerator {
-  fun generate(releaseNotesConfig: ReleaseNotesConfig, versionName: String, versionCode: Int): String {
+  fun generate(releaseNotesConfig: ReleaseNotesConfig, versionName: String, versionCode: Int?): String {
     val version = getVersionSection(releaseNotesConfig, versionName, versionCode)
     val header = getHeaderSection(releaseNotesConfig)
     val history = getHistorySection(releaseNotesConfig)
@@ -38,7 +38,7 @@ internal object ReleaseNotesGenerator {
   }
 
   @VisibleForTesting
-  internal fun getVersionSection(releaseNotesConfig: ReleaseNotesConfig, versionName: String, versionCode: Int) =
+  internal fun getVersionSection(releaseNotesConfig: ReleaseNotesConfig, versionName: String, versionCode: Int?) =
       releaseNotesConfig.getVersion(versionName = versionName, versionCode = versionCode)
 
   @VisibleForTesting

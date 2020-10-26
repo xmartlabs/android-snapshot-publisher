@@ -10,6 +10,7 @@ open class ReleaseNotesConfig {
   var commitHistoryFormat: String = Constants.RELEASE_NOTES_CONFIG_COMMIT_HISTORY_FORMAT_DEFAULT_VALUE
   var historyFormat: String = Constants.RELEASE_NOTES_CONFIG_HISTORY_FORMAT_DEFAULT_VALUE
   var maxCommitHistoryLines: Int = Constants.RELEASE_NOTES_CONFIG_MAX_COMMIT_HISTORY_LINES_DEFAULT_VALUE
+
   @Suppress("MemberVisibilityCanBePrivate")
   var releaseNotesFormat: String = Constants.RELEASE_NOTES_CONFIG_FORMAT_DEFAULT_VALUE
   var outputFile: File? = Constants.RELEASE_NOTES_OUTPUT_FILE_DEFAULT_VALUE
@@ -28,7 +29,7 @@ open class ReleaseNotesConfig {
           .replace(Constants.RELEASE_NOTES_HISTORY_KEY, history, true)
           .replace(Constants.RELEASE_NOTES_COMMIT_HISTORY_KEY, changelog, true)
 
-  internal fun getVersion(versionName: String, versionCode: Int) = versionFormat
+  internal fun getVersion(versionName: String, versionCode: Int?) = versionFormat
       .replace(Constants.RELEASE_NOTES_VERSION_NAME_KEY, versionName, true)
-      .replace(Constants.RELEASE_NOTES_VERSION_CODE_KEY, versionCode.toString(), true)
+      .replace(Constants.RELEASE_NOTES_VERSION_CODE_KEY, versionCode?.toString() ?: "", true)
 }

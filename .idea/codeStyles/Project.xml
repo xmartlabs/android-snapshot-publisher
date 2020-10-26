@@ -271,8 +271,6 @@
     <JavaCodeStyleSettings>
       <option name="PREFER_LONGER_NAMES" value="false" />
       <option name="CLASS_NAMES_IN_JAVADOC" value="2" />
-      <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="99" />
-      <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="99" />
       <option name="IMPORT_LAYOUT_TABLE">
         <value>
           <package name="android" withSubpackages="true" static="false" />
@@ -518,7 +516,16 @@
     <JetCodeStyleSettings>
       <option name="PACKAGES_TO_USE_STAR_IMPORTS">
         <value>
-          <package name="kotlinx.android.synthetic" withSubpackages="true" static="false" />
+          <package name="kotlinx.android.synthetic" alias="false" withSubpackages="true" />
+        </value>
+      </option>
+      <option name="PACKAGES_IMPORT_LAYOUT">
+        <value>
+          <package name="" alias="false" withSubpackages="true" />
+          <package name="java" alias="false" withSubpackages="true" />
+          <package name="javax" alias="false" withSubpackages="true" />
+          <package name="kotlin" alias="false" withSubpackages="true" />
+          <package name="" alias="true" withSubpackages="true" />
         </value>
       </option>
       <option name="NAME_COUNT_TO_USE_STAR_IMPORT" value="2147483647" />
@@ -526,8 +533,6 @@
     </JetCodeStyleSettings>
     <XML>
       <option name="XML_ATTRIBUTE_WRAP" value="0" />
-      <option name="XML_ALIGN_ATTRIBUTES" value="false" />
-      <option name="XML_SPACE_INSIDE_EMPTY_TAG" value="true" />
       <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
     </XML>
     <ADDITIONAL_INDENT_OPTIONS fileType="haml">

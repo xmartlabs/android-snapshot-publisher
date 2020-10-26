@@ -1,5 +1,6 @@
 package com.xmartlabs.snapshotpublisher
 
+import com.android.build.gradle.api.ApkVariantOutput
 import com.android.build.gradle.api.ApplicationVariant
 import com.xmartlabs.snapshotpublisher.model.FirebaseAppDistributionReleaseConfig
 import com.xmartlabs.snapshotpublisher.model.GooglePlayConfig
@@ -12,7 +13,6 @@ import com.xmartlabs.snapshotpublisher.task.ErrorTask
 import com.xmartlabs.snapshotpublisher.task.GenerateReleaseNotesTask
 import com.xmartlabs.snapshotpublisher.task.PrepareFirebaseAppDistributionReleaseTask
 import com.xmartlabs.snapshotpublisher.task.PrepareGooglePlayReleaseTask
-import com.xmartlabs.snapshotpublisher.task.UpdateAndroidVersionNameTask
 import com.xmartlabs.snapshotpublisher.utils.ErrorHelper
 import com.xmartlabs.snapshotpublisher.utils.createTask
 import com.xmartlabs.snapshotpublisher.utils.snapshotReleaseExtension
@@ -43,44 +43,35 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   }
 
   private fun Project.createTasksForVariant(variant: ApplicationVariant) {
+    updateVariantVersionName(variant)
     val assembleTask = AndroidPluginHelper.getAssembleTask(this, variant)
     val bundleTask = AndroidPluginHelper.getBundleTask(this, variant)
-    val updateVersionNameTask = createAndroidVersionTask(variant, assembleTask, bundleTask)
-    val generateReleaseNotesTask = createGenerateReleaseNotesTask(variant, updateVersionNameTask)
-    val preparationTasks = listOf(generateReleaseNotesTask, updateVersionNameTask)
+    val generateReleaseNotesTask = createGenerateReleaseNotesTask(variant)
+    val preparationTasks = listOf(generateReleaseNotesTask)
 
     createPrepareApkSnapshotTask(variant, assembleTask, preparationTasks)
-    if (bundleTask != null) {
+    val prepareBundleTask = if (bundleTask != null) {
       createPrepareBundleSnapshotTask(variant, bundleTask, preparationTasks)
-    }
-    createGooglePlayDeployTask(variant, preparationTasks)
+    } else null
+    createGooglePlayDeployTask(variant, assembleTask, prepareBundleTask, preparationTasks)
     createFirebaseDeployTask(variant, assembleTask, preparationTasks)
   }
 
   private fun Project.createGenerateReleaseNotesTask(
-      variant: ApplicationVariant? = null,
-      updateVersionNameTask: UpdateAndroidVersionNameTask? = null
+      variant: ApplicationVariant? = null
   ) = createTask<GenerateReleaseNotesTask>(
       name = Constants.GENERATE_SNAPSHOT_RELEASE_NOTES_TASK_NAME + (variant?.capitalizedName ?: ""),
       description = "Generates release notes"
   ) {
     this.variant = variant
-    updateVersionNameTask?.mustRunAfter(this)
   }
 
-  private fun Project.createAndroidVersionTask(
-      variant: ApplicationVariant,
-      assembleTask: Task,
-      bundleTask: Task?
-  ) = createTask<UpdateAndroidVersionNameTask>(
-      name = "${Constants.UPDATE_ANDROID_VERSION_NAME_TASK_NAME}${variant.capitalizedName}",
-      description = "Update Android Version name"
-  ) {
-    this.variant = variant
-    @Suppress("UnstableApiUsage")
-    assembleTask.mustRunAfter(this)
-    @Suppress("UnstableApiUsage")
-    bundleTask?.mustRunAfter(this)
+  private fun Project.updateVariantVersionName(variant: ApplicationVariant) {
+    // TODO: This should be changed in AGP 4.2. It allows to change it in a specific task.
+    val versionName = AndroidPluginHelper.getVersionName(project, variant)
+    variant.outputs.all {
+      (this as? ApkVariantOutput)?.versionNameOverride = versionName
+    }
   }
 
   private fun Project.createPrepareApkSnapshotTask(
@@ -109,6 +100,8 @@ class SnapshotPublisherPlugin : Plugin<Project> {
 
   private fun Project.createGooglePlayDeployTask(
       variant: ApplicationVariant,
+      assembleApkTask: Task,
+      appBundleTask: Task?,
       preparationTasks: List<Task>
   ) {
     if (variant.buildType.isDebuggable) {
@@ -123,21 +116,13 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       } else {
         PlayPublisherPluginHelper.getPublishApkTask(this, variant)
       }
-      val preparePublishTask = createTask<PrepareGooglePlayReleaseTask>(
-          name = "${Constants.PREPARE_GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
-          group = null,
-          description = "Prepare and deploy snapshot build to Google Play"
-      ) {
-        this.variant = variant
-        this.publishGooglePlayTask = publishGooglePlayTask
+      val compilationTask = if (googlePlayConfig.defaultToAppBundles) appBundleTask else assembleApkTask
 
-        val generateResourcesTask = PlayPublisherPluginHelper.getGenerateResourcesTask(project, variant)
-        mustRunAfter(generateResourcesTask)
-        preparationTasks.forEach { task ->
-          generateResourcesTask.mustRunAfter(task)
-          dependsOn(task)
-        }
-      }
+      val preparePublishTask = createGooglePlayReleasePreparationTask(
+          variant,
+          publishGooglePlayTask,
+          (preparationTasks + compilationTask).requireNoNulls()
+      )
 
       createTask<DefaultTask>(
           name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
@@ -150,6 +135,28 @@ class SnapshotPublisherPlugin : Plugin<Project> {
     } else {
       createGooglePlayErrorTask(googlePlayConfig, variant)
     }
+  }
+
+  private fun Project.createGooglePlayReleasePreparationTask(
+      variant: ApplicationVariant,
+      publishGooglePlayTask: Task,
+      preparationTasks: List<Task>
+  ): PrepareGooglePlayReleaseTask = createTask<PrepareGooglePlayReleaseTask>(
+      name = "${Constants.PREPARE_GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+      group = null,
+      description = "Prepare and deploy snapshot build to Google Play"
+  ) {
+    this.variant = variant
+    this.publishGooglePlayTask = publishGooglePlayTask
+
+    val generateResourcesTask = PlayPublisherPluginHelper.getGenerateResourcesTask(project, variant)
+    mustRunAfter(generateResourcesTask)
+
+    preparationTasks
+        .forEach { task ->
+          generateResourcesTask.mustRunAfter(task)
+          dependsOn(task)
+        }
   }
 
   private fun Project.createGooglePlayErrorTask(

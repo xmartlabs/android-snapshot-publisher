@@ -10,7 +10,20 @@ internal object GitHelper {
   @VisibleForTesting
   internal var defaultDir = File(".")
 
-  private fun String.execute(dir: File? = defaultDir): String {
+  private var commandRunner: (command: String, dir: File?) -> String = {
+    command, dir -> command.executeInConsole(dir)
+  }
+
+  private fun String.execute(dir: File? = defaultDir): String =
+    commandRunner.invoke(this, dir)
+
+  @VisibleForTesting
+  @JvmStatic
+  fun setupCommandRunner(runner: (command: String, dir: File?) -> String) {
+    commandRunner = runner
+  }
+
+  private fun String.executeInConsole(dir: File? = defaultDir): String {
     val parts = this.trim().split(" (?=([^\']*\'[^\']*\')*[^\']*$)".toRegex())
         .map { it.replace("'", "") }
 
@@ -50,7 +63,7 @@ internal object GitHelper {
       val allowMergeCommitCommandArg = if (includeMergeCommitsInHistory) "" else "--no-merges"
 
       val logRange = getHistoryRange(this)
-      val numberOfCommits = GitHelper.getTotalNumberOfCommits(logRange, allowMergeCommitCommandArg)
+      val numberOfCommits = getTotalNumberOfCommits(logRange, allowMergeCommitCommandArg)
       val requireCommitsCommandArg = if (numberOfCommits <= maxCommitHistoryLines) "" else " -n $maxCommitHistoryLines"
       val gitLogCommand = "git log --pretty=format:'$commitHistoryFormat'$requireCommitsCommandArg $logRange"
 
