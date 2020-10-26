@@ -2,10 +2,13 @@ Change Log
 ==========
 All notable changes to this project will be documented in this file.
 
-[Version 2.2.0 _UNDELIVERED_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v2.2.0)
+[Version 2.2.0 _(2020-10-26)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v2.2.0)
 - Upgrade Google Play Publisher dependency to [v3.0.0](https://github.com/Triple-T/gradle-play-publisher/releases/tag/3.0.0).
 - Change min required gradle version to `6.5.0`.
 - Change min Android Gradle plugin gradle version to `4.1.0`.
+
+### Breaking changes
+- After AGP 4.1 the version name cannot be applied only to specific plugin tasks. In turn, it's applied in the configuration step, causing all builds to contain `versionNameFormat`. AGP 4.2 fixes this issue but is still in alpha. If you're using a lower version of AGP, you can use the version of [2.1.0](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v2.1.0).
 
 ---
 
