@@ -32,7 +32,7 @@ internal object PlayPublisherPluginHelper {
   private const val RELEASE_NOTES_PATH = "release-notes"
 
   private fun PlayPublisherExtension.areCredsValid(): Boolean {
-    val creds = serviceAccountCredentials.orNull?.asFile  ?: return false
+    val creds = serviceAccountCredentials.orNull?.asFile ?: return false
     return creds.extension.equals("json", true)
   }
 
@@ -49,6 +49,11 @@ internal object PlayPublisherPluginHelper {
 
   private fun Project.getTask(variant: ApplicationVariant, taskName: String): Task =
       project.tasks.getByName(taskName.format(variant.capitalizedName))
+
+  fun getGenerateEditTask(project: Project, appId: String) = project.tasks.findByName(
+      "generateEditFor" +
+          appId.split(".").joinToString("Dot", transform = String::capitalize)
+  )
 
   fun getPublishBundleTask(project: Project, variant: ApplicationVariant): Task =
       project.getTask(variant, PUBLISH_BUNDLE_TASK_NAME)

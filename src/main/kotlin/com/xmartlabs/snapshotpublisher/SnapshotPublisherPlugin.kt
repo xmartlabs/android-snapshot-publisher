@@ -124,6 +124,9 @@ class SnapshotPublisherPlugin : Plugin<Project> {
           (preparationTasks + compilationTask).requireNoNulls()
       )
 
+      val generateEditTask = PlayPublisherPluginHelper.getGenerateEditTask(project, variant.applicationId)
+      generateEditTask?.mustRunAfter(preparationTasks)
+
       createTask<DefaultTask>(
           name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
           group = Constants.PLUGIN_GROUP,
