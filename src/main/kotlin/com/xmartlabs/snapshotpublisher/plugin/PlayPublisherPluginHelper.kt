@@ -1,16 +1,16 @@
 package com.xmartlabs.snapshotpublisher.plugin
 
 import com.android.Version
+import com.android.build.api.extension.ApplicationAndroidComponentsExtension
 import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.api.BaseVariant
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.github.triplet.gradle.play.PlayPublisherExtension
 import com.xmartlabs.snapshotpublisher.model.SnapshotReleaseExtension
 import com.xmartlabs.snapshotpublisher.utils.ErrorHelper
 import com.xmartlabs.snapshotpublisher.utils.snapshotReleaseExtension
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.getByType
 import org.gradle.util.GradleVersion
 import org.gradle.util.VersionNumber
 import java.io.File
@@ -18,7 +18,7 @@ import java.io.File
 internal object PlayPublisherPluginHelper {
   private const val PLAY_EXTENSION_NAME = "play"
   private val MIN_GRADLE_VERSION = GradleVersion.version("6.5")
-  private val MIN_AGP_VERSION = VersionNumber.parse("4.1.0")
+  private val MIN_AGP_VERSION = VersionNumber.parse("4.2.0")
 
   private const val GENERATE_RESOURCES_TASK_NAME = "generate%sPlayResources"
   private const val PUBLISH_APK_TASK_NAME = "publish%sApk"
@@ -32,7 +32,7 @@ internal object PlayPublisherPluginHelper {
   private const val RELEASE_NOTES_PATH = "release-notes"
 
   private fun PlayPublisherExtension.areCredsValid(): Boolean {
-    val creds = serviceAccountCredentials.orNull?.asFile  ?: return false
+    val creds = serviceAccountCredentials.orNull?.asFile ?: return false
     return creds.extension.equals("json", true)
   }
 
@@ -93,7 +93,7 @@ internal object PlayPublisherPluginHelper {
 
     var credentialsInitialized = false
 
-    val android = project.the<BaseAppModuleExtension>()
+    val android = project.extensions.getByType<ApplicationAndroidComponentsExtension>()
     android.onVariants v@{
       val releaseSetup = project.snapshotReleaseExtension
       if (!credentialsInitialized) {

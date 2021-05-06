@@ -44,3 +44,5 @@ hs_err_pid*
 .idea/
 
 /out
+
+/local.properties
