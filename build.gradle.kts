@@ -9,7 +9,7 @@ buildscript {
 plugins {
   id("com.gradle.plugin-publish") version "0.10.1"
   `kotlin-dsl`
-  kotlin("jvm") version "1.4.31"
+  kotlin("jvm") version "1.4.32"
   groovy
   id("io.gitlab.arturbosch.detekt") version "1.11.0"
   jacoco
@@ -51,7 +51,7 @@ jacoco {
 }
 
 group = "com.xmartlabs"
-version = "2.3.0-SNAPSHOT"
+version = "2.3.0"
 
 gradlePlugin {
   plugins {
