@@ -76,6 +76,8 @@ buildscript {
   }
 }
 ```
+**Note:** If you're using AGP 7.0, you should use the `2.3.0-AGP7.0` version.
+
 Apply the plugin to each individual `com.android.application` module where you want to use it.
 
 ```groovy

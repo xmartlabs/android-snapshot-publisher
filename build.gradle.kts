@@ -52,7 +52,7 @@ jacoco {
 }
 
 group = "com.xmartlabs"
-version = "2.4.0-SNAPSHOT"
+version = "2.3.0-AGP7.0"
 
 gradlePlugin {
   plugins {
