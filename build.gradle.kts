@@ -27,7 +27,7 @@ repositories {
 }
 
 dependencies {
-  compileOnly("com.android.tools.build:gradle:7.0.0-beta03") // Compile only to not force a specific AGP version
+  compileOnly("com.android.tools.build:gradle:7.0.0") // Compile only to not force a specific AGP version
   compileOnly("com.android.tools:common:30.0.0-beta03")
 
   detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.0.0-RC12")
@@ -38,7 +38,7 @@ dependencies {
   implementation("com.google.firebase:firebase-appdistribution-gradle:2.1.2")
   implementation("com.google.guava:guava:29.0-jre")
 
-  testImplementation("com.android.tools.build:gradle:7.0.0-alpha14")
+  testImplementation("com.android.tools.build:gradle:7.0.0")
   testImplementation( "org.mockito:mockito-inline:3.11.0")
   testImplementation("junit:junit:4.13.2")
   testImplementation("org.assertj:assertj-core:3.11.1")
