@@ -1,0 +1,33 @@
+name: Run lints and build
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+jobs:
+  build_and_checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache files
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.android/build-cache
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}-${{ hashFiles('**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Gradle Initialization
+        run: ./gradlew
+      - name: Detekt
+        run: ./gradlew detekt
+      - name: Upload Detekt report
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: Detekt report
+          path: build/reports/detekt/detekt.html
+      - name: Build
+        run: ./gradlew build
