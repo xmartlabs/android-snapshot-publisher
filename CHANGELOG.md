@@ -2,6 +2,11 @@ Change Log
 ==========
 All notable changes to this project will be documented in this file.
 
+[Version 2.4.0] _(unreleased)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v2.4.0)
+- Change min Android Gradle plugin gradle version to `7.0.0`.
+- Upgrade Google Play Publisher dependency to [v3.6.0](https://github.com/Triple-T/gradle-play-publisher/releases/tag/3.6.0).
+- Update Core libraries
+
 [Version 2.3.0-AGP7.0 _(2021-05-18)_](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v2.3.0-AGP7.0)
 - Upgrade Google Play Publisher dependency to [v3.4.0-agp7.0](https://github.com/Triple-T/gradle-play-publisher/releases/tag/3.4.0-agp7.0).
 - Change min Android Gradle plugin gradle version to `7.0.0-beta01`.
