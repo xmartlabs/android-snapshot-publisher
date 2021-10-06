@@ -7,15 +7,15 @@ buildscript {
 }
 
 plugins {
-  id("com.gradle.plugin-publish") version "0.14.0"
+  id("com.gradle.plugin-publish") version "0.16.0"
   `kotlin-dsl`
-  kotlin("jvm") version "1.5.10"
+  kotlin("jvm") version "1.5.31"
   groovy
   id("io.gitlab.arturbosch.detekt") version "1.11.0"
   jacoco
   `java-gradle-plugin`
   `maven-publish`
-  id("com.github.ben-manes.versions") version "0.33.0"
+  id("com.github.ben-manes.versions") version "0.39.0"
 }
 
 apply(from = "./scripts/dependency_updates.gradle")
@@ -28,18 +28,18 @@ repositories {
 
 dependencies {
   compileOnly("com.android.tools.build:gradle:7.0.0") // Compile only to not force a specific AGP version
-  compileOnly("com.android.tools:common:30.0.0-beta03")
+  compileOnly("com.android.tools:common:30.0.0")
 
   detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.0.0-RC12")
 
-  implementation("com.github.triplet.gradle:android-publisher:3.4.0-agp7.0")
-  implementation("com.github.triplet.gradle:play-publisher:3.4.0-agp7.0")
+  implementation("com.github.triplet.gradle:android-publisher:3.6.0")
+  implementation("com.github.triplet.gradle:play-publisher:3.6.0")
   implementation("com.google.apis:google-api-services-androidpublisher:v3-rev20200526-1.30.9")
-  implementation("com.google.firebase:firebase-appdistribution-gradle:2.1.2")
-  implementation("com.google.guava:guava:29.0-jre")
+  implementation("com.google.firebase:firebase-appdistribution-gradle:2.2.0")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.31")
 
   testImplementation("com.android.tools.build:gradle:7.0.0")
-  testImplementation( "org.mockito:mockito-inline:3.11.0")
+  testImplementation( "org.mockito:mockito-inline:3.12.4")
   testImplementation("junit:junit:4.13.2")
   testImplementation("org.assertj:assertj-core:3.11.1")
   testImplementation("org.eclipse.jgit:org.eclipse.jgit:3.5.0.201409260305-r")
