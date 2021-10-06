@@ -72,11 +72,10 @@ buildscript {
     google()
   }
   dependencies {
-     classpath "com.xmartlabs:snapshot-publisher:2.3.0"
+     classpath "com.xmartlabs:snapshot-publisher:2.4.0"
   }
 }
 ```
-**Note:** If you're using AGP 7.0, you should use the `2.3.0-AGP7.0` version.
 
 Apply the plugin to each individual `com.android.application` module where you want to use it.
 
@@ -134,8 +133,6 @@ snapshotPublisher {
 
 **Known Issue:** after AGP 4.1 the version name cannot be applied only to specific plugin tasks. 
 In turn, it's applied in the configuration step, causing all builds to contain `versionNameFormat`.
-AGP 4.2 fixes this issue but is still in alpha.
-If you're using a lower version of AGP, you can use the version of [2.1.0](https://github.com/xmartlabs/android-snapshot-publisher/releases/tag/v2.1.0).
 
 ### Release notes
 The `releaseNotes` block allows you to perform build release notes customizations.
