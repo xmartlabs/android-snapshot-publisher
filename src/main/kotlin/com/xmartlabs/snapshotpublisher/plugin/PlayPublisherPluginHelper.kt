@@ -1,7 +1,7 @@
 package com.xmartlabs.snapshotpublisher.plugin
 
 import com.android.Version
-import com.android.build.api.extension.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.api.BaseVariant
 import com.github.triplet.gradle.play.PlayPublisherExtension
