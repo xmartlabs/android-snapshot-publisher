@@ -39,7 +39,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.31")
 
   testImplementation("com.android.tools.build:gradle:7.0.0")
-  testImplementation( "org.mockito:mockito-inline:3.12.4")
+  testImplementation("org.mockito:mockito-inline:3.12.4")
   testImplementation("junit:junit:4.13.2")
   testImplementation("org.assertj:assertj-core:3.11.1")
   testImplementation("org.eclipse.jgit:org.eclipse.jgit:3.5.0.201409260305-r")
@@ -52,7 +52,7 @@ jacoco {
 }
 
 group = "com.xmartlabs"
-version = "2.4.0"
+version = "2.4.1"
 
 gradlePlugin {
   plugins {
