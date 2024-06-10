@@ -35,7 +35,7 @@ dependencies {
   implementation("com.github.triplet.gradle:android-publisher:3.6.0")
   implementation("com.github.triplet.gradle:play-publisher:3.6.0")
   implementation("com.google.apis:google-api-services-androidpublisher:v3-rev20200526-1.30.9")
-  implementation("com.google.firebase:firebase-appdistribution-gradle:2.2.0")
+  implementation("com.google.firebase:firebase-appdistribution-gradle:3.0.1")
   implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.31")
 
   testImplementation("com.android.tools.build:gradle:7.0.0")
