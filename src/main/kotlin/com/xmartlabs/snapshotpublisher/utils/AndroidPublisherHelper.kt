@@ -57,8 +57,12 @@ internal object AndroidPublisherHelper {
   internal fun buildPublisher(project: Project, googlePlayConfig: GooglePlayConfig): AndroidPublisher {
     val transport = buildTransport()
     val creds = getCreds(googlePlayConfig, project)
+        ?: throw org.gradle.api.GradleException(
+            "Google Play service account credentials file not found. " +
+                "Configure googlePlay.serviceAccountCredentials in snapshotPublisher."
+        )
 
-    val credentials = GoogleCredentials.fromStream(creds?.inputStream())
+    val credentials = GoogleCredentials.fromStream(creds.inputStream())
         .createScoped(listOf(AndroidPublisherScopes.ANDROIDPUBLISHER))
     val requestInitializer = HttpCredentialsAdapter(credentials)
 
