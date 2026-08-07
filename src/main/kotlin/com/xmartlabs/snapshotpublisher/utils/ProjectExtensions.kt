@@ -4,6 +4,7 @@ import com.xmartlabs.snapshotpublisher.Constants
 import com.xmartlabs.snapshotpublisher.model.SnapshotReleaseExtension
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.tasks.TaskProvider
 
 @Suppress("UnsafeCast")
 internal val Project.snapshotReleaseExtension: SnapshotReleaseExtension
@@ -14,12 +15,8 @@ internal inline fun <reified T : Task> Project.createTask(
     description: String? = null,
     group: String? = Constants.PLUGIN_GROUP,
     crossinline block: T.() -> Unit = {}
-): T {
-  val config: T.() -> Unit = {
-    this.description = description
-    this.group = group
-    block()
-  }
-
-  return tasks.create(name, T::class.java, config)
+): TaskProvider<T> = tasks.register(name, T::class.java) {
+  this.description = description
+  this.group = group
+  block()
 }

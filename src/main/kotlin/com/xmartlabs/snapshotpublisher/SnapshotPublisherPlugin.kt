@@ -1,7 +1,8 @@
 package com.xmartlabs.snapshotpublisher
 
-import com.android.build.gradle.api.ApkVariantOutput
-import com.android.build.gradle.api.ApplicationVariant
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.ApplicationVariant
 import com.xmartlabs.snapshotpublisher.model.FirebaseAppDistributionReleaseConfig
 import com.xmartlabs.snapshotpublisher.model.GooglePlayConfig
 import com.xmartlabs.snapshotpublisher.model.SnapshotReleaseExtension
@@ -21,6 +22,8 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.tasks.TaskProvider
+import org.gradle.kotlin.dsl.getByType
 
 @Suppress("unused")
 class SnapshotPublisherPlugin : Plugin<Project> {
@@ -30,29 +33,38 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       FirebaseAppDistributionPluginHelper.initializeAppDistributionPlugin(this)
       PlayPublisherPluginHelper.initializePlayPublisherPlugin(this)
 
-      if (AndroidPluginHelper.hasAndroidExtension(this)) {
-        createGenerateReleaseNotesTask()
+      val androidComponents = extensions.findByType(ApplicationAndroidComponentsExtension::class.java)
+          ?: throw GradleException("Android is not present")
 
-        AndroidPluginHelper.getAndroidExtension(this).applicationVariants.whenObjectAdded {
-          createTasksForVariant(this)
+      createGenerateReleaseNotesTask()
+
+      val variants = mutableListOf<ApplicationVariant>()
+      androidComponents.onVariants { variant ->
+        updateVariantVersionName(variant)
+        variants.add(variant)
+      }
+
+      afterEvaluate {
+        variants.forEach { variant ->
+          createTasksForVariant(variant)
         }
-      } else {
-        throw GradleException("Android is not present")
       }
     }
   }
 
   private fun Project.createTasksForVariant(variant: ApplicationVariant) {
-    updateVariantVersionName(variant)
-    val assembleTask = AndroidPluginHelper.getAssembleTask(this, variant)
-    val bundleTask = AndroidPluginHelper.getBundleTask(this, variant)
+    val capitalizedName = variant.capitalizedName
+    val assembleTask = AndroidPluginHelper.getAssembleTask(this, capitalizedName)
+    val bundleTask = AndroidPluginHelper.getBundleTask(this, capitalizedName)
     val generateReleaseNotesTask = createGenerateReleaseNotesTask(variant)
-    val preparationTasks = listOf(generateReleaseNotesTask)
+    val preparationTasks: List<Any> = listOf(generateReleaseNotesTask)
 
-    createPrepareApkSnapshotTask(variant, assembleTask, preparationTasks)
+    createPrepareApkSnapshotTask(capitalizedName, assembleTask, preparationTasks)
     val prepareBundleTask = if (bundleTask != null) {
-      createPrepareBundleSnapshotTask(variant, bundleTask, preparationTasks)
-    } else null
+      createPrepareBundleSnapshotTask(capitalizedName, bundleTask, preparationTasks)
+    } else {
+      null
+    }
     createGooglePlayDeployTask(variant, assembleTask, prepareBundleTask, preparationTasks)
     createFirebaseDeployTask(variant, assembleTask, preparationTasks)
   }
@@ -67,19 +79,23 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   }
 
   private fun Project.updateVariantVersionName(variant: ApplicationVariant) {
-    // TODO: This should be changed in AGP 4.2. It allows to change it in a specific task.
-    val versionName = AndroidPluginHelper.getVersionName(project, variant)
-    variant.outputs.all {
-      (this as? ApkVariantOutput)?.versionNameOverride = versionName
+    val releaseSetup = snapshotReleaseExtension
+    val currentVersionName = variant.outputs.firstOrNull()?.versionName?.orNull
+        ?: extensions.getByType<ApplicationExtension>().defaultConfig.versionName
+        ?: ""
+    val versionName = AndroidPluginHelper.getVersionName(releaseSetup.version, currentVersionName)
+
+    variant.outputs.forEach { output ->
+      output.versionName.set(versionName)
     }
   }
 
   private fun Project.createPrepareApkSnapshotTask(
-      variant: ApplicationVariant,
+      capitalizedName: String,
       assembleTask: Task,
-      preparationTasks: List<Task>
+      preparationTasks: List<Any>
   ) = createTask<DefaultTask>(
-      name = "${Constants.PREPARE_APK_VERSION_TASK_NAME}${variant.capitalizedName}",
+      name = "${Constants.PREPARE_APK_VERSION_TASK_NAME}$capitalizedName",
       description = "Prepare, compile and create an apk file."
   ) {
     preparationTasks.forEach { dependsOn(it) }
@@ -87,11 +103,11 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   }
 
   private fun Project.createPrepareBundleSnapshotTask(
-      variant: ApplicationVariant,
+      capitalizedName: String,
       bundleTask: Task?,
-      preparationTasks: List<Task>
+      preparationTasks: List<Any>
   ) = createTask<DefaultTask>(
-      name = "${Constants.PREPARE_BUNDLE_VERSION_TASK_NAME}${variant.capitalizedName}",
+      name = "${Constants.PREPARE_BUNDLE_VERSION_TASK_NAME}$capitalizedName",
       description = "Prepare, compile and create a bundle file."
   ) {
     preparationTasks.forEach { dependsOn(it) }
@@ -101,31 +117,35 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   private fun Project.createGooglePlayDeployTask(
       variant: ApplicationVariant,
       assembleApkTask: Task,
-      appBundleTask: Task?,
-      preparationTasks: List<Task>
+      appBundleTask: TaskProvider<DefaultTask>?,
+      preparationTasks: List<Any>
   ) {
-    if (variant.buildType.isDebuggable) {
-      project.logger.info("Skipping debuggable build type '${variant.buildType.name}' for Google Play's tasks.")
+    val capitalizedName = variant.capitalizedName
+    val appExtension = extensions.getByType<ApplicationExtension>()
+    val buildType = appExtension.buildTypes.findByName(variant.buildType ?: "")
+    if (buildType?.isDebuggable == true) {
+      project.logger.info("Skipping debuggable build type '${variant.buildType}' for Google Play's tasks.")
       return
     }
 
     val googlePlayConfig = project.snapshotReleaseExtension.googlePlay
     if (ErrorHelper.isServiceAccountCredentialFileValid(project, googlePlayConfig.serviceAccountCredentials)) {
       val publishGooglePlayTask: Task = if (googlePlayConfig.defaultToAppBundles) {
-        PlayPublisherPluginHelper.getPublishBundleTask(this, variant)
+        PlayPublisherPluginHelper.getPublishBundleTask(this, capitalizedName)
       } else {
-        PlayPublisherPluginHelper.getPublishApkTask(this, variant)
+        PlayPublisherPluginHelper.getPublishApkTask(this, capitalizedName)
       }
-      val compilationTask = if (googlePlayConfig.defaultToAppBundles) appBundleTask else assembleApkTask
+      val compilationTask: Any? = if (googlePlayConfig.defaultToAppBundles) appBundleTask else assembleApkTask
 
       val preparePublishTask = createGooglePlayReleasePreparationTask(
           variant,
+          capitalizedName,
           publishGooglePlayTask,
-          (preparationTasks + compilationTask).requireNoNulls()
+          preparationTasks + listOfNotNull(compilationTask)
       )
 
       createTask<DefaultTask>(
-          name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+          name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}$capitalizedName",
           group = Constants.PLUGIN_GROUP,
           description = "Release a snapshot version to Google Play"
       ) {
@@ -133,23 +153,24 @@ class SnapshotPublisherPlugin : Plugin<Project> {
         dependsOn(publishGooglePlayTask)
       }
     } else {
-      createGooglePlayErrorTask(googlePlayConfig, variant)
+      createGooglePlayErrorTask(googlePlayConfig, capitalizedName)
     }
   }
 
   private fun Project.createGooglePlayReleasePreparationTask(
       variant: ApplicationVariant,
+      capitalizedName: String,
       publishGooglePlayTask: Task,
-      preparationTasks: List<Task>
-  ): PrepareGooglePlayReleaseTask = createTask<PrepareGooglePlayReleaseTask>(
-      name = "${Constants.PREPARE_GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+      preparationTasks: List<Any>
+  ) = createTask<PrepareGooglePlayReleaseTask>(
+      name = "${Constants.PREPARE_GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}$capitalizedName",
       group = null,
       description = "Prepare and deploy snapshot build to Google Play"
   ) {
     this.variant = variant
     this.publishGooglePlayTask = publishGooglePlayTask
 
-    val generateResourcesTask = PlayPublisherPluginHelper.getGenerateResourcesTask(project, variant)
+    val generateResourcesTask = PlayPublisherPluginHelper.getGenerateResourcesTask(project, capitalizedName)
     mustRunAfter(generateResourcesTask)
 
     preparationTasks
@@ -161,7 +182,7 @@ class SnapshotPublisherPlugin : Plugin<Project> {
 
   private fun Project.createGooglePlayErrorTask(
       googlePlayConfig: GooglePlayConfig,
-      variant: ApplicationVariant
+      capitalizedName: String
   ) {
     val error = ErrorHelper.getServiceAccountFileErrorMessage(
         project,
@@ -170,7 +191,7 @@ class SnapshotPublisherPlugin : Plugin<Project> {
     )
 
     createTask<ErrorTask>(
-        name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+        name = "${Constants.GOOGLE_PLAY_SNAPSHOT_DEPLOY_TASK_NAME}$capitalizedName",
         group = Constants.PLUGIN_GROUP,
         description = "Release a snapshot version to Google Play"
     ) {
@@ -181,18 +202,19 @@ class SnapshotPublisherPlugin : Plugin<Project> {
   private fun Project.createFirebaseDeployTask(
       variant: ApplicationVariant,
       assembleTask: Task,
-      preparationTasks: List<Task>
+      preparationTasks: List<Any>
   ) {
-    val publishTask = FirebaseAppDistributionPluginHelper.getDistributionTask(this, variant)
+    val capitalizedName = variant.capitalizedName
+    val publishTask = FirebaseAppDistributionPluginHelper.getDistributionTask(this, capitalizedName)
     if (publishTask == null) {
       logger
-          .info("Skipping build type ${variant.buildType.name} due to Firebase App Distribution being disabled for it")
+          .info("Skipping build type ${variant.buildType} due to Firebase App Distribution being disabled for it")
       return
     }
     val firebaseConfig = project.snapshotReleaseExtension.firebaseAppDistribution
     if (ErrorHelper.isServiceAccountCredentialFileValid(project, firebaseConfig.serviceAccountCredentials)) {
       val prepareReleaseTask = createTask<PrepareFirebaseAppDistributionReleaseTask>(
-          name = "${Constants.PREPARE_FIREBASE_APP_DISTRIBUTION_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+          name = "${Constants.PREPARE_FIREBASE_APP_DISTRIBUTION_SNAPSHOT_DEPLOY_TASK_NAME}$capitalizedName",
           description = "Prepare the Firebase App Distribution snapshot release",
           group = null
       ) {
@@ -201,7 +223,7 @@ class SnapshotPublisherPlugin : Plugin<Project> {
       }
 
       createTask<DefaultTask>(
-          name = "${Constants.FIREBASE_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+          name = "${Constants.FIREBASE_SNAPSHOT_DEPLOY_TASK_NAME}$capitalizedName",
           description = "Prepare and deploy a snapshot build to Firebase App Distribution"
       ) {
         publishTask.mustRunAfter(assembleTask)
@@ -212,13 +234,13 @@ class SnapshotPublisherPlugin : Plugin<Project> {
         dependsOn(publishTask)
       }
     } else {
-      createFirebaseErrorTask(firebaseConfig, variant)
+      createFirebaseErrorTask(firebaseConfig, capitalizedName)
     }
   }
 
   private fun Project.createFirebaseErrorTask(
       firebaseConfig: FirebaseAppDistributionReleaseConfig,
-      variant: ApplicationVariant
+      capitalizedName: String
   ) {
     val error = ErrorHelper.getServiceAccountFileErrorMessage(
         project,
@@ -227,7 +249,7 @@ class SnapshotPublisherPlugin : Plugin<Project> {
     )
 
     createTask<ErrorTask>(
-        name = "${Constants.FIREBASE_SNAPSHOT_DEPLOY_TASK_NAME}${variant.capitalizedName}",
+        name = "${Constants.FIREBASE_SNAPSHOT_DEPLOY_TASK_NAME}$capitalizedName",
         group = Constants.PLUGIN_GROUP,
         description = "Release a snapshot version to Firebase App Distribution"
     ) {

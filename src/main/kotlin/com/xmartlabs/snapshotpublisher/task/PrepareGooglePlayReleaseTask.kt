@@ -1,6 +1,6 @@
 package com.xmartlabs.snapshotpublisher.task
 
-import com.android.build.gradle.api.ApplicationVariant
+import com.android.build.api.variant.ApplicationVariant
 import com.github.triplet.gradle.androidpublisher.ReleaseStatus
 import com.github.triplet.gradle.androidpublisher.ResolutionStrategy
 import com.github.triplet.gradle.play.PlayPublisherExtension
@@ -30,7 +30,9 @@ open class PrepareGooglePlayReleaseTask : DefaultTask() {
 
   private val googlePlayConfig by lazy { project.snapshotReleaseExtension.googlePlay }
   private val publisher by lazy { AndroidPublisherHelper.buildPublisher(project, googlePlayConfig) }
-  private val generatedReleaseNotesFile by lazy { File(project.buildDir, Constants.OUTPUT_RELEASE_NOTES_FILE_PATH) }
+  private val generatedReleaseNotesFile by lazy {
+    project.layout.buildDirectory.file(Constants.OUTPUT_RELEASE_NOTES_FILE_PATH).get().asFile
+  }
 
   @Suppress("unused")
   @TaskAction
@@ -55,11 +57,11 @@ open class PrepareGooglePlayReleaseTask : DefaultTask() {
     AndroidPublisherHelper.read(
         skipIfNotFound = false,
         publisher = publisher,
-        variant = variant,
+        applicationId = variant.applicationId.get(),
         project = project
     ) { editId ->
-      val details = details().get(variant.applicationId, editId).execute()
-      PlayPublisherPluginHelper.releaseNotesFile(project, variant, details.defaultLanguage, googlePlayConfig.track)
+      val details = details().get(variant.applicationId.get(), editId).execute()
+      PlayPublisherPluginHelper.releaseNotesFile(project, variant.name, details.defaultLanguage, googlePlayConfig.track)
           .apply {
             parentFile.mkdirs()
             writeText(getReleaseNotes())
