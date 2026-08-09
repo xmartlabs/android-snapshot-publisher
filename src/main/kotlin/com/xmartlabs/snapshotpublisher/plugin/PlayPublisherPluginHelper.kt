@@ -2,8 +2,6 @@ package com.xmartlabs.snapshotpublisher.plugin
 
 import com.android.Version
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
-import com.android.build.gradle.api.ApplicationVariant
-import com.android.build.gradle.api.BaseVariant
 import com.github.triplet.gradle.play.PlayPublisherExtension
 import com.xmartlabs.snapshotpublisher.model.SnapshotReleaseExtension
 import com.xmartlabs.snapshotpublisher.utils.ErrorHelper
@@ -12,20 +10,18 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.util.GradleVersion
-import org.gradle.util.VersionNumber
 import java.io.File
 
 internal object PlayPublisherPluginHelper {
   private const val PLAY_EXTENSION_NAME = "play"
-  private val MIN_GRADLE_VERSION = GradleVersion.version("6.5")
-  private val MIN_AGP_VERSION = VersionNumber.parse("7.0.0")
+  private val MIN_GRADLE_VERSION = GradleVersion.version("8.1")
+  private val MIN_AGP_VERSION = GradleVersion.version("8.1.0")
 
   private const val GENERATE_RESOURCES_TASK_NAME = "generate%sPlayResources"
   private const val PUBLISH_APK_TASK_NAME = "publish%sApk"
   private const val PUBLISH_BUNDLE_TASK_NAME = "publish%sBundle"
   private const val PLAY_PUBLISHER_PLUGIN_CLASS = "com.github.triplet.gradle.play.PlayPublisherPlugin"
 
-  // https://github.com/Triple-T/gradle-play-publisher/blob/3e86503431794792dc63dd6b5bb51e03493f1ed7/plugin/src/main/kotlin/com/github/triplet/gradle/play/internal/Constants.kt
   private const val RESOURCE_PATH = "res"
   private const val OUTPUT_PATH = "gpp"
   private const val RESOURCES_OUTPUT_PATH = "generated/$OUTPUT_PATH"
@@ -36,30 +32,31 @@ internal object PlayPublisherPluginHelper {
     return creds.extension.equals("json", true)
   }
 
-  private val BaseVariant.playPath get() = "$RESOURCES_OUTPUT_PATH/$name"
+  private fun playPath(variantName: String) = "$RESOURCES_OUTPUT_PATH/$variantName"
 
-  private val BaseVariant.playResourcePath get() = "$playPath/$RESOURCE_PATH"
+  private fun playResourcePath(variantName: String) = "${playPath(variantName)}/$RESOURCE_PATH"
 
-  fun releaseNotesFile(project: Project, variant: BaseVariant, defaultLanguage: String, track: String) =
-      File(project.buildDir, "${variant.playResourcePath}/$RELEASE_NOTES_PATH/$defaultLanguage/$track.txt")
+  fun releaseNotesFile(project: Project, variantName: String, defaultLanguage: String, track: String) =
+      project.layout.buildDirectory
+          .file("${playResourcePath(variantName)}/$RELEASE_NOTES_PATH/$defaultLanguage/$track.txt")
+          .get().asFile
 
   @Suppress("UnsafeCast")
   private val Project.playPublisherExtension
     get() = project.extensions.findByName(PLAY_EXTENSION_NAME) as PlayPublisherExtension
 
-  private fun Project.getTask(variant: ApplicationVariant, taskName: String): Task =
-      project.tasks.getByName(taskName.format(variant.capitalizedName))
+  private fun Project.getTask(capitalizedName: String, taskName: String): Task =
+      project.tasks.getByName(taskName.format(capitalizedName))
 
-  fun getPublishBundleTask(project: Project, variant: ApplicationVariant): Task =
-      project.getTask(variant, PUBLISH_BUNDLE_TASK_NAME)
+  fun getPublishBundleTask(project: Project, capitalizedName: String): Task =
+      project.getTask(capitalizedName, PUBLISH_BUNDLE_TASK_NAME)
 
-  fun getPublishApkTask(project: Project, variant: ApplicationVariant): Task =
-      project.getTask(variant, PUBLISH_APK_TASK_NAME)
+  fun getPublishApkTask(project: Project, capitalizedName: String): Task =
+      project.getTask(capitalizedName, PUBLISH_APK_TASK_NAME)
 
-  fun getGenerateResourcesTask(project: Project, variant: ApplicationVariant): Task =
-      project.getTask(variant, GENERATE_RESOURCES_TASK_NAME)
+  fun getGenerateResourcesTask(project: Project, capitalizedName: String): Task =
+      project.getTask(capitalizedName, GENERATE_RESOURCES_TASK_NAME)
 
-  // Required in https://github.com/Triple-T/gradle-play-publisher/blob/40092f24d68034395c4c3399dbef0c5eb2f2c484/common/validation/src/main/kotlin/com/github/triplet/gradle/common/validation/Validation.kt#L9
   private fun checkGradleVersion() {
     val gradleVersion = GradleVersion.current()
     check(gradleVersion >= MIN_GRADLE_VERSION) {
@@ -71,7 +68,7 @@ internal object PlayPublisherPluginHelper {
   }
 
   private fun checkAgp() {
-    val agpVersion = VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION)
+    val agpVersion = GradleVersion.version(Version.ANDROID_GRADLE_PLUGIN_VERSION)
     check(agpVersion >= MIN_AGP_VERSION) {
       "Android Snapshot Publisher's minimum Android Gradle Plugin version is at least " +
           "$MIN_AGP_VERSION and yours is $agpVersion. Find the latest version " +
@@ -87,7 +84,7 @@ internal object PlayPublisherPluginHelper {
     var credentialsInitialized = false
 
     val android = project.extensions.getByType<ApplicationAndroidComponentsExtension>()
-    android.onVariants v@{
+    android.onVariants {
       val releaseSetup = project.snapshotReleaseExtension
       if (!credentialsInitialized) {
         credentialsInitialized = true
@@ -106,7 +103,7 @@ internal object PlayPublisherPluginHelper {
           if (ErrorHelper.isServiceAccountCredentialFileValid(project, credentialFile)) {
             project.file(credentialFile ?: "mock.json")
           } else {
-            File("mock.json") // To skip Google Play Publisher validation
+            File("mock.json")
           }
       )
     }

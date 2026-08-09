@@ -1,6 +1,6 @@
 package com.xmartlabs.snapshotpublisher.task
 
-import com.android.build.gradle.api.ApplicationVariant
+import com.android.build.api.variant.ApplicationVariant
 import com.xmartlabs.snapshotpublisher.Constants
 import com.xmartlabs.snapshotpublisher.model.ReleaseNotesConfig
 import com.xmartlabs.snapshotpublisher.plugin.AndroidPluginHelper
@@ -45,7 +45,7 @@ open class GenerateReleaseNotesTask : DefaultTask() {
           }
 
   private fun createGeneratedReleaseNotesFile(generatedReleaseNotes: String) =
-      File(project.buildDir, Constants.OUTPUT_RELEASE_NOTES_FILE_PATH)
+      project.layout.buildDirectory.file(Constants.OUTPUT_RELEASE_NOTES_FILE_PATH).get().asFile
           .apply {
             parentFile.mkdirs()
             writeText(generatedReleaseNotes)
